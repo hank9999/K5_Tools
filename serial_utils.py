@@ -1,6 +1,10 @@
 import struct
 
 
+def log(msg):
+    print(msg)
+
+
 def xor_arr(data: bytes):
     tbl = [22, 108, 20, 230, 46, 145, 13, 64, 33, 53, 213, 64, 19, 3, 233, 128]
     x = b""
@@ -72,6 +76,7 @@ def get_string(data: bytes, begin, max_len):
 
 
 def sayhello(serial_port):
+    log('发送hello指令')
     hello_packet = b"\x14\x05\x04\x00\x6a\x39\x57\x64"
 
     tries = 5
@@ -129,5 +134,6 @@ def write_extra_mem(serial_port, offset, add, data):
 
 
 def reset_radio(serial_port):
+    log('发送复位指令')
     reset_packet = b"\xdd\x05\x00\x00"
-    send_command(serport, reset_packet)
+    send_command(serial_port, reset_packet)

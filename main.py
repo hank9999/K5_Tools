@@ -80,11 +80,11 @@ def clean_eeprom(serial_port: str, progress: ttk.Progressbar):
                     log('进度: ' + str(present) + '%' + ', ' + 'offset=' + hex(offset) + ', ' + 'add_offset=' + hex(n * 128))
                     window.update()
                     window.update()
-    progress['value'] = 0
-    window.update()
+        progress['value'] = 0
+        window.update()
+        serial_utils.reset_radio(serial_port)
     log('清空EEPROM成功！')
     messagebox.showinfo('提示', '清空EEPROM成功！')
-
 
 def main():
     window.title('K5/K6 小工具集')
