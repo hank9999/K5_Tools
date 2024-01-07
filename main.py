@@ -58,7 +58,7 @@ def clean_eeprom(serial_port: str, progress: ttk.Progressbar):
             return
 
         if not extra_eeprom:
-            log('非萝狮虎(losehu) 扩容固件扩容固件，部分扇区可能无法被清除')
+            log('非萝狮虎(losehu) 扩容固件，部分扇区可能无法被清除')
             messagebox.showinfo('未扩容固件', '未使用 萝狮虎(losehu) 扩容固件, 部分扇区可能无法被清除')
             for i in range(0, 64):
                 serial_utils.write_eeprom(serial_port, b'\xff' * 128, i * 128)
@@ -76,7 +76,6 @@ def clean_eeprom(serial_port: str, progress: ttk.Progressbar):
                     present = int((current_step / total_steps) * 100)
                     progress['value'] = present
                     log('进度: ' + str(present) + '%' + ', ' + 'offset=' + hex(offset) + ', ' + 'add_offset=' + hex(n * 128))
-                    window.update()
                     window.update()
         progress['value'] = 0
         window.update()
