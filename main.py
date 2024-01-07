@@ -30,8 +30,10 @@ def main():
     serial_port_label.grid(row=1, column=0, padx=(10, 0), pady=10, sticky='w')
     serial_port_combo = ttk.Combobox(window, values=[], width=8)
     serial_port_combo['postcommand'] = lambda: serial_port_combo_postcommand(serial_port_combo)
-    serial_port_combo.bind('<<ComboboxSelected>>',
-                           lambda event: serial_port_combo_callback(event, serial_port_combo.get()))
+    serial_port_combo.bind(
+        '<<ComboboxSelected>>',
+        lambda event: serial_port_combo_callback(event, serial_port_combo.get())
+    )
     serial_port_combo.grid(row=1, column=1, padx=(0, 10), pady=10, sticky='w')
 
     clean_eeprom_button = tk.Button(
