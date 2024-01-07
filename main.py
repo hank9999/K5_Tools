@@ -141,8 +141,8 @@ def write_font(serial_port: str, progress: ttk.Progressbar):
         progress['value'] = 0
         window.update()
         serial_utils.reset_radio(serial_port)
-    log('清空EEPROM成功！')
-    messagebox.showinfo('提示', '清空EEPROM成功！')
+    log('写入字库成功！')
+    messagebox.showinfo('提示', '写入字库成功！')
 
 
 class TextRedirector(tk.Text):
