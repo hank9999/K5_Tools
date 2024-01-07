@@ -79,15 +79,18 @@ def sayhello(serial_port):
     log('发送hello指令')
     hello_packet = b"\x14\x05\x04\x00\x6a\x39\x57\x64"
 
-    tries = 5
-    while True:
-        send_command(serial_port, hello_packet)
-        o = receive_reply(serial_port)
-        if o:
-            break
-        tries -= 1
-        if tries == 0:
-            raise Exception("没有收到电台应答包！")
+    try:
+        tries = 5
+        while True:
+            send_command(serial_port, hello_packet)
+            o = receive_reply(serial_port)
+            if o:
+                break
+            tries -= 1
+            if tries == 0:
+                raise Exception("没有收到电台应答包！")
+    except Exception as e:
+        raise Exception("没有收到电台应答包！<-" + str(e))
     firmware = get_string(o, 4, 16)
     return firmware
 

@@ -31,8 +31,8 @@ def serial_port_combo_callback(event, serial_port: str):
             log(msg)
             messagebox.showinfo('提示', msg)
         except Exception as e:
-            log('串口连接失败！' + str(e))
-            messagebox.showerror('错误', str(e))
+            log('串口连接失败！<-' + str(e))
+            messagebox.showerror('错误', '串口连接失败！<-' + str(e))
             return
 
 
@@ -55,8 +55,8 @@ def clean_eeprom(serial_port: str, progress: ttk.Progressbar):
             log(msg)
             messagebox.showinfo('提示', msg)
         except Exception as e:
-            log('串口连接失败！' + str(e))
-            messagebox.showerror('错误', str(e))
+            log('串口连接失败！<-' + str(e))
+            messagebox.showerror('错误', '串口连接失败！<-' + str(e))
             return
 
         if not extra_eeprom:
