@@ -1,8 +1,13 @@
+import os
+import sys
 import tkinter as tk
 from tkinter import ttk, messagebox
 import serial.tools.list_ports
-
 import serial_utils
+if sys.version_info < (3, 10):
+    import importlib_resources
+else:
+    import importlib.resources as importlib_resources
 
 window = tk.Tk()
 
@@ -107,7 +112,11 @@ def write_font(serial_port: str, progress: ttk.Progressbar):
             messagebox.showerror('未扩容固件', '未使用 萝狮虎(losehu) 扩容固件，无法写入字库！')
             return
         else:
-            with open('resources/font.bin', 'rb') as f:
+            resource_dir = str(importlib_resources.files('resources'))
+            if resource_dir.startswith('MultiplexedPath'):
+                resource_dir = resource_dir[17:-2]
+            font_file = str(os.path.join(resource_dir, 'font.bin'))
+            with open(font_file, 'rb') as f:
                 data = f.read()
             if len(data) != 0x1C320:
                 log('字库文件大小错误！')
