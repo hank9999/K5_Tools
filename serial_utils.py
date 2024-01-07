@@ -1,8 +1,5 @@
 import struct
-
-
-def log(msg):
-    print(msg)
+from logger import log
 
 
 def xor_arr(data: bytes):
