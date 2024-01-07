@@ -69,10 +69,10 @@ def clean_eeprom(serial_port: str, progress: ttk.Progressbar):
                 log('进度: ' + str(present) + '%' + ', ' + 'offset=' + hex(i * 128))
                 window.update()
         else:
-            total_steps = 4 * 64
+            total_steps = 512 * 2
             current_step = 0
-            for offset in range(0, 4):
-                for n in range(0, 64):
+            for offset in range(0, 2):
+                for n in range(0, 512):
                     current_step += 1
                     serial_utils.write_extra_mem(serial_port, offset, n * 128, b'\xff' * 128)
                     present = int((current_step / total_steps) * 100)
