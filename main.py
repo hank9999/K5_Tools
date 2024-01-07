@@ -145,10 +145,22 @@ def write_font(serial_port: str, progress: ttk.Progressbar):
     messagebox.showinfo('提示', '清空EEPROM成功！')
 
 
+class TextRedirector(tk.Text):
+    def __init__(self, widget):
+        super().__init__()
+        self.widget = widget
+
+    def write(self, strs):
+        self.widget.insert(tk.END, strs)
+        self.widget.see(tk.END)
+
+    def flush(self):
+        pass
+
+
 def main():
     window.title('K5/K6 小工具集')
     tk.Label(window, text='K5/K6 小工具集 BG4IST - hank9999').grid(row=0, column=0, columnspan=26, padx=10, pady=10, sticky='w')
-    log('K5/K6 小工具集 BG4IST - hank9999\n')
 
     serial_port_label = tk.Label(window, text='串口')
     serial_port_label.grid(row=1, column=0, padx=(10, 0), pady=10, sticky='w')
@@ -163,10 +175,16 @@ def main():
     write_font_button = tk.Button(window, text='写入字库', command=lambda: write_font(serial_port_combo.get(), progress))
     write_font_button.grid(row=2, column=1, padx=(60, 10), pady=10, sticky='w')
 
+    textbox = tk.Text(window, width=40, height=10)
+    textbox.grid(row=3, column=0, columnspan=26, padx=10, pady=10, sticky='w')
+    sys.stdout = TextRedirector(textbox)
+
     # 创建进度条
     progress = ttk.Progressbar(window, orient='horizontal', length=260, mode='determinate')
     # 放置进度条在窗口底部
-    progress.grid(row=3, column=0, columnspan=26, padx=10, pady=10, sticky='ew')
+    progress.grid(row=4, column=0, columnspan=26, padx=10, pady=10, sticky='ew')
+
+    log('K5/K6 小工具集 BG4IST - hank9999\n')
 
     window.mainloop()
 
