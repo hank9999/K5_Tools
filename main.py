@@ -51,9 +51,7 @@ def clean_eeprom(serial_port: str, progress: ttk.Progressbar):
         try:
             version = serial_utils.sayhello(serial_port)
             extra_eeprom = version.endswith('K')
-            msg = '串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 256KiB+' if extra_eeprom else '8KiB')
-            log(msg)
-            messagebox.showinfo('提示', msg)
+            log('串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 256KiB+' if extra_eeprom else '8KiB'))
         except Exception as e:
             log('串口连接失败！<-' + str(e))
             messagebox.showerror('错误', '串口连接失败！<-' + str(e))
