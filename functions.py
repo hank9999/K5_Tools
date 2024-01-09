@@ -27,7 +27,7 @@ def serial_port_combo_callback(event, serial_port: str):
         try:
             version = serial_utils.sayhello(serial_port)
             extra_eeprom = version.endswith('K')
-            msg = '串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 256KiB+' if extra_eeprom else '8KiB')
+            msg = '串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 128KiB+' if extra_eeprom else '8KiB')
             log(msg)
             messagebox.showinfo('提示', msg)
         except Exception as e:
@@ -51,7 +51,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar):
         try:
             version = serial_utils.sayhello(serial_port)
             extra_eeprom = version.endswith('K')
-            log('串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 256KiB+' if extra_eeprom else '8KiB'))
+            log('串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 128KiB+' if extra_eeprom else '8KiB'))
         except Exception as e:
             log('串口连接失败！<-' + str(e))
             messagebox.showerror('错误', '串口连接失败！<-' + str(e))
@@ -75,7 +75,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar):
                     serial_utils.write_extra_mem(serial_port, offset, n * 128, b'\xff' * 128)
                     present = int((current_step / total_steps) * 100)
                     progress['value'] = present
-                    log('进度: ' + str(present) + '%' + ', ' + 'offset=' + hex(offset) + ', ' + 'add_offset=' + hex(
+                    log('进度: ' + str(present) + '%' + ', ' + 'offset=' + hex(offset) + ', ' + 'extra=' + hex(
                         n * 128))
                     window.update()
         progress['value'] = 0
@@ -97,7 +97,7 @@ def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar):
         try:
             version = serial_utils.sayhello(serial_port)
             extra_eeprom = version.endswith('K')
-            log('串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 256KiB+' if extra_eeprom else '8KiB'))
+            log('串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 128KiB+' if extra_eeprom else '8KiB'))
         except Exception as e:
             log('串口连接失败！<-' + str(e))
             messagebox.showerror('错误', '串口连接失败！<-' + str(e))
