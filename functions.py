@@ -46,16 +46,6 @@ def check_serial_port(serial_port: serial.Serial) -> SerialPortCheckResult:
 def serial_port_combo_callback(event, serial_port: str, status_label: tk.Label):
     status_label['text'] = '当前操作: 检查串口连接'
     with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
-        try:
-            version = serial_utils.sayhello(serial_port)
-            extra_eeprom = version.endswith('K')
-            msg = '串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 128KiB+' if extra_eeprom else '8KiB')
-            log(msg)
-            messagebox.showinfo('提示', msg)
-        except Exception as e:
-            log('串口连接失败！<-' + str(e))
-            messagebox.showerror('错误', '串口连接失败！<-' + str(e))
-            return
         serial_check = check_serial_port(serial_port)
         if serial_check.status:
             messagebox.showinfo('提示', serial_check.message)
