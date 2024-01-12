@@ -1,3 +1,4 @@
+import dataclasses
 import os
 import sys
 import serial_utils
@@ -11,6 +12,13 @@ else:
     import importlib.resources as importlib_resources
 
 
+@dataclasses.dataclass
+class SerialPortCheckResult:
+    status: bool
+    message: str
+    extra_eeprom: bool
+
+
 def get_all_serial_port():
     ports = serial.tools.list_ports.comports()
     ports = [port.device for port in ports]
@@ -20,6 +28,19 @@ def get_all_serial_port():
 
 def serial_port_combo_postcommand(combo: ttk.Combobox):
     combo['values'] = get_all_serial_port()
+
+
+def check_serial_port(serial_port: serial.Serial) -> SerialPortCheckResult:
+    try:
+        version = serial_utils.sayhello(serial_port)
+        extra_eeprom = version.endswith('K')
+        msg = '串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 128KiB+' if extra_eeprom else '8KiB')
+        log(msg)
+        return SerialPortCheckResult(True, msg, extra_eeprom)
+    except Exception as e:
+        msg = '串口连接失败！<-' + str(e)
+        log(msg)
+        return SerialPortCheckResult(False, msg, False)
 
 
 def serial_port_combo_callback(event, serial_port: str):
@@ -34,6 +55,11 @@ def serial_port_combo_callback(event, serial_port: str):
             log('串口连接失败！<-' + str(e))
             messagebox.showerror('错误', '串口连接失败！<-' + str(e))
             return
+        serial_check = check_serial_port(serial_port)
+        if serial_check.status:
+            messagebox.showinfo('提示', serial_check.message)
+        else:
+            messagebox.showerror('错误', serial_check.message)
 
 
 def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar):
@@ -48,16 +74,12 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar):
         return
 
     with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
-        try:
-            version = serial_utils.sayhello(serial_port)
-            extra_eeprom = version.endswith('K')
-            log('串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 128KiB+' if extra_eeprom else '8KiB'))
-        except Exception as e:
-            log('串口连接失败！<-' + str(e))
-            messagebox.showerror('错误', '串口连接失败！<-' + str(e))
+        serial_check = check_serial_port(serial_port)
+        if not serial_check.status:
+            messagebox.showerror('错误', serial_check.message)
             return
 
-        if not extra_eeprom:
+        if not serial_check.extra_eeprom:
             log('非萝狮虎(losehu) 扩容固件，部分扇区可能无法被清除')
             messagebox.showinfo('未扩容固件', '未使用 萝狮虎(losehu) 扩容固件, 部分扇区可能无法被清除')
             for i in range(0, 64):
@@ -94,16 +116,12 @@ def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar):
         return
 
     with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
-        try:
-            version = serial_utils.sayhello(serial_port)
-            extra_eeprom = version.endswith('K')
-            log('串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 128KiB+' if extra_eeprom else '8KiB'))
-        except Exception as e:
-            log('串口连接失败！<-' + str(e))
-            messagebox.showerror('错误', '串口连接失败！<-' + str(e))
+        serial_check = check_serial_port(serial_port)
+        if not serial_check.status:
+            messagebox.showerror('错误', serial_check.message)
             return
 
-        if not extra_eeprom:
+        if not serial_check.extra_eeprom:
             log('非萝狮虎(losehu) 扩容固件，无法写入字库！')
             messagebox.showerror('未扩容固件', '未使用 萝狮虎(losehu) 扩容固件，无法写入字库！')
             return
