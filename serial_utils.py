@@ -92,6 +92,15 @@ def sayhello(serial_port):
     return firmware
 
 
+def read_eeprom(serial_port, offset: int, length: int):
+    read_mem = b"\x1b\x05\x08\x00" + \
+        struct.pack("<HBB", offset, length, 0) + \
+        b"\x6a\x39\x57\x64"
+    send_command(serial_port, read_mem)
+    o = receive_reply(serial_port)
+    return o[8:]
+
+
 def write_eeprom(serial_port, data, offset):
     dlen = len(data)
     write_mem = b"\x1d\x05" + \
