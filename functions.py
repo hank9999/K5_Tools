@@ -77,9 +77,10 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
             messagebox.showinfo('未扩容固件', '未使用 萝狮虎(losehu) 扩容固件, 部分扇区可能无法被清除')
             for i in range(0, 64):
                 serial_utils.write_eeprom(serial_port, b'\xff' * 128, i * 128)
-                present = int((i + 1) / 64 * 100)
+                present_float = (i + 1) / 64 * 100
+                present = int(present_float)
                 progress['value'] = present
-                log('进度: ' + str(present) + '%' + ', ' + 'offset=' + hex(i * 128))
+                log(f'进度: {present_float:.1f}%, offset={hex(i * 128)}')
                 window.update()
         else:
             total_steps = 512 * 2
@@ -88,10 +89,10 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
                 for n in range(0, 512):
                     current_step += 1
                     serial_utils.write_extra_mem(serial_port, offset, n * 128, b'\xff' * 128)
-                    present = int((current_step / total_steps) * 100)
+                    present_float = (current_step / total_steps) * 100
+                    present = int(present_float)
                     progress['value'] = present
-                    log('进度: ' + str(present) + '%' + ', ' + 'offset=' + hex(offset) + ', ' + 'extra=' + hex(
-                        n * 128))
+                    log(f'进度: {present_float:.1f}%, offset={hex(offset)}, extra={hex(n * 128)}')
                     window.update()
         progress['value'] = 0
         window.update()
@@ -143,9 +144,10 @@ def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, statu
                     serial_utils.write_extra_mem(serial_port, 0x1, addr - 0x10000, write_data)
                 addr += 128
                 current_step += 1
-                present = int((current_step / total_page) * 100)
+                present_float = (current_step / total_page) * 100
+                present = int(present_float)
                 progress['value'] = present
-                log('进度: ' + str(present) + '%' + ', ' + 'addr=' + hex(addr))
+                log(f'进度: {present_float:.1f}%, addr={hex(addr)}')
                 window.update()
         progress['value'] = 0
         window.update()
