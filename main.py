@@ -6,6 +6,7 @@ from logger import log
 from functions import serial_port_combo_postcommand, serial_port_combo_callback, clean_eeprom, write_font
 
 window = tk.Tk()
+version = '0.1'
 
 
 class TextRedirector(tk.Text):
@@ -22,9 +23,10 @@ class TextRedirector(tk.Text):
 
 
 def main():
-    window.title('K5/K6 小工具集')
-    label = tk.Label(window, text='K5/K6 小工具集 BG4IST - hank9999')
-    label.grid(row=0, column=0, columnspan=26, padx=10, pady=10, sticky='w')
+    window.title(f'K5/K6 小工具集 v{version}')
+    label1 = tk.Label(window, text=f'K5/K6 小工具集 v{version} (BG4IST - hank9999)')
+    label1.grid(row=0, column=0, columnspan=26, padx=10, pady=(10, 0), sticky='w')
+
     label2 = tk.Label(window, text='当前操作: 无')
     label2.grid(row=1, column=0, columnspan=26, padx=10, pady=(0, 10), sticky='w')
 
