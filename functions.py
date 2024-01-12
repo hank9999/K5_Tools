@@ -43,7 +43,8 @@ def check_serial_port(serial_port: serial.Serial) -> SerialPortCheckResult:
         return SerialPortCheckResult(False, msg, False)
 
 
-def serial_port_combo_callback(event, serial_port: str):
+def serial_port_combo_callback(event, serial_port: str, status_label: tk.Label):
+    status_label['text'] = '当前操作: 检查串口连接'
     with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
         try:
             version = serial_utils.sayhello(serial_port)
@@ -60,11 +61,13 @@ def serial_port_combo_callback(event, serial_port: str):
             messagebox.showinfo('提示', serial_check.message)
         else:
             messagebox.showerror('错误', serial_check.message)
+    status_label['text'] = '当前操作: 无'
 
 
-def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar):
+def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label):
     log('开始清空EEPROM流程')
     log('选择的串口: ' + serial_port)
+    status_label['text'] = '当前操作: 清空EEPROM'
     if len(serial_port) == 0:
         log('没有选择串口！')
         messagebox.showerror('错误', '没有选择串口！')
@@ -104,12 +107,14 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar):
         window.update()
         serial_utils.reset_radio(serial_port)
     log('清空EEPROM成功！')
+    status_label['text'] = '当前操作: 无'
     messagebox.showinfo('提示', '清空EEPROM成功！')
 
 
-def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar):
+def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label):
     log('开始写入字库流程')
     log('选择的串口: ' + serial_port)
+    status_label['text'] = '当前操作: 写入字库'
     if len(serial_port) == 0:
         log('没有选择串口！')
         messagebox.showerror('错误', '没有选择串口！')
@@ -156,4 +161,5 @@ def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar):
         window.update()
         serial_utils.reset_radio(serial_port)
     log('写入字库成功！')
+    status_label['text'] = '当前操作: 无'
     messagebox.showinfo('提示', '写入字库成功！')
