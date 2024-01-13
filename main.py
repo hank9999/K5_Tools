@@ -75,7 +75,7 @@ def main():
     # 放置进度条在窗口底部
     progress.place(x=10, y=300)
 
-    log('K5/K6 小工具集 BG4IST - hank9999\n')
+    log(f'K5/K6 小工具集 v{version} BG4IST - hank9999\n')
 
     window.mainloop()
 
