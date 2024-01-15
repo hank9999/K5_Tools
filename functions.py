@@ -21,7 +21,7 @@ class SerialPortCheckResult:
 def get_all_serial_port():
     ports = serial.tools.list_ports.comports()
     ports = [port.device for port in ports]
-    log('可用串口：' + str(ports))
+    log('可用串口: ' + str(ports))
     return ports
 
 
@@ -33,7 +33,7 @@ def check_serial_port(serial_port: serial.Serial) -> SerialPortCheckResult:
     try:
         version = serial_utils.sayhello(serial_port)
         extra_eeprom = version.endswith('K')
-        msg = '串口连接成功！\n版本号：' + version + '\nEEPROM大小：' + ('已扩容 128KiB+' if extra_eeprom else '8KiB')
+        msg = '串口连接成功！\n版本号: ' + version + '\nEEPROM大小: ' + ('已扩容 128KiB+' if extra_eeprom else '8KiB')
         log(msg)
         return SerialPortCheckResult(True, msg, extra_eeprom)
     except Exception as e:
