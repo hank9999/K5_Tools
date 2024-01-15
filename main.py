@@ -57,21 +57,30 @@ def main():
     clean_eeprom_button = tk.Button(
         window,
         text='清空EEPROM',
-        command=lambda: clean_eeprom(serial_port_combo.get(), window, progress, label2)
+        command=lambda: clean_eeprom(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+        )
     )
     clean_eeprom_button.place(x=10, y=100)
 
     write_font_old_button = tk.Button(
         window,
         text='写入字库 (旧)',
-        command=lambda: write_font(serial_port_combo.get(), window, progress, label2, False)
+        command=lambda: write_font(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), False
+        )
     )
     write_font_old_button.place(x=105, y=100)
 
     write_font_new_button = tk.Button(
         window,
         text='写入字库 (新)',
-        command=lambda: write_font(serial_port_combo.get(), window, progress, label2, True)
+        command=lambda: write_font(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), True
+        )
     )
     write_font_new_button.place(x=197, y=100)
 
