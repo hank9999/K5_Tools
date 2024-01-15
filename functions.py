@@ -1,15 +1,14 @@
 import dataclasses
-import os
-import sys
 import serial_utils
 import serial.tools.list_ports
 from logger import log
 import tkinter as tk
 from tkinter import messagebox, ttk
-if sys.version_info < (3, 10):
-    import importlib_resources
-else:
-    import importlib.resources as importlib_resources
+import resources.font
+# if sys.version_info < (3, 10):
+#     import importlib_resources
+# else:
+#     import importlib.resources as importlib_resources
 
 
 @dataclasses.dataclass
@@ -102,10 +101,13 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
     messagebox.showinfo('提示', '清空EEPROM成功！')
 
 
-def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label):
+def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
+               new_font: bool = True):
     log('开始写入字库流程')
+    font_version = '新' if new_font else '旧'
+    log(f'字库版本: {font_version}')
     log('选择的串口: ' + serial_port)
-    status_label['text'] = '当前操作: 写入字库'
+    status_label['text'] = f'当前操作: 写入字库 ({font_version})'
     if len(serial_port) == 0:
         log('没有选择串口！')
         messagebox.showerror('错误', '没有选择串口！')
@@ -122,26 +124,32 @@ def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, statu
             messagebox.showerror('未扩容固件', '未使用 萝狮虎(losehu) 扩容固件，无法写入字库！')
             return
         else:
-            resource_dir = str(importlib_resources.files('resources'))
-            if resource_dir.startswith('MultiplexedPath'):
-                resource_dir = resource_dir[17:-2]
-            font_file = str(os.path.join(resource_dir, 'font.bin'))
-            with open(font_file, 'rb') as f:
-                data = f.read()
-            if len(data) != 0x1C320:
-                log('字库文件大小错误！')
-                messagebox.showerror('错误', '字库文件大小错误！')
-                return
-            total_page = 0x1C320 // 128
+            # resource_dir = str(importlib_resources.files('resources'))
+            # if resource_dir.startswith('MultiplexedPath'):
+            #     resource_dir = resource_dir[17:-2]
+            # font_file = str(os.path.join(resource_dir, 'font_old.bin'))
+            # with open(font_file, 'rb') as f:
+            #     data = f.read()
+            # if len(data) != 0x1C320:
+            #     log('字库文件大小错误！')
+            #     messagebox.showerror('错误', '字库文件大小错误！')
+            #     return
+            # 直接使用字库数据 不再从文件读取
+            if new_font:
+                font_data = resources.font.new_data
+            else:
+                font_data = resources.font.old_data
+            font_len = len(font_data)
+            total_page = font_len // 128
             addr = 0x2000
             current_step = 0
-            while addr < 0x1C320:
-                write_data = data[:128]
-                data = data[128:]
-                if addr < 0x10000:
-                    serial_utils.write_extra_mem(serial_port, 0x0, addr, write_data)
-                else:
-                    serial_utils.write_extra_mem(serial_port, 0x1, addr - 0x10000, write_data)
+            offset = 0
+            while addr < 0x2000 + font_len:
+                write_data = bytes(font_data[:128])
+                font_data = font_data[128:]
+                if addr - offset * 0x10000 >= 0x10000:
+                    offset += 1
+                serial_utils.write_extra_mem(serial_port, offset, addr - offset * 0x10000, write_data)
                 addr += 128
                 current_step += 1
                 percent_float = (current_step / total_page) * 100
