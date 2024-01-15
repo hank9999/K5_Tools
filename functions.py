@@ -75,7 +75,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
             log('非萝狮虎(losehu) 扩容固件，部分扇区可能无法被清除')
             messagebox.showinfo('未扩容固件', '未使用 萝狮虎(losehu) 扩容固件, 部分扇区可能无法被清除')
             for i in range(0, 64):
-                serial_utils.write_eeprom(serial_port, b'\xff' * 128, i * 128)
+                serial_utils.write_eeprom(serial_port, i * 128, b'\xff' * 128)
                 percent_float = (i + 1) / 64 * 100
                 percent = int(percent_float)
                 progress['value'] = percent
