@@ -1,4 +1,6 @@
 import dataclasses
+import random
+from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE
 import serial_utils
 import serial.tools.list_ports
 from logger import log
@@ -15,7 +17,8 @@ import resources.font
 class SerialPortCheckResult:
     status: bool
     message: str
-    extra_eeprom: bool
+    firmware_version: int
+    eeprom_size: int
 
 
 def get_all_serial_port():
@@ -29,20 +32,55 @@ def serial_port_combo_postcommand(combo: ttk.Combobox):
     combo['values'] = get_all_serial_port()
 
 
+def check_eeprom_writeable(serial_port: serial.Serial, offset: int, extra: int) -> bool:
+    # 读取原始数据
+    read_data = serial_utils.read_extra_eeprom(serial_port, offset, extra, 8)
+    # 写入随机数据
+    random_bytes = bytes([random.randint(0, 255) for _ in range(8)])
+    serial_utils.write_extra_eeprom(serial_port, offset, extra, random_bytes)
+    # 读取写入的数据
+    read_write_data = serial_utils.read_extra_eeprom(serial_port, offset, extra, 8)
+    # 恢复原始数据
+    serial_utils.write_extra_eeprom(serial_port, offset, extra, read_data)
+
+    return read_write_data == random_bytes
+
+
 def check_serial_port(serial_port: serial.Serial) -> SerialPortCheckResult:
     try:
         version = serial_utils.sayhello(serial_port)
-        extra_eeprom = version.endswith('K')
-        msg = '串口连接成功！\n版本号: ' + version + '\nEEPROM大小: ' + ('已扩容 128KiB+' if extra_eeprom else '8KiB')
+        eeprom_size = 0
+        if version.startswith('LOSEHU'):
+            firmware_version = 0
+            if version.endswith('K') or version.endswith('H'):
+                firmware_version = 1
+        else:
+            firmware_version = 2
+
+        if firmware_version == 1:
+            # 检查EEPROM大小
+            # 128 KiB
+            if check_eeprom_writeable(serial_port, 0x1, 0x8000):
+                eeprom_size = 1
+            # 256 KiB
+            if check_eeprom_writeable(serial_port, 0x3, 0x8000):
+                eeprom_size = 2
+            # 512 KiB
+            if check_eeprom_writeable(serial_port, 0x7, 0x8000):
+                eeprom_size = 3
+
+        msg = (f'串口连接成功！\n版本号: {version}\n自动检测结果如下:\n'
+               f'固件版本: {FIRMWARE_VERSION_LIST[firmware_version]}\nEEPROM大小: {EEPROM_SIZE[eeprom_size]}')
         log(msg)
-        return SerialPortCheckResult(True, msg, extra_eeprom)
+        return SerialPortCheckResult(True, msg, firmware_version, eeprom_size)
     except Exception as e:
         msg = '串口连接失败！<-' + str(e)
         log(msg)
-        return SerialPortCheckResult(False, msg, False)
+        return SerialPortCheckResult(False, msg, 2, 0)
 
 
-def serial_port_combo_callback(event, serial_port: str, status_label: tk.Label):
+def serial_port_combo_callback(_, serial_port: str, status_label: tk.Label, eeprom_size_combo: ttk.Combobox,
+                               firmware_combo: ttk.Combobox):
     status_label['text'] = '当前操作: 检查串口连接'
     with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port)
@@ -50,6 +88,8 @@ def serial_port_combo_callback(event, serial_port: str, status_label: tk.Label):
             messagebox.showinfo('提示', serial_check.message)
         else:
             messagebox.showerror('错误', serial_check.message)
+        firmware_combo.set(FIRMWARE_VERSION_LIST[serial_check.firmware_version])
+        eeprom_size_combo.set(EEPROM_SIZE[serial_check.eeprom_size])
     status_label['text'] = '当前操作: 无'
 
 

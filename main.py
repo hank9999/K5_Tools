@@ -1,6 +1,7 @@
 import sys
 import tkinter as tk
 from tkinter import ttk
+from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE
 from logger import log
 
 from functions import serial_port_combo_postcommand, serial_port_combo_callback, clean_eeprom, write_font
@@ -33,23 +34,24 @@ def main():
 
     serial_port_label = tk.Label(window, text='串口')
     serial_port_label.place(x=10, y=60)
-    serial_port_combo = ttk.Combobox(window, values=[], width=8)
+    serial_port_combo = ttk.Combobox(window, values=[], width=8, state='readonly')
     serial_port_combo.place(x=40, y=60)
 
     eeprom_size_label = tk.Label(window, text='EEPROM')
     eeprom_size_label.place(x=125, y=60)
-    eeprom_size_combo = ttk.Combobox(window, values=[], width=8)
+    eeprom_size_combo = ttk.Combobox(window, values=EEPROM_SIZE, width=8, state='readonly')
     eeprom_size_combo.place(x=185, y=60)
 
     firmware_label = tk.Label(window, text='固件版本')
     firmware_label.place(x=270, y=60)
-    firmware_combo = ttk.Combobox(window, values=[], width=8)
+    firmware_combo = ttk.Combobox(window, values=FIRMWARE_VERSION_LIST, width=8, state='readonly')
     firmware_combo.place(x=325, y=60)
 
     serial_port_combo['postcommand'] = lambda: serial_port_combo_postcommand(serial_port_combo)
     serial_port_combo.bind(
         '<<ComboboxSelected>>',
-        lambda event: serial_port_combo_callback(event, serial_port_combo.get(), label2)
+        lambda event: serial_port_combo_callback(event, serial_port_combo.get(), label2, eeprom_size_combo,
+                                                 firmware_combo)
     )
 
     clean_eeprom_button = tk.Button(
