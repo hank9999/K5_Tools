@@ -69,8 +69,11 @@ def check_serial_port(serial_port: serial.Serial) -> SerialPortCheckResult:
             if check_eeprom_writeable(serial_port, 0x7, 0x8000):
                 eeprom_size = 3
 
-        msg = (f'串口连接成功！\n版本号: {version}\n自动检测结果如下:\n'
-               f'固件版本: {FIRMWARE_VERSION_LIST[firmware_version]}\nEEPROM大小: {EEPROM_SIZE[eeprom_size]}')
+        msg = f'串口连接成功！\n版本号: {version}\n自动检测结果如下:\n固件版本: {FIRMWARE_VERSION_LIST[firmware_version]}\n'
+        if firmware_version != 1:
+            msg += f'非{FIRMWARE_VERSION_LIST[1]}固件无法自动检测EEPROM大小\n'
+        else:
+            msg += f'EEPROM大小: {EEPROM_SIZE[eeprom_size]}'
         log(msg)
         return SerialPortCheckResult(True, msg, firmware_version, eeprom_size)
     except Exception as e:
