@@ -59,12 +59,19 @@ def main():
     )
     clean_eeprom_button.place(x=10, y=100)
 
-    write_font_button = tk.Button(
+    write_font_old_button = tk.Button(
         window,
-        text='写入字库',
-        command=lambda: write_font(serial_port_combo.get(), window, progress, label2)
+        text='写入字库 (旧)',
+        command=lambda: write_font(serial_port_combo.get(), window, progress, label2, False)
     )
-    write_font_button.place(x=105, y=100)
+    write_font_old_button.place(x=105, y=100)
+
+    write_font_new_button = tk.Button(
+        window,
+        text='写入字库 (新)',
+        command=lambda: write_font(serial_port_combo.get(), window, progress, label2, True)
+    )
+    write_font_new_button.place(x=197, y=100)
 
     textbox = tk.Text(window, width=56, height=10)
     textbox.place(x=10, y=145)
