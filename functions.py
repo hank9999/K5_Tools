@@ -87,7 +87,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
             for offset in range(0, 2):
                 for n in range(0, 512):
                     current_step += 1
-                    serial_utils.write_extra_mem(serial_port, offset, n * 128, b'\xff' * 128)
+                    serial_utils.write_extra_eeprom(serial_port, offset, n * 128, b'\xff' * 128)
                     percent_float = (current_step / total_steps) * 100
                     percent = int(percent_float)
                     progress['value'] = percent
@@ -149,7 +149,7 @@ def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, statu
                 font_data = font_data[128:]
                 if addr - offset * 0x10000 >= 0x10000:
                     offset += 1
-                serial_utils.write_extra_mem(serial_port, offset, addr - offset * 0x10000, write_data)
+                serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, write_data)
                 addr += 128
                 current_step += 1
                 percent_float = (current_step / total_page) * 100

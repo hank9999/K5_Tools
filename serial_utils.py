@@ -120,7 +120,7 @@ def write_eeprom(serial_port, data, offset):
         raise Exception("写入前8KiB EEPROM响应错误！")
 
 
-def write_extra_mem(serial_port, offset, add, data):
+def write_extra_eeprom(serial_port, offset, add, data):
     add = struct.pack("<H", add)
     length = len(data) + len(add)
 
