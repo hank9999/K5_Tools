@@ -119,7 +119,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
                 percent_float = (i + 1) / 64 * 100
                 percent = int(percent_float)
                 progress['value'] = percent
-                log(f'进度: {percent_float:.1f}%, offset={hex(i * 128)}')
+                log(f'进度: {percent_float:.1f}%, offset={hex(i * 128)}', '')
                 window.update()
 
                 serial_utils.write_eeprom(serial_port, i * 128, b'\xff' * 128)
@@ -135,7 +135,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
                 percent_float = (current_step / total_steps) * 100
                 percent = int(percent_float)
                 progress['value'] = percent
-                log(f'进度: {percent_float:.1f}%, addr={hex(addr)}')
+                log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
                 window.update()
 
                 if addr - offset * 0x10000 >= 0x10000:
@@ -207,7 +207,7 @@ def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, statu
             percent_float = (current_step / total_page) * 100
             percent = int(percent_float)
             progress['value'] = percent
-            log(f'进度: {percent_float:.1f}%, addr={hex(addr)}')
+            log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
             window.update()
 
             write_data = bytes(font_data[:128])

@@ -1,2 +1,2 @@
-def log(msg: str):
-    print(msg)
+def log(msg: str, end_char='\n'):
+    print(f'{msg}{end_char}')
