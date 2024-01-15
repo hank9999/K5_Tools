@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "k5-tools"
+version = "0.1.0"
+description = ""
+authors = ["hank9999 <hank9999@qq.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pyserial = "^3.5"
+importlib-resources = "^6.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
