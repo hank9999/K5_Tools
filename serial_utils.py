@@ -1,4 +1,5 @@
 import struct
+import serial
 from logger import log
 
 
@@ -24,7 +25,7 @@ def calculate_crc16_xmodem(data: bytes):
     return crc & 0xFFFF
 
 
-def send_command(serial_port, data: bytes):
+def send_command(serial_port: serial.Serial, data: bytes):
     crc = calculate_crc16_xmodem(data)
     data2 = data + struct.pack("<H", crc)
 
@@ -38,7 +39,7 @@ def send_command(serial_port, data: bytes):
     return result
 
 
-def receive_reply(serial_port):
+def receive_reply(serial_port: serial.Serial):
     header = serial_port.read(4)
     if len(header) != 4:
         raise Exception("数据头长度不正确！")
@@ -61,7 +62,7 @@ def receive_reply(serial_port):
     return cmd2
 
 
-def get_string(data: bytes, begin, max_len):
+def get_string(data: bytes, begin: int, max_len: int):
     tmp_len = min(max_len + 1, len(data))
     s = [data[i] for i in range(begin, tmp_len)]
     index = 0
@@ -72,7 +73,7 @@ def get_string(data: bytes, begin, max_len):
     return ''.join(chr(x) for x in s[0:index])
 
 
-def sayhello(serial_port):
+def sayhello(serial_port: serial.Serial):
     log('发送hello指令')
     hello_packet = b"\x14\x05\x04\x00\x6a\x39\x57\x64"
 
@@ -92,7 +93,7 @@ def sayhello(serial_port):
     return firmware
 
 
-def read_eeprom(serial_port, offset: int, length: int):
+def read_eeprom(serial_port: serial.Serial, offset: int, length: int):
     read_mem = b"\x1b\x05\x08\x00" + \
         struct.pack("<HBB", offset, length, 0) + \
         b"\x6a\x39\x57\x64"
@@ -102,6 +103,7 @@ def read_eeprom(serial_port, offset: int, length: int):
 
 
 def write_eeprom(serial_port, data, offset):
+def write_eeprom(serial_port: serial.Serial, offset: int, data: bytes):
     dlen = len(data)
     write_mem = b"\x1d\x05" + \
                 struct.pack("<BBHBB", dlen + 8, 0, offset, dlen, 1) + \
@@ -120,7 +122,7 @@ def write_eeprom(serial_port, data, offset):
         raise Exception("写入前8KiB EEPROM响应错误！")
 
 
-def write_extra_eeprom(serial_port, offset, add, data):
+def write_extra_eeprom(serial_port: serial.Serial, offset: int, add: int, data: bytes):
     add = struct.pack("<H", add)
     length = len(data) + len(add)
 
@@ -142,7 +144,7 @@ def write_extra_eeprom(serial_port, offset, add, data):
         raise Exception("写入扩容部分 EEPROM响应错误！")
 
 
-def reset_radio(serial_port):
+def reset_radio(serial_port: serial.Serial):
     log('发送复位指令')
     reset_packet = b"\xdd\x05\x00\x00"
     send_command(serial_port, reset_packet)
