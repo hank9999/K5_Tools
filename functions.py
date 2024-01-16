@@ -154,7 +154,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
 def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
                eeprom_size: int, firmware_version: int, new_font: bool = True):
     log('开始写入字库流程')
-    font_version = '新' if new_font else '旧'
+    font_version = 'H' if new_font else 'K'
     log(f'字库版本: {font_version}')
     log('选择的串口: ' + serial_port)
     status_label['text'] = f'当前操作: 写入字库 ({font_version})'

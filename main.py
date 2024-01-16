@@ -66,7 +66,7 @@ def main():
 
     write_font_old_button = tk.Button(
         window,
-        text='写入字库 (旧)',
+        text='写入字库 (K)',
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), False
@@ -76,13 +76,13 @@ def main():
 
     write_font_new_button = tk.Button(
         window,
-        text='写入字库 (新)',
+        text='写入字库 (H)',
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), True
         )
     )
-    write_font_new_button.place(x=197, y=100)
+    write_font_new_button.place(x=193, y=100)
 
     textbox = tk.Text(window, width=56, height=10)
     textbox.place(x=10, y=145)
