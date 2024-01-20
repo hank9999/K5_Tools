@@ -152,9 +152,9 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
 
 
 def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
-               eeprom_size: int, firmware_version: int, new_font: bool = True):
+               eeprom_size: int, firmware_version: int, compress: bool = False):
     log('开始写入字库流程')
-    font_version = 'H' if new_font else 'K'
+    font_version = 'H' if not compress else 'K'
     log(f'字库版本: {font_version}')
     log('选择的串口: ' + serial_port)
     status_label['text'] = f'当前操作: 写入字库 ({font_version})'
@@ -187,17 +187,17 @@ def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, statu
             status_label['text'] = '当前操作: 无'
             return
 
-        if new_font and eeprom_size < 2:
-            msg = f'EEPROM小于256KiB，无法写入新字库！'
+        if not compress and eeprom_size < 2:
+            msg = f'EEPROM小于256KiB，无法写入H固件字库！'
             log(msg)
             messagebox.showinfo('EEPROM大小不足', msg)
             status_label['text'] = '当前操作: 无'
             return
 
-        if new_font:
-            font_data = resources.font.new_data
+        if compress:
+            font_data = resources.font.GB2312_COMPRESSED
         else:
-            font_data = resources.font.old_data
+            font_data = resources.font.GB2312_UNCOMPRESSED
         font_len = len(font_data)
         total_page = font_len // 128
         addr = 0x2000

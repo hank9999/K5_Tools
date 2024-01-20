@@ -69,7 +69,7 @@ def main():
         text='写入字库 (K)',
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), False
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), True
         )
     )
     write_font_old_button.place(x=105, y=100)
@@ -79,7 +79,7 @@ def main():
         text='写入字库 (H)',
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), True
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), False
         )
     )
     write_font_new_button.place(x=193, y=100)
