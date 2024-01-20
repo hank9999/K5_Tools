@@ -26,7 +26,7 @@ class TextRedirector(tk.Text):
 
 def main():
     window.title(f'K5/K6 小工具集 v{version}')
-    window.geometry('420x340')
+    window.geometry('420x380')
     label1 = tk.Label(window, text=f'K5/K6 小工具集 v{version} (BG4IST - hank9999)')
     label1.place(x=10, y=10)
 
@@ -103,16 +103,16 @@ def main():
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    write_tone_options_button.place(x=282, y=100)
+    write_tone_options_button.place(x=10, y=140)
 
     textbox = tk.Text(window, width=56, height=10)
-    textbox.place(x=10, y=145)
+    textbox.place(x=10, y=185)
     sys.stdout = TextRedirector(textbox)
 
     # 创建进度条
     progress = ttk.Progressbar(window, orient='horizontal', length=397, mode='determinate')
     # 放置进度条在窗口底部
-    progress.place(x=10, y=300)
+    progress.place(x=10, y=340)
 
     log(f'K5/K6 小工具集 v{version} BG4IST - hank9999\n')
 
