@@ -200,10 +200,10 @@ def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, statu
             font_data = resources.font.GB2312_UNCOMPRESSED
         font_len = len(font_data)
         total_page = font_len // 128
-        addr = 0x2000
+        addr = 0x2A00
         current_step = 0
         offset = 0
-        while addr < 0x2000 + font_len:
+        while addr < 0x2A00 + font_len:
             percent_float = (current_step / total_page) * 100
             percent = int(percent_float)
             progress['value'] = percent
@@ -223,3 +223,64 @@ def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, statu
     log('写入字库成功！')
     status_label['text'] = '当前操作: 无'
     messagebox.showinfo('提示', '写入字库成功！')
+
+
+def write_font_conf(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
+                    eeprom_size: int, firmware_version: int):
+    log('开始写入字库配置')
+    log('选择的串口: ' + serial_port)
+    status_label['text'] = f'当前操作: 写入字库配置'
+    if len(serial_port) == 0:
+        log('没有选择串口！')
+        messagebox.showerror('错误', '没有选择串口！')
+        status_label['text'] = '当前操作: 无'
+        return
+
+    with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
+        serial_check = check_serial_port(serial_port)
+        if not serial_check.status:
+            messagebox.showerror('错误', serial_check.message)
+            status_label['text'] = '当前操作: 无'
+            return
+
+        log(f'选择固件版本: {FIRMWARE_VERSION_LIST[firmware_version]} EEPROM大小: {EEPROM_SIZE[eeprom_size]}')
+
+        if firmware_version != 1:
+            msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入字库配置！'
+            log(msg)
+            messagebox.showinfo('未扩容固件', msg)
+            status_label['text'] = '当前操作: 无'
+            return
+
+        if eeprom_size < 1:
+            msg = f'EEPROM小于128KiB，无法写入字库配置！'
+            log(msg)
+            messagebox.showinfo('EEPROM大小不足', msg)
+            status_label['text'] = '当前操作: 无'
+            return
+        font_data = resources.font.FONT_CONF
+        font_len = len(font_data)
+        total_page = font_len // 128
+        addr = 0x2480
+        current_step = 0
+        offset = 0
+        while addr < 0x2480 + font_len:
+            percent_float = (current_step / total_page) * 100
+            percent = int(percent_float)
+            progress['value'] = percent
+            log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
+            window.update()
+
+            write_data = bytes(font_data[:128])
+            font_data = font_data[128:]
+            if addr - offset * 0x10000 >= 0x10000:
+                offset += 1
+            serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, write_data)
+            addr += 128
+            current_step += 1
+        progress['value'] = 0
+        window.update()
+        serial_utils.reset_radio(serial_port)
+    log('写入字库配置成功！')
+    status_label['text'] = '当前操作: 无'
+    messagebox.showinfo('提示', '写入字库配置成功！')
