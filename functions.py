@@ -229,18 +229,13 @@ def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, 
             current_step += 1
         progress['value'] = 0
         window.update()
-        serial_utils.reset_radio(serial_port)
     log('写入字库成功！')
     status_label['text'] = '当前操作: 无'
-    write_font_conf(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
-    write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
-    messagebox.showinfo('提示', '写入字库成功！')
 
 
 def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
-                    eeprom_size: int, firmware_version: int, is_continue: bool = False):
+                    eeprom_size: int, firmware_version: int):
     log('开始写入字库配置')
-    log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入字库配置'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
@@ -255,7 +250,6 @@ def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             status_label['text'] = '当前操作: 无'
             return
 
-        log(f'选择固件版本: {FIRMWARE_VERSION_LIST[firmware_version]} EEPROM大小: {EEPROM_SIZE[eeprom_size]}')
 
         if firmware_version != 1:
             msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入字库配置！'
@@ -292,17 +286,13 @@ def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             current_step += 1
         progress['value'] = 0
         window.update()
-        serial_utils.reset_radio(serial_port)
     log('写入字库配置成功！')
     status_label['text'] = '当前操作: 无'
-    if not is_continue:
-        messagebox.showinfo('提示', '写入字库配置成功！')
 
 
 def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
-                       eeprom_size: int, firmware_version: int, is_continue: bool = False):
+                       eeprom_size: int, firmware_version: int):
     log('开始写入亚音参数')
-    log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入亚音参数'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
@@ -317,7 +307,6 @@ def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
             status_label['text'] = '当前操作: 无'
             return
 
-        log(f'选择固件版本: {FIRMWARE_VERSION_LIST[firmware_version]} EEPROM大小: {EEPROM_SIZE[eeprom_size]}')
 
         if firmware_version != 1:
             msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入亚音参数！'
@@ -359,5 +348,28 @@ def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
         serial_utils.reset_radio(serial_port)
     log('写入亚音参数成功！')
     status_label['text'] = '当前操作: 无'
-    if not is_continue:
-        messagebox.showinfo('提示', '写入亚音参数成功！')
+
+# 写入字库等信息的总函数
+def write_to_the_font(serial_port: str, serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
+               eeprom_size: int, firmware_version: int,):
+                with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
+                    version = serial_utils.sayhello(serial_port)
+                    if version.startswith('LOSEHU'):
+                        if version.endswith('K'):
+                            compress = True
+                            version_code = 'K'
+                        elif version.endswith('H'):
+                            compress = False
+                            version_code = 'H'
+                    else:
+                        version_code = 'other'
+                if version_code == 'K' or version_code == 'H':
+                    log(f'操作进行1/3:写入{version_code}版字库')
+                    write_font (serial_port_text, window, progress, status_label, eeprom_size, firmware_version, compress)
+                    log(f'操作进行2/3:写入字库配置')
+                    write_font_conf(serial_port_text, window, progress, status_label, eeprom_size, firmware_version)
+                    log(f'操作进行3/3:写入亚音参数')
+                    write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version)
+                    messagebox.showinfo('提示', f'{version_code}版本字库\n字库配置\n亚音参数\n写入成功！')
+                else:
+                    messagebox.showinfo('提示', f'非LOSEHU扩容固件，无法写入')
