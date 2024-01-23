@@ -43,32 +43,39 @@ def check_eeprom_writeable(serial_port: serial.Serial, offset: int, extra: int) 
     return read_write_data == random_bytes
 
 
-def check_serial_port(serial_port: serial.Serial) -> SerialPortCheckResult:
+def check_serial_port(serial_port: serial.Serial,
+                      auto_detect: bool = True) -> SerialPortCheckResult:
     try:
         version = serial_utils.sayhello(serial_port)
         eeprom_size = 0
-        if version.startswith('LOSEHU'):
-            firmware_version = 0
-            if version.endswith('K') or version.endswith('H'):
-                firmware_version = 1
-        else:
-            firmware_version = 2
+        if auto_detect:
+            if version.startswith('LOSEHU'):
+                firmware_version = 0
+                if version.endswith('K') or version.endswith('H'):
+                    firmware_version = 1
+            else:
+                firmware_version = 2
 
-        if firmware_version == 1:
-            # 检查EEPROM大小
-            for i in range(1, 5):
-                # 128 KiB offset 0x1, 256 KiB offset 0x3, 384 KiB offset 0x5, 512 KiB offset 0x7
-                # 1 -> 0x1, 2 -> 0x3, 3 -> 0x5, 4 -> 0x7 符合 2n-1
-                if check_eeprom_writeable(serial_port, 2 * i - 1, 0x8000):
-                    eeprom_size = i
-                else:
-                    break
-        msg = f'串口连接成功！\n版本号: {version}\n自动检测结果如下:\n固件版本: {FIRMWARE_VERSION_LIST[firmware_version]}\n'
-        if firmware_version != 1:
-            msg += f'非{FIRMWARE_VERSION_LIST[1]}固件无法自动检测EEPROM大小\n'
+            if firmware_version == 1:
+                # 检查EEPROM大小
+                for i in range(1, 5):
+                    # 128 KiB offset 0x1, 256 KiB offset 0x3, 384 KiB offset 0x5, 512 KiB offset 0x7
+                    # 1 -> 0x1, 2 -> 0x3, 3 -> 0x5, 4 -> 0x7 符合 2n-1
+                    if check_eeprom_writeable(serial_port, 2 * i - 1, 0x8000):
+                        eeprom_size = i
+                    else:
+                        break
+            msg = f'串口连接成功！\n版本号: {version}\n自动检测结果如下:\n固件版本: {FIRMWARE_VERSION_LIST[firmware_version]}\n'
+            if firmware_version != 1:
+                msg += f'非{FIRMWARE_VERSION_LIST[1]}固件无法自动检测EEPROM大小\n'
+            else:
+                msg += f'EEPROM大小: {EEPROM_SIZE[eeprom_size]}'
+            log(msg)
         else:
-            msg += f'EEPROM大小: {EEPROM_SIZE[eeprom_size]}'
-        log(msg)
+            msg = f'串口连接成功！\n版本号: {version}\n'
+            log(msg)
+            firmware_version = 2
+            eeprom_size = 0
         return SerialPortCheckResult(True, msg, firmware_version, eeprom_size)
     except Exception as e:
         msg = '串口连接失败！<-' + str(e)
@@ -105,7 +112,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
         return
 
     with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
-        serial_check = check_serial_port(serial_port)
+        serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
             messagebox.showerror('错误', serial_check.message)
             status_label['text'] = '当前操作: 无'
@@ -167,7 +174,7 @@ def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, 
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
-        serial_check = check_serial_port(serial_port)
+        serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
             messagebox.showerror('错误', serial_check.message)
             status_label['text'] = '当前操作: 无'
@@ -242,7 +249,7 @@ def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
-        serial_check = check_serial_port(serial_port)
+        serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
             messagebox.showerror('错误', serial_check.message)
             status_label['text'] = '当前操作: 无'
@@ -303,7 +310,7 @@ def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
-        serial_check = check_serial_port(serial_port)
+        serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
             messagebox.showerror('错误', serial_check.message)
             status_label['text'] = '当前操作: 无'
