@@ -232,13 +232,12 @@ def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, 
         serial_utils.reset_radio(serial_port)
     log('写入字库成功！')
     status_label['text'] = '当前操作: 无'
+    write_font_conf(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
+    write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
     messagebox.showinfo('提示', '写入字库成功！')
-    write_font_conf(serial_port_text, window, progress, status_label, eeprom_size, firmware_version)
-    write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version)
-
 
 def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
-                    eeprom_size: int, firmware_version: int):
+                    eeprom_size: int, firmware_version: int, is_continue: bool = False):
     log('开始写入字库配置')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入字库配置'
@@ -295,11 +294,12 @@ def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
         serial_utils.reset_radio(serial_port)
     log('写入字库配置成功！')
     status_label['text'] = '当前操作: 无'
-    messagebox.showinfo('提示', '写入字库配置成功！')
+    if not is_continue:
+        messagebox.showinfo('提示', '写入字库配置成功！')
 
 
 def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
-                       eeprom_size: int, firmware_version: int):
+                       eeprom_size: int, firmware_version: int, is_continue: bool = False):
     log('开始写入亚音参数')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入亚音参数'
@@ -358,4 +358,5 @@ def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
         serial_utils.reset_radio(serial_port)
     log('写入亚音参数成功！')
     status_label['text'] = '当前操作: 无'
-    messagebox.showinfo('提示', '写入亚音参数成功！')
+    if not is_continue:
+        messagebox.showinfo('提示', '写入亚音参数成功！')
