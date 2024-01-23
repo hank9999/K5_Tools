@@ -153,20 +153,20 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
     messagebox.showinfo('提示', '清空EEPROM成功！')
 
 
-def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
+def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
                eeprom_size: int, firmware_version: int, compress: bool = False):
     log('开始写入字库流程')
     font_version = 'H' if not compress else 'K'
     log(f'字库版本: {font_version}')
-    log('选择的串口: ' + serial_port)
+    log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入字库 ({font_version})'
-    if len(serial_port) == 0:
+    if len(serial_port_text) == 0:
         log('没有选择串口！')
         messagebox.showerror('错误', '没有选择串口！')
         status_label['text'] = '当前操作: 无'
         return
 
-    with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
+    with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port)
         if not serial_check.status:
             messagebox.showerror('错误', serial_check.message)
@@ -226,20 +226,22 @@ def write_font(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, statu
     log('写入字库成功！')
     status_label['text'] = '当前操作: 无'
     messagebox.showinfo('提示', '写入字库成功！')
+    write_font_conf(serial_port_text, window, progress, status_label, eeprom_size, firmware_version)
+    write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version)
 
 
-def write_font_conf(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
+def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
                     eeprom_size: int, firmware_version: int):
     log('开始写入字库配置')
-    log('选择的串口: ' + serial_port)
+    log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入字库配置'
-    if len(serial_port) == 0:
+    if len(serial_port_text) == 0:
         log('没有选择串口！')
         messagebox.showerror('错误', '没有选择串口！')
         status_label['text'] = '当前操作: 无'
         return
 
-    with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
+    with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port)
         if not serial_check.status:
             messagebox.showerror('错误', serial_check.message)
@@ -289,18 +291,18 @@ def write_font_conf(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, 
     messagebox.showinfo('提示', '写入字库配置成功！')
 
 
-def write_tone_options(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
+def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
                        eeprom_size: int, firmware_version: int):
     log('开始写入亚音参数')
-    log('选择的串口: ' + serial_port)
+    log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入亚音参数'
-    if len(serial_port) == 0:
+    if len(serial_port_text) == 0:
         log('没有选择串口！')
         messagebox.showerror('错误', '没有选择串口！')
         status_label['text'] = '当前操作: 无'
         return
 
-    with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
+    with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port)
         if not serial_check.status:
             messagebox.showerror('错误', serial_check.message)
