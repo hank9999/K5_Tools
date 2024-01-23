@@ -1,6 +1,9 @@
 import dataclasses
 import random
 import struct
+from typing import Union, List
+
+from serial import Serial
 
 from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE
 import serial_utils
@@ -95,6 +98,31 @@ def serial_port_combo_callback(_, serial_port: str, status_label: tk.Label, eepr
         firmware_combo.set(FIRMWARE_VERSION_LIST[serial_check.firmware_version])
         eeprom_size_combo.set(EEPROM_SIZE[serial_check.eeprom_size])
     status_label['text'] = '当前操作: 无'
+
+
+def write_data(serial_port: Serial, start_addr: int, data: Union[bytes, List[int]],
+               progress: ttk.Progressbar, window: tk.Tk, step: int = 128):
+    data_len = len(data)
+    total_page = data_len // 128
+    addr = start_addr
+    current_step = 0
+    offset = 0
+    while addr < start_addr + data_len:
+        percent_float = (current_step / total_page) * 100
+        percent = int(percent_float)
+        progress['value'] = percent
+        log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
+        window.update()
+
+        writing_data = bytes(data[:step])
+        data = data[step:]
+        if addr - offset * 0x10000 >= 0x10000:
+            offset += 1
+        serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, writing_data)
+        addr += step
+        current_step += 1
+    progress['value'] = 0
+    window.update()
 
 
 def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label, eeprom_size: int,
@@ -207,25 +235,7 @@ def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, 
             font_data = font.GB2312_COMPRESSED
         else:
             font_data = font.GB2312_UNCOMPRESSED
-        font_len = len(font_data)
-        total_page = font_len // 128
-        addr = 0x2E00
-        current_step = 0
-        offset = 0
-        while addr < 0x2E00 + font_len:
-            percent_float = (current_step / total_page) * 100
-            percent = int(percent_float)
-            progress['value'] = percent
-            log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-            window.update()
-
-            write_data = bytes(font_data[:128])
-            font_data = font_data[128:]
-            if addr - offset * 0x10000 >= 0x10000:
-                offset += 1
-            serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, write_data)
-            addr += 128
-            current_step += 1
+        write_data(serial_port, 0x2E00, font_data, progress, window)
         progress['value'] = 0
         window.update()
         serial_utils.reset_radio(serial_port)
@@ -269,26 +279,7 @@ def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             messagebox.showinfo('EEPROM大小不足', msg)
             status_label['text'] = '当前操作: 无'
             return
-        font_data = font.FONT_CONF
-        font_len = len(font_data)
-        total_page = font_len // 128
-        addr = 0x2480
-        current_step = 0
-        offset = 0
-        while addr < 0x2480 + font_len:
-            percent_float = (current_step / total_page) * 100
-            percent = int(percent_float)
-            progress['value'] = percent
-            log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-            window.update()
-
-            write_data = bytes(font_data[:128])
-            font_data = font_data[128:]
-            if addr - offset * 0x10000 >= 0x10000:
-                offset += 1
-            serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, write_data)
-            addr += 128
-            current_step += 1
+        write_data(serial_port, 0x2480, font.FONT_CONF, progress, window)
         progress['value'] = 0
         window.update()
         serial_utils.reset_radio(serial_port)
@@ -334,25 +325,7 @@ def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
         data = b''
         for tone_data in tone.CTCSS_OPTIONS + tone.DCS_OPTIONS:
             data += struct.pack('<H', tone_data)
-        data_len = len(data)
-        total_page = data_len // 128
-        addr = 0x2C00
-        current_step = 0
-        offset = 0
-        while addr < 0x2C00 + data_len:
-            percent_float = (current_step / total_page) * 100
-            percent = int(percent_float)
-            progress['value'] = percent
-            log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-            window.update()
-
-            write_data = data[:128]
-            data = data[128:]
-            if addr - offset * 0x10000 >= 0x10000:
-                offset += 1
-            serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, write_data)
-            addr += 128
-            current_step += 1
+        write_data(serial_port, 0x2C00, data, progress, window)
         progress['value'] = 0
         window.update()
         serial_utils.reset_radio(serial_port)
