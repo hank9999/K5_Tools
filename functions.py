@@ -236,6 +236,7 @@ def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, 
     write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
     messagebox.showinfo('提示', '写入字库成功！')
 
+
 def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
                     eeprom_size: int, firmware_version: int, is_continue: bool = False):
     log('开始写入字库配置')
