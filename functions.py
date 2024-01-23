@@ -212,7 +212,6 @@ def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, 
         addr = 0x2E00
         current_step = 0
         offset = 0
-        print(font_len)
         while addr < 0x2E00 + font_len:
             percent_float = (current_step / total_page) * 100
             percent = int(percent_float)
