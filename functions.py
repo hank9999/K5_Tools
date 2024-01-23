@@ -164,22 +164,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
             target_eeprom_offset = 0x2000
             if eeprom_size > 0:
                 target_eeprom_offset = 0x20000 * eeprom_size
-            total_steps = target_eeprom_offset // 128
-            current_step = 0
-            addr = 0x0
-            offset = 0x0
-            while addr < target_eeprom_offset:
-                percent_float = (current_step / total_steps) * 100
-                percent = int(percent_float)
-                progress['value'] = percent
-                log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-                window.update()
-
-                if addr - offset * 0x10000 >= 0x10000:
-                    offset += 1
-                serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, b'\xff' * 128)
-                addr += 128
-                current_step += 1
+            write_data(serial_port, 0, b'\xff' * target_eeprom_offset, progress, window)
         progress['value'] = 0
         window.update()
         serial_utils.reset_radio(serial_port)
