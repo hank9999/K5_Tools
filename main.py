@@ -8,7 +8,7 @@ from functions import serial_port_combo_postcommand, serial_port_combo_callback,
     write_font_conf, write_tone_options
 
 window = tk.Tk()
-version = '0.1'
+version = '0.2'
 
 
 class TextRedirector(tk.Text):
