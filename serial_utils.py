@@ -89,6 +89,8 @@ def sayhello(serial_port: serial.Serial):
                 raise Exception("没有收到电台应答包！")
     except Exception as e:
         raise Exception("没有收到电台应答包！<-" + str(e))
+    #log(len(o))
+    firmware = get_string(o, 4, len(o))
     firmware = get_string(o, 4, len(o))
     return firmware
 

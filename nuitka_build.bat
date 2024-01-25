@@ -1,1 +1,1 @@
-nuitka --standalone --onefile --windows-disable-console --include-data-dir="resources/"="resources/" --enable-plugin=tk-inter main.py
+nuitka --standalone --windows-disable-console --include-data-dir="resources/"="resources/" --enable-plugin=tk-inter main.py
