@@ -169,9 +169,9 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
             write_data(serial_port, 0, b'\xff' * target_eeprom_offset, progress, window)
         progress['value'] = 0
         window.update()
-        serial_utils.reset_radio(serial_port)
     log('清空EEPROM成功！')
     status_label['text'] = '当前操作: 无'
+    serial_utils.reset_radio(serial_port)
     messagebox.showinfo('提示', '清空EEPROM成功！')
 
 
@@ -232,11 +232,10 @@ def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, 
         write_data(serial_port, addr, font_data, progress, window)
         progress['value'] = 0
         window.update()
-        if not is_continue:
-            serial_utils.reset_radio(serial_port)
     log('写入字库成功！')
     status_label['text'] = '当前操作: 无'
     if not is_continue:
+        serial_utils.reset_radio(serial_port)
         messagebox.showinfo('提示', '写入字库成功！')
 
 
@@ -276,11 +275,10 @@ def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
         write_data(serial_port, 0x2480, font.FONT_CONF, progress, window)
         progress['value'] = 0
         window.update()
-        if not is_continue:
-            serial_utils.reset_radio(serial_port)
     log('写入字库配置成功！')
     status_label['text'] = '当前操作: 无'
     if not is_continue:
+        serial_utils.reset_radio(serial_port)
         messagebox.showinfo('提示', '写入字库配置成功！')
 
 
@@ -323,11 +321,10 @@ def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
         write_data(serial_port, 0x2C00, data, progress, window)
         progress['value'] = 0
         window.update()
-        if not is_continue:
-            serial_utils.reset_radio(serial_port)
     log('写入亚音参数成功！')
     status_label['text'] = '当前操作: 无'
     if not is_continue:
+        serial_utils.reset_radio(serial_port)
         messagebox.showinfo('提示', '写入亚音参数成功！')
 
 
