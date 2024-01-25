@@ -4,6 +4,9 @@ import struct
 from typing import Union, List
 
 from serial import Serial
+from typing import Union, List
+
+from serial import Serial
 
 from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE
 import serial_utils
@@ -125,6 +128,31 @@ def write_data(serial_port: Serial, start_addr: int, data: Union[bytes, List[int
     window.update()
 
 
+def write_data(serial_port: Serial, start_addr: int, data: Union[bytes, List[int]],
+               progress: ttk.Progressbar, window: tk.Tk, step: int = 128):
+    data_len = len(data)
+    total_page = data_len // 128
+    addr = start_addr
+    current_step = 0
+    offset = 0
+    while addr < start_addr + data_len:
+        percent_float = (current_step / total_page) * 100
+        percent = int(percent_float)
+        progress['value'] = percent
+        log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
+        window.update()
+
+        writing_data = bytes(data[:step])
+        data = data[step:]
+        if addr - offset * 0x10000 >= 0x10000:
+            offset += 1
+        serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, writing_data)
+        addr += step
+        current_step += 1
+    progress['value'] = 0
+    window.update()
+
+
 def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label, eeprom_size: int,
                  firmware_version: int):
     log('开始清空EEPROM流程')
@@ -165,6 +193,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
             if eeprom_size > 0:
                 target_eeprom_offset = 0x20000 * eeprom_size
             write_data(serial_port, 0, b'\xff' * target_eeprom_offset, progress, window)
+            write_data(serial_port, 0, b'\xff' * target_eeprom_offset, progress, window)
         progress['value'] = 0
         window.update()
         serial_utils.reset_radio(serial_port)
@@ -177,6 +206,7 @@ def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, 
                eeprom_size: int, firmware_version: int, compress: bool = False, old_font: bool = False):
                eeprom_size: int, firmware_version: int, font_type):
     log('开始写入字库流程')
+    font_version = ('H' if not compress else 'K') if not old_font else '旧'
     font_version = ('H' if not compress else 'K') if not old_font else '旧'
     log(f'字库版本: {font_version}')
     log('选择的串口: ' + serial_port_text)
@@ -293,6 +323,7 @@ def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             status_label['text'] = '当前操作: 无'
             return
         write_data(serial_port, 0x2480, font.FONT_CONF, progress, window)
+        write_data(serial_port, 0x2480, font.FONT_CONF, progress, window)
         progress['value'] = 0
         window.update()
     log('写入字库配置成功！')
@@ -333,6 +364,7 @@ def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
         data = b''
         for tone_data in tone.CTCSS_OPTIONS + tone.DCS_OPTIONS:
             data += struct.pack('<H', tone_data)
+        write_data(serial_port, 0x2C00, data, progress, window)
         write_data(serial_port, 0x2C00, data, progress, window)
         progress['value'] = 0
         window.update()
