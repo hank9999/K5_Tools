@@ -1,8 +1,11 @@
 import dataclasses
 import random
 import struct
+from typing import Union, List
 
-from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE
+from serial import Serial
+
+from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE, FontType
 import serial_utils
 import serial.tools.list_ports
 from logger import log
@@ -10,12 +13,14 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from resources import tone, font
 
+
 @dataclasses.dataclass
 class SerialPortCheckResult:
     status: bool
     message: str
     firmware_version: int
     eeprom_size: int
+    raw_version_text: str
 
 
 def get_all_serial_port():
@@ -76,11 +81,11 @@ def check_serial_port(serial_port: serial.Serial,
             log(msg)
             firmware_version = 2
             eeprom_size = 0
-        return SerialPortCheckResult(True, msg, firmware_version, eeprom_size)
+        return SerialPortCheckResult(True, msg, firmware_version, eeprom_size, version)
     except Exception as e:
         msg = '串口连接失败！<-' + str(e)
         log(msg)
-        return SerialPortCheckResult(False, msg, 2, 0)
+        return SerialPortCheckResult(False, msg, 2, 0, '')
 
 
 def serial_port_combo_callback(_, serial_port: str, status_label: tk.Label, eeprom_size_combo: ttk.Combobox,
@@ -95,6 +100,31 @@ def serial_port_combo_callback(_, serial_port: str, status_label: tk.Label, eepr
         firmware_combo.set(FIRMWARE_VERSION_LIST[serial_check.firmware_version])
         eeprom_size_combo.set(EEPROM_SIZE[serial_check.eeprom_size])
     status_label['text'] = '当前操作: 无'
+
+
+def write_data(serial_port: Serial, start_addr: int, data: Union[bytes, List[int]],
+               progress: ttk.Progressbar, window: tk.Tk, step: int = 128):
+    data_len = len(data)
+    total_page = data_len // 128
+    addr = start_addr
+    current_step = 0
+    offset = 0
+    while addr < start_addr + data_len:
+        percent_float = (current_step / total_page) * 100
+        percent = int(percent_float)
+        progress['value'] = percent
+        log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
+        window.update()
+
+        writing_data = bytes(data[:step])
+        data = data[step:]
+        if addr - offset * 0x10000 >= 0x10000:
+            offset += 1
+        serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, writing_data)
+        addr += step
+        current_step += 1
+    progress['value'] = 0
+    window.update()
 
 
 def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label, eeprom_size: int,
@@ -136,22 +166,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
             target_eeprom_offset = 0x2000
             if eeprom_size > 0:
                 target_eeprom_offset = 0x20000 * eeprom_size
-            total_steps = target_eeprom_offset // 128
-            current_step = 0
-            addr = 0x0
-            offset = 0x0
-            while addr < target_eeprom_offset:
-                percent_float = (current_step / total_steps) * 100
-                percent = int(percent_float)
-                progress['value'] = percent
-                log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-                window.update()
-
-                if addr - offset * 0x10000 >= 0x10000:
-                    offset += 1
-                serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, b'\xff' * 128)
-                addr += 128
-                current_step += 1
+            write_data(serial_port, 0, b'\xff' * target_eeprom_offset, progress, window)
         progress['value'] = 0
         window.update()
         serial_utils.reset_radio(serial_port)
@@ -161,10 +176,11 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
 
 
 def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
-               eeprom_size: int, firmware_version: int, font_type):
+               eeprom_size: int, firmware_version: int, font_type: FontType, is_continue: bool = False):
     log('开始写入字库流程')
+    log(f'字库版本: {font_type.value}')
     log('选择的串口: ' + serial_port_text)
-    status_label['text'] = f'当前操作: 写入字库 ({font_type})'
+    status_label['text'] = f'当前操作: 写入字库 ({font_type.value})'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
         messagebox.showerror('错误', '没有选择串口！')
@@ -194,52 +210,40 @@ def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, 
             status_label['text'] = '当前操作: 无'
             return
 
-        if font_type == 'GB2312_UNCOMPRESSED' and eeprom_size < 2:
+        if font_type == FontType.GB2312_UNCOMPRESSED and eeprom_size < 2:
             msg = f'EEPROM小于256KiB，无法写入H固件字库！'
             log(msg)
             messagebox.showinfo('EEPROM大小不足', msg)
             status_label['text'] = '当前操作: 无'
             return
 
-        if font_type == 'GB2312_COMPRESSED':
+        addr = 0x2E00
+        if font_type == FontType.GB2312_COMPRESSED:
             font_data = font.GB2312_COMPRESSED
-        elif font_type == 'GB2312_UNCOMPRESSED':
+        elif font_type == FontType.GB2312_UNCOMPRESSED:
             font_data = font.GB2312_UNCOMPRESSED
-        else:
-            font_data = font.LOH_font
-        font_len = len(font_data)
-        total_page = font_len // 128
-        if font_type == 'LOH_font':
+        elif font_type == FontType.LOSEHU_FONT:
+            font_data = font.LOSEHU_FONT
             addr = 0x2000
         else:
-            addr = 0x2E00
-        start_addr = addr
-        current_step = 0
-        offset = 0
-        print(font_len)
-        while addr < start_addr + font_len:
-            percent_float = (current_step / total_page) * 100
-            percent = int(percent_float)
-            progress['value'] = percent
-            log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-            window.update()
-
-            write_data = bytes(font_data[:128])
-            font_data = font_data[128:]
-            if addr - offset * 0x10000 >= 0x10000:
-                offset += 1
-            serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, write_data)
-            addr += 128
-            current_step += 1
+            messagebox.showerror('错误', '未知字库类型！')
+            status_label['text'] = '当前操作: 无'
+            return
+        write_data(serial_port, addr, font_data, progress, window)
         progress['value'] = 0
         window.update()
+        if not is_continue:
+            serial_utils.reset_radio(serial_port)
     log('写入字库成功！')
     status_label['text'] = '当前操作: 无'
+    if not is_continue:
+        messagebox.showinfo('提示', '写入字库成功！')
 
 
 def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
-                    eeprom_size: int, firmware_version: int):
+                    eeprom_size: int, firmware_version: int, is_continue: bool = False):
     log('开始写入字库配置')
+    log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入字库配置'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
@@ -254,6 +258,7 @@ def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             status_label['text'] = '当前操作: 无'
             return
 
+        log(f'选择固件版本: {FIRMWARE_VERSION_LIST[firmware_version]} EEPROM大小: {EEPROM_SIZE[eeprom_size]}')
 
         if firmware_version != 1:
             msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入字库配置！'
@@ -268,35 +273,21 @@ def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             messagebox.showinfo('EEPROM大小不足', msg)
             status_label['text'] = '当前操作: 无'
             return
-        font_data = font.FONT_CONF
-        font_len = len(font_data)
-        total_page = font_len // 128
-        addr = 0x2480
-        current_step = 0
-        offset = 0
-        while addr < 0x2480 + font_len:
-            percent_float = (current_step / total_page) * 100
-            percent = int(percent_float)
-            progress['value'] = percent
-            log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-            window.update()
-
-            write_data = bytes(font_data[:128])
-            font_data = font_data[128:]
-            if addr - offset * 0x10000 >= 0x10000:
-                offset += 1
-            serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, write_data)
-            addr += 128
-            current_step += 1
+        write_data(serial_port, 0x2480, font.FONT_CONF, progress, window)
         progress['value'] = 0
         window.update()
+        if not is_continue:
+            serial_utils.reset_radio(serial_port)
     log('写入字库配置成功！')
     status_label['text'] = '当前操作: 无'
+    if not is_continue:
+        messagebox.showinfo('提示', '写入字库配置成功！')
 
 
 def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
-                       eeprom_size: int, firmware_version: int):
+                       eeprom_size: int, firmware_version: int, is_continue: bool = False):
     log('开始写入亚音参数')
+    log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入亚音参数'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
@@ -311,6 +302,7 @@ def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
             status_label['text'] = '当前操作: 无'
             return
 
+        log(f'选择固件版本: {FIRMWARE_VERSION_LIST[firmware_version]} EEPROM大小: {EEPROM_SIZE[eeprom_size]}')
 
         if firmware_version != 1:
             msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入亚音参数！'
@@ -328,69 +320,58 @@ def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
         data = b''
         for tone_data in tone.CTCSS_OPTIONS + tone.DCS_OPTIONS:
             data += struct.pack('<H', tone_data)
-        data_len = len(data)
-        total_page = data_len // 128
-        addr = 0x2C00
-        current_step = 0
-        offset = 0
-        while addr < 0x2C00 + data_len:
-            percent_float = (current_step / total_page) * 100
-            percent = int(percent_float)
-            progress['value'] = percent
-            log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-            window.update()
-
-            write_data = data[:128]
-            data = data[128:]
-            if addr - offset * 0x10000 >= 0x10000:
-                offset += 1
-            serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, write_data)
-            addr += 128
-            current_step += 1
+        write_data(serial_port, 0x2C00, data, progress, window)
         progress['value'] = 0
         window.update()
+        if not is_continue:
+            serial_utils.reset_radio(serial_port)
     log('写入亚音参数成功！')
     status_label['text'] = '当前操作: 无'
+    if not is_continue:
+        messagebox.showinfo('提示', '写入亚音参数成功！')
+
 
 # 复位函数
-def reset_radio(serial_port: str, status_label):
-    status_label['text'] = '当前操作: 复位设备...'
-    with serial.Serial(serial_port, 38400, timeout=2) as port:
-        serial_utils.reset_radio(port)
-    log('正在复位设备...')
+def reset_radio(serial_port_text: str, status_label):
+    status_label['text'] = '当前操作: 复位设备'
+    log('正在复位设备')
+    with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
+        serial_utils.reset_radio(serial_port)
     status_label['text'] = '当前操作: 无'
 
+
 # 写入字库等信息的总函数
-def write_to_the_font(serial_port: str, serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
-               eeprom_size: int, firmware_version: int,):
-    with serial.Serial(serial_port, 38400, timeout=2) as port:
-        version = serial_utils.sayhello(port)
+def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
+                    status_label: tk.Label, eeprom_size: int, firmware_version: int):
+    with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
+        result = check_serial_port(serial_port, False)
+        version = result.raw_version_text
         if version.startswith('LOSEHU'):
             version_code = version[-1]
             if version_code == 'H':
-                font_type = 'GB2312_UNCOMPRESSED'
+                font_type = FontType.GB2312_UNCOMPRESSED
             elif version_code == 'K':
                 version_number = int(version[6:9])
                 if version_number < 118:
-                    font_type = 'LOH_font'
+                    font_type = FontType.LOSEHU_FONT
                 else:
-                    font_type = 'GB2312_COMPRESSED'
+                    font_type = FontType.GB2312_COMPRESSED
         else:
             version_code = 'other'
     if version_code == 'K' or version_code == 'H':
         if version_number < 118:
-            log(f'操作进行:写入{version_number}{version_code}版字库')
+            log(f'正在进行 写入{version_number}{version_code}版字库')
             write_font(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, font_type)
-            reset_radio(serial_port, status_label)
+            reset_radio(serial_port_text, status_label)
             messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n写入成功')
         else:
-            log(f'操作进行1/3:写入{version_number}{version_code}版字库')
-            write_font(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, font_type)
-            log(f'操作进行2/3:写入字库配置')
-            write_font_conf(serial_port_text, window, progress, status_label, eeprom_size, firmware_version)
-            log(f'操作进行3/3:写入亚音参数')
-            write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version)
-            reset_radio(serial_port, status_label)
+            log(f'正在进行 1/3: 写入{version_number}{version_code}版字库')
+            write_font(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, font_type, True)
+            log(f'正在进行 2/3: 写入字库配置')
+            write_font_conf(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
+            log(f'正在进行 3/3: 写入亚音参数')
+            write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
+            reset_radio(serial_port_text, status_label)
             messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n写入成功！')
     else:
         messagebox.showinfo('提示', f'非LOSEHU扩容固件，无法写入')

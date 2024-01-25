@@ -1,14 +1,14 @@
 import sys
 import tkinter as tk
 from tkinter import ttk
-from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE
+from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE, FontType
 from logger import log
 
 from functions import serial_port_combo_postcommand, serial_port_combo_callback, clean_eeprom, write_font, \
-    write_font_conf, write_tone_options, write_to_the_font
+    write_font_conf, write_tone_options, auto_write_font
 
 window = tk.Tk()
-version = '0.1'
+version = '0.2'
 
 
 class TextRedirector(tk.Text):
@@ -65,15 +65,68 @@ def main():
     )
     clean_eeprom_button.place(x=10, y=100)
 
+    write_font_k_button = tk.Button(
+        window,
+        text='写入字库 (K)',
+        command=lambda: write_font(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
+            FontType.GB2312_COMPRESSED
+        )
+    )
+    write_font_k_button.place(x=105, y=100)
+
+    write_font_h_button = tk.Button(
+        window,
+        text='写入字库 (H)',
+        command=lambda: write_font(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
+            FontType.GB2312_UNCOMPRESSED
+        )
+    )
+    write_font_h_button.place(x=193, y=100)
+
     write_font_old_button = tk.Button(
         window,
-        text='写入字库',
-        command=lambda: write_to_the_font(
-            serial_port_combo.get(), serial_port_combo.get(), window, progress, label2,
+        text='写入字库 (旧)',
+        command=lambda: write_font(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
+            FontType.LOSEHU_FONT
+        )
+    )
+    write_font_old_button.place(x=282, y=100)
+
+    write_font_conf_button = tk.Button(
+        window,
+        text='写入字库配置',
+        command=lambda: write_font_conf(
+            serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    write_font_old_button.place(x=105, y=100)
+    write_font_conf_button.place(x=10, y=140)
+
+    write_tone_options_button = tk.Button(
+        window,
+        text='写入亚音参数',
+        command=lambda: write_tone_options(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+        )
+    )
+    write_tone_options_button.place(x=105, y=140)
+
+    auto_write_font_button = tk.Button(
+        window,
+        text='自动写入字库',
+        command=lambda: auto_write_font(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+        )
+    )
+    auto_write_font_button.place(x=193, y=140)
 
     textbox = tk.Text(window, width=56, height=10)
     textbox.place(x=10, y=185)
