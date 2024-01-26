@@ -10,6 +10,31 @@ from functions import serial_port_combo_postcommand, serial_port_combo_callback,
 window = tk.Tk()
 version = '0.3'
 
+class Tooltip:
+    def __init__(self, widget, text):
+        self.widget = widget
+        self.text = text
+        self.tooltip_window = None
+
+        self.widget.bind("<Enter>", self.show_tooltip)
+        self.widget.bind("<Leave>", self.hide_tooltip)
+
+    def show_tooltip(self, event):
+        x, y, _, _ = self.widget.bbox("insert")
+        x += self.widget.winfo_rootx() + 25
+        y += self.widget.winfo_rooty() + 25
+
+        self.tooltip_window = tk.Toplevel(self.widget)
+        self.tooltip_window.wm_overrideredirect(True)
+        self.tooltip_window.wm_geometry(f"+{x}+{y}")
+
+        label = tk.Label(self.tooltip_window, text=self.text, background="#ffffee", relief="solid", borderwidth=1)
+        label.pack()
+
+    def hide_tooltip(self, event):
+        if self.tooltip_window:
+            self.tooltip_window.destroy()
+            self.tooltip_window = None
 
 class TextRedirector(tk.Text):
     def __init__(self, widget):
@@ -23,10 +48,8 @@ class TextRedirector(tk.Text):
     def flush(self):
         pass
 
-
 def make_readonly(event):
     return "break"
-
 
 def main():
     window.title(f'K5/K6 小工具集 v{version}')
@@ -164,6 +187,14 @@ def main():
 
     # 布局结束，显示首行日志
     log(f'K5/K6 小工具集 v{version} BG4IST - hank9999\n')
+
+    # 在此统一设置tooltip
+    tooltip = Tooltip(serial_port_combo, "点击选择K5/K6所在串口")
+    tooltip = Tooltip(eeprom_size_combo, "EEPROM芯片容量，若自动检测正确则无需修改")
+    tooltip = Tooltip(firmware_combo, "固件版本，若自动检测正确则无需修改")
+    tooltip = Tooltip(write_font_k_button, "萝狮虎118版本及后续版本使用，压缩GB2312字库")
+    tooltip = Tooltip(write_font_h_button, "萝狮虎118版本及后续版本使用，全量GB2312字库")
+    tooltip = Tooltip(write_font_old_button, "萝狮虎117版本及之前版本使用，旧字库")
 
     window.mainloop()
 
