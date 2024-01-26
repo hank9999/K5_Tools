@@ -34,19 +34,19 @@ def main():
     window.resizable(False, False)
 
     # 第一行
-    frame1 = tk.Frame(window)
+    frame1 = tk.Frame(window, padx=10, pady=2)
     frame1.grid(row=0, column=0, sticky='w')
     label1 = tk.Label(frame1, text=f'K5/K6 小工具集 v{version} (BG4IST - hank9999)')
     label1.pack(side='left')
 
     # 第二行
-    frame2 = tk.Frame(window)
+    frame2 = tk.Frame(window, padx=10, pady=2)
     frame2.grid(row=1, column=0, sticky='w')
     label2 = tk.Label(frame2, text='当前操作: 无')
     label2.pack(side='left')
 
     # 第三行
-    frame3 = tk.Frame(window)
+    frame3 = tk.Frame(window, padx=10, pady=2)
     frame3.grid(row=2, column=0, sticky='w')
     serial_port_label = tk.Label(frame3, text='串口')
     serial_port_label.pack(side='left')
@@ -68,7 +68,7 @@ def main():
     firmware_combo.pack(side='left', padx=1, pady=2)
 
     # 第四行
-    frame4 = tk.Frame(window)
+    frame4 = tk.Frame(window, padx=10, pady=2)
     frame4.grid(row=3, column=0, sticky='w')
     clean_eeprom_button = tk.Button(
         frame4,
@@ -115,7 +115,7 @@ def main():
     write_font_old_button.pack(side='left', padx=3, pady=2)
 
     # 第五行
-    frame5 = tk.Frame(window)
+    frame5 = tk.Frame(window, padx=10, pady=2)
     frame5.grid(row=4, column=0, sticky='w')
     write_font_conf_button = tk.Button(
         frame5,
@@ -149,7 +149,7 @@ def main():
     auto_write_font_button.pack(side='left', padx=3, pady=2)
 
     # 第六行
-    frame6 = tk.Frame(window)
+    frame6 = tk.Frame(window, padx=10, pady=2)
     frame6.grid(row=5, column=0, sticky='w')
     textbox = tk.Text(frame6, width=60, height=15)
     textbox.bind("<Key>", make_readonly)  # 防止用户修改
@@ -157,7 +157,7 @@ def main():
     sys.stdout = TextRedirector(textbox)
 
     # 第七行
-    frame7 = tk.Frame(window)
+    frame7 = tk.Frame(window, padx=10, pady=2)
     frame7.grid(row=6, column=0, sticky='w')
     progress = ttk.Progressbar(frame7, orient='horizontal', length=424, mode='determinate')
     progress.pack(side='left', padx=2, pady=2)
