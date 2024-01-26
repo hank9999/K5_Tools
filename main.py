@@ -30,7 +30,7 @@ def make_readonly(event):
 
 def main():
     window.title(f'K5/K6 小工具集 v{version}')
-    window.geometry('428x370')
+    # window.geometry('428x370')
     window.resizable(False, False)
 
     # 第一行
