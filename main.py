@@ -10,6 +10,7 @@ from functions import serial_port_combo_postcommand, serial_port_combo_callback,
 window = tk.Tk()
 version = '0.3'
 
+
 class Tooltip:
     def __init__(self, widget, text):
         self.widget = widget
@@ -36,6 +37,7 @@ class Tooltip:
             self.tooltip_window.destroy()
             self.tooltip_window = None
 
+
 class TextRedirector(tk.Text):
     def __init__(self, widget):
         super().__init__()
@@ -48,8 +50,10 @@ class TextRedirector(tk.Text):
     def flush(self):
         pass
 
+
 def make_readonly(event):
     return "break"
+
 
 def main():
     window.title(f'K5/K6 小工具集 v{version}')
