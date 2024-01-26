@@ -60,11 +60,11 @@ def main():
     )
     eeprom_size_label = tk.Label(frame3, text='EEPROM')
     eeprom_size_label.pack(side='left')
-    eeprom_size_combo = ttk.Combobox(frame3, values=EEPROM_SIZE, width=10, state='disabled')
+    eeprom_size_combo = ttk.Combobox(frame3, values=EEPROM_SIZE, width=10, state='readonly')
     eeprom_size_combo.pack(side='left', padx=1, pady=2)
     firmware_label = tk.Label(frame3, text='固件版本')
     firmware_label.pack(side='left')
-    firmware_combo = ttk.Combobox(frame3, values=FIRMWARE_VERSION_LIST, width=10, state='disabled')
+    firmware_combo = ttk.Combobox(frame3, values=FIRMWARE_VERSION_LIST, width=10, state='readonly')
     firmware_combo.pack(side='left', padx=1, pady=2)
 
     # 第四行
