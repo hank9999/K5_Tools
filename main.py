@@ -193,12 +193,12 @@ def main():
     log(f'K5/K6 小工具集 v{version} BG4IST - hank9999\n')
 
     # 在此统一设置tooltip
-    tooltip = Tooltip(serial_port_combo, "点击选择K5/K6所在串口")
-    tooltip = Tooltip(eeprom_size_combo, "EEPROM芯片容量，若自动检测正确则无需修改")
-    tooltip = Tooltip(firmware_combo, "固件版本，若自动检测正确则无需修改")
-    tooltip = Tooltip(write_font_k_button, "萝狮虎118版本及后续版本使用，压缩GB2312字库")
-    tooltip = Tooltip(write_font_h_button, "萝狮虎118版本及后续版本使用，全量GB2312字库")
-    tooltip = Tooltip(write_font_old_button, "萝狮虎117版本及之前版本使用，旧字库")
+    Tooltip(serial_port_combo, "点击选择K5/K6所在串口")
+    Tooltip(eeprom_size_combo, "EEPROM芯片容量，若自动检测正确则无需修改")
+    Tooltip(firmware_combo, "固件版本，若自动检测正确则无需修改")
+    Tooltip(write_font_k_button, "萝狮虎118版本及后续版本使用，压缩GB2312字库")
+    Tooltip(write_font_h_button, "萝狮虎118版本及后续版本使用，全量GB2312字库")
+    Tooltip(write_font_old_button, "萝狮虎117版本及之前版本使用，旧字库")
 
     window.mainloop()
 
