@@ -1,15 +1,22 @@
 import sys
 import tkinter as tk
-from tkinter import ttk
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
+import configparser
 from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE, FontType
 from logger import log
 
 from functions import serial_port_combo_postcommand, serial_port_combo_callback, clean_eeprom, write_font, \
     write_font_conf, write_tone_options, auto_write_font
 
-window = tk.Tk()
+window = ttk.Window()
 version = '0.4'
 
+config = configparser.ConfigParser()
+if not config.read('config.ini'):
+    config['Settings'] = {'theme': ''}
+
+style = ttk.Style(config.get('Settings', 'theme'))
 
 class Tooltip:
     def __init__(self, widget, text):
@@ -55,26 +62,45 @@ def make_readonly(event):
     return "break"
 
 
+def on_closing():
+    config['Settings'] = {'theme': style.theme.name}
+    with open('config.ini', 'w') as configfile:
+        config.write(configfile)
+    window.destroy()
+
+
 def main():
     window.title(f'K5/K6 小工具集 v{version}')
     # window.geometry('428x370')
     window.resizable(False, False)
+    window.protocol("WM_DELETE_WINDOW", on_closing)
 
     # 第一行
-    frame1 = tk.Frame(window, padx=10, pady=2)
-    frame1.grid(row=0, column=0, sticky='w')
+    frame1 = tk.Frame(window, padx=4, pady=2)
+    frame1.grid(row=0, column=0, sticky='we')
     label1 = tk.Label(frame1, text=f'K5/K6 小工具集 v{version} (BG4IST - hank9999)')
     label1.pack(side='left')
 
+    theme_combo = ttk.Combobox(frame1, width=10, state="readonly", text=style.theme.name, values=style.theme_names())
+    theme_combo.current(style.theme_names().index(style.theme.name))
+    theme_combo.pack(side='right', padx=(1,3), pady=(5,2))
+    def change_theme(e):
+        t = theme_combo.get()
+        style.theme_use(t)
+        theme_combo.selection_clear()
+    theme_combo.bind("<<ComboboxSelected>>", change_theme)
+    theme_label = tk.Label(frame1, text='主题')
+    theme_label.pack(side='right')
+
     # 第二行
-    frame2 = tk.Frame(window, padx=10, pady=2)
-    frame2.grid(row=1, column=0, sticky='w')
+    frame2 = tk.Frame(window, padx=4, pady=2)
+    frame2.grid(row=1, column=0, sticky='we')
     label2 = tk.Label(frame2, text='当前操作: 无')
     label2.pack(side='left')
 
     # 第三行
-    frame3 = tk.Frame(window, padx=10, pady=2)
-    frame3.grid(row=2, column=0, sticky='w')
+    frame3 = tk.Frame(window, padx=4, pady=2)
+    frame3.grid(row=2, column=0, sticky='we')
     serial_port_label = tk.Label(frame3, text='串口')
     serial_port_label.pack(side='left')
     serial_port_combo = ttk.Combobox(frame3, values=[], width=10, state="readonly")
@@ -95,99 +121,99 @@ def main():
     firmware_combo.pack(side='left', padx=1, pady=2)
 
     # 第四行
-    frame4 = tk.Frame(window, padx=10, pady=2)
-    frame4.grid(row=3, column=0, sticky='w')
+    frame4 = tk.Frame(window, padx=4, pady=2)
+    frame4.grid(row=3, column=0, sticky='we')
     clean_eeprom_button = tk.Button(
         frame4,
         text='清空EEPROM',
-        width=13,
+        width=14,
         command=lambda: clean_eeprom(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    clean_eeprom_button.pack(side='left', padx=3, pady=2)
+    clean_eeprom_button.pack(side='left', padx=3, pady=1, ipady=2)
     write_font_k_button = tk.Button(
         frame4,
         text='写入字库 (K)',
-        width=13,
+        width=14,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
             FontType.GB2312_COMPRESSED
         )
     )
-    write_font_k_button.pack(side='left', padx=3, pady=2)
+    write_font_k_button.pack(side='left', padx=3, pady=1, ipady=2)
     write_font_h_button = tk.Button(
         frame4,
         text='写入字库 (H)',
-        width=13,
+        width=14,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
             FontType.GB2312_UNCOMPRESSED
         )
     )
-    write_font_h_button.pack(side='left', padx=3, pady=2)
+    write_font_h_button.pack(side='left', padx=3, pady=1, ipady=2)
     write_font_old_button = tk.Button(
         frame4,
         text='写入字库 (旧)',
-        width=13,
+        width=14,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
             FontType.LOSEHU_FONT
         )
     )
-    write_font_old_button.pack(side='left', padx=3, pady=2)
+    write_font_old_button.pack(side='left', padx=3, pady=1, ipady=2)
 
     # 第五行
-    frame5 = tk.Frame(window, padx=10, pady=2)
-    frame5.grid(row=4, column=0, sticky='w')
+    frame5 = tk.Frame(window, padx=4, pady=2)
+    frame5.grid(row=4, column=0, sticky='we')
     write_font_conf_button = tk.Button(
         frame5,
         text='写入字库配置',
-        width=13,
+        width=14,
         command=lambda: write_font_conf(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    write_font_conf_button.pack(side='left', padx=3, pady=2)
+    write_font_conf_button.pack(side='left', padx=3, pady=1, ipady=2)
     write_tone_options_button = tk.Button(
         frame5,
         text='写入亚音参数',
-        width=13,
+        width=14,
         command=lambda: write_tone_options(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    write_tone_options_button.pack(side='left', padx=3, pady=2)
+    write_tone_options_button.pack(side='left', padx=3, pady=1, ipady=2)
     auto_write_font_button = tk.Button(
         frame5,
         text='自动写入字库',
-        width=13,
+        width=14,
         command=lambda: auto_write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    auto_write_font_button.pack(side='left', padx=3, pady=2)
+    auto_write_font_button.pack(side='left', padx=3, pady=1, ipady=2)
 
     # 第六行
-    frame6 = tk.Frame(window, padx=10, pady=2)
-    frame6.grid(row=5, column=0, sticky='w')
+    frame6 = tk.Frame(window, padx=4, pady=2)
+    frame6.grid(row=5, column=0, sticky='we')
     textbox = tk.Text(frame6, width=60, height=15)
     textbox.bind("<Key>", make_readonly)  # 防止用户修改
-    textbox.pack(side='left', padx=2, pady=2)
+    textbox.pack(side='left', padx=3, pady=1)
     sys.stdout = TextRedirector(textbox)
 
     # 第七行
-    frame7 = tk.Frame(window, padx=10, pady=2)
-    frame7.grid(row=6, column=0, sticky='w')
-    progress = ttk.Progressbar(frame7, orient='horizontal', length=424, mode='determinate')
-    progress.pack(side='left', padx=2, pady=2)
+    frame7 = tk.Frame(window, padx=4, pady=2)
+    frame7.grid(row=6, column=0, sticky='we')
+    progress = ttk.Progressbar(frame7, orient='horizontal', length=434, mode='determinate')
+    progress.pack(side='left', padx=3, pady=(1,5))
 
     # 布局结束，显示首行日志
     log(f'K5/K6 小工具集 v{version} BG4IST - hank9999\n')
