@@ -2,7 +2,6 @@ import os
 import sys
 import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
 import configparser
 from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE, FontType
 from logger import log
