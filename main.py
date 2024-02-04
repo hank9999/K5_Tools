@@ -61,7 +61,6 @@ class Tooltip(object):
             self.widget.after_cancel(tid)
 
     def showtip(self, event=None):
-        x = y = 0
         x, y, cx, cy = self.widget.bbox('insert')
         x += self.widget.winfo_rootx() + 25
         y += self.widget.winfo_rooty() + 25
