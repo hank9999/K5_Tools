@@ -33,7 +33,7 @@ style = ttk.Style(config.get('Settings', 'theme'))
 class Tooltip(object):
     def __init__(self, widget, text='widget info'):
         self.wait_time = 100  # miliseconds
-        self.wraplength = 180  # pixels
+        self.wrap_length = 180  # pixels
         self.widget = widget
         self.text = text
         self.widget.bind('<Enter>', self.enter)
@@ -74,7 +74,7 @@ class Tooltip(object):
             background='#ffffff',
             relief='solid',
             borderwidth=1,
-            wraplength=self.wraplength,
+            wraplength=self.wrap_length,
         )
         label.pack(ipadx=1)
 
