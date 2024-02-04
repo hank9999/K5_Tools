@@ -1,3 +1,4 @@
+import os
 import sys
 import tkinter as tk
 import ttkbootstrap as ttk
@@ -19,8 +20,12 @@ from functions import (
 window = ttk.Window()
 version = '0.4'
 
+appdata_path = os.getenv('APPDATA') if os.getenv('APPDATA') is not None else ''
+config_dir = os.path.join(appdata_path, 'K5_Tools')
+config_path = os.path.join(config_dir, 'config.ini')
+
 config = configparser.ConfigParser()
-if not config.read('config.ini'):
+if not config.read(config_path):
     config['Settings'] = {'theme': ''}
 
 style = ttk.Style(config.get('Settings', 'theme'))
@@ -101,7 +106,9 @@ def make_readonly(event):
 
 def on_closing():
     config['Settings'] = {'theme': style.theme.name}
-    with open('config.ini', 'w') as configfile:
+    if not os.path.exists(config_dir):
+        os.mkdir(config_dir)
+    with open(config_path, 'w') as configfile:
         config.write(configfile)
     window.destroy()
 
