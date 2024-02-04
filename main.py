@@ -133,7 +133,6 @@ def main():
         frame1,
         width=10,
         state='readonly',
-        text=style.theme.name,
         values=style.theme_names(),
     )
     theme_combo.current(style.theme_names().index(style.theme.name))
