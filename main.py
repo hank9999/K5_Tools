@@ -111,6 +111,12 @@ def on_closing():
     window.destroy()
 
 
+def change_theme(_, theme_combo: ttk.Combobox):
+    t = theme_combo.get()
+    style.theme_use(t)
+    theme_combo.selection_clear()
+
+
 def main():
     window.title(f'K5/K6 小工具集 v{version}')
     # window.geometry('428x370')
@@ -133,12 +139,7 @@ def main():
     theme_combo.current(style.theme_names().index(style.theme.name))
     theme_combo.pack(side='right', padx=(1, 3), pady=(5, 2))
 
-    def change_theme(e):
-        t = theme_combo.get()
-        style.theme_use(t)
-        theme_combo.selection_clear()
-
-    theme_combo.bind('<<ComboboxSelected>>', change_theme)
+    theme_combo.bind('<<ComboboxSelected>>', lambda event: change_theme(event, theme_combo))
     theme_label = tk.Label(frame1, text='主题')
     theme_label.pack(side='right')
 
