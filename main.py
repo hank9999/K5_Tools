@@ -41,7 +41,7 @@ class Tooltip(object):
         self.widget.bind('<Leave>', self.leave)
         self.widget.bind('<ButtonPress>', self.leave)
         self.widget.bind('<ButtonRelease>', self.enter)
-        self.id = None
+        self.tid = None
         self.tw = None
 
     def enter(self, event=None):
@@ -53,13 +53,13 @@ class Tooltip(object):
 
     def schedule(self):
         self.unschedule()
-        self.id = self.widget.after(self.waittime, self.showtip)
+        self.tid = self.widget.after(self.waittime, self.showtip)
 
     def unschedule(self):
-        id = self.id
-        self.id = None
-        if id:
-            self.widget.after_cancel(id)
+        tid = self.tid
+        self.tid = None
+        if tid:
+            self.widget.after_cancel(tid)
 
     def showtip(self, event=None):
         x = y = 0
