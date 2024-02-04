@@ -43,10 +43,10 @@ class Tooltip(object):
         self.tid = None
         self.tw = None
 
-    def enter(self, event=None):
+    def enter(self, _):
         self.schedule()
 
-    def leave(self, event=None):
+    def leave(self, _):
         self.unschedule()
         self.hidetip()
 
@@ -60,7 +60,7 @@ class Tooltip(object):
         if tid:
             self.widget.after_cancel(tid)
 
-    def showtip(self, event=None):
+    def showtip(self):
         x, y, cx, cy = self.widget.bbox('insert')
         x += self.widget.winfo_rootx() + 25
         y += self.widget.winfo_rooty() + 25
@@ -98,7 +98,7 @@ class TextRedirector(tk.Text):
         pass
 
 
-def make_readonly(event):
+def make_readonly(_):
     return 'break'
 
 
