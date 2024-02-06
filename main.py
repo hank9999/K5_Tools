@@ -32,7 +32,7 @@ style = ttk.Style(config.get('Settings', 'theme'))
 
 class Tooltip(object):
     def __init__(self, widget, text='widget info'):
-        self.wait_time = 100  # milliseconds
+        self.wait_time = 500  # milliseconds
         self.wrap_length = 180  # pixels
         self.widget = widget
         self.text = text
