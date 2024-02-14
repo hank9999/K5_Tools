@@ -103,6 +103,9 @@ def read_eeprom(serial_port: serial.Serial, offset: int, length: int):
 
 
 def read_extra_eeprom(serial_port: serial.Serial, offset: int, extra: int, length: int):
+    if extra > 0xFFFF:
+        offset = extra >> 16
+        extra = extra & 0xFFFF
     extra_bytes = struct.pack("<H", extra)
     read_mem = b"\x2b\x05\x08\x00" + \
                struct.pack("<HBB", offset, length, 0) + \
@@ -133,6 +136,9 @@ def write_eeprom(serial_port: serial.Serial, offset: int, data: bytes):
 
 
 def write_extra_eeprom(serial_port: serial.Serial, offset: int, extra: int, data: bytes):
+    if extra > 0xFFFF:
+        offset = extra >> 16
+        extra = extra & 0xFFFF
     extra = struct.pack("<H", extra)
     length = len(data) + len(extra)
 
