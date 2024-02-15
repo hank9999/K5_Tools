@@ -7,13 +7,17 @@ from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE, FontType
 from logger import log
 
 from functions import (
-    serial_port_combo_postcommand,
-    serial_port_combo_callback,
-    clean_eeprom,
-    write_font,
-    write_font_conf,
-    write_tone_options,
-    auto_write_font,
+    serial_port_combo_postcommand, 
+    serial_port_combo_callback, 
+    clean_eeprom, write_font, 
+    write_font_conf, 
+    write_tone_options, 
+    auto_write_font, 
+    read_calibration, 
+    write_calibration, 
+    read_config, 
+    write_config, 
+    write_pinyin_index,
 )
 
 window = ttk.Window()
@@ -178,141 +182,186 @@ def main():
     firmware_combo.pack(side='left', padx=1, pady=2)
 
     # 第四行
-    frame4 = tk.Frame(window, padx=4, pady=2)
-    frame4.grid(row=3, column=0, sticky='we')
+    frame4 = tk.Frame(window, padx=10, pady=2)
+    frame4.grid(row=3, column=0, sticky='w')
+
     clean_eeprom_button = tk.Button(
         frame4,
         text='清空EEPROM',
-        width=14,
+        width=13,
         command=lambda: clean_eeprom(
-            serial_port_combo.get(),
-            window,
-            progress,
-            label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()),
-            FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
-        ),
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+        )
     )
-    clean_eeprom_button.pack(side='left', padx=3, pady=1, ipady=2)
-    write_font_k_button = tk.Button(
+    clean_eeprom_button.pack(side='left', padx=3, pady=2)
+    
+    auto_write_font_button = tk.Button(
         frame4,
-        text='写入字库 (K)',
-        width=14,
-        command=lambda: write_font(
-            serial_port_combo.get(),
-            window,
-            progress,
-            label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()),
-            FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
-            FontType.GB2312_COMPRESSED,
-        ),
+        text='自动写入字库',
+        width=13,
+        command=lambda: auto_write_font(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+        )
     )
-    write_font_k_button.pack(side='left', padx=3, pady=1, ipady=2)
-    write_font_h_button = tk.Button(
-        frame4,
-        text='写入字库 (H)',
-        width=14,
-        command=lambda: write_font(
-            serial_port_combo.get(),
-            window,
-            progress,
-            label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()),
-            FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
-            FontType.GB2312_UNCOMPRESSED,
-        ),
-    )
-    write_font_h_button.pack(side='left', padx=3, pady=1, ipady=2)
-    write_font_old_button = tk.Button(
-        frame4,
-        text='写入字库 (旧)',
-        width=14,
-        command=lambda: write_font(
-            serial_port_combo.get(),
-            window,
-            progress,
-            label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()),
-            FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
-            FontType.LOSEHU_FONT,
-        ),
-    )
-    write_font_old_button.pack(side='left', padx=3, pady=1, ipady=2)
+    auto_write_font_button.pack(side='left', padx=3, pady=2)
 
+    read_calibration_button = tk.Button(
+        frame4,
+        text='读取校准参数',
+        width=13,
+        command=lambda: read_calibration(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+        )
+    )
+    read_calibration_button.pack(side='left', padx=3, pady=2)
+
+    write_calibration_button = tk.Button(
+        frame4,
+        text='写入校准参数',
+        width=13,
+        command=lambda: write_calibration(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+        )
+    )
+    write_calibration_button.pack(side='left', padx=3, pady=2)
     # 第五行
-    frame5 = tk.Frame(window, padx=4, pady=2)
-    frame5.grid(row=4, column=0, sticky='we')
+    frame5 = tk.Frame(window, padx=10, pady=2)
+    frame5.grid(row=4, column=0, sticky='w')
+
+    read_config_button = tk.Button(
+        frame5,
+        text='读取配置参数',
+        width=13,
+        command=lambda: read_config(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+        )
+    )
+    read_config_button.pack(side='left', padx=3, pady=2)
+
+    write_config_button = tk.Button(
+        frame5,
+        text='写入配置参数',
+        width=13,
+        command=lambda: write_config(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+        )
+    )
+    write_config_button.pack(side='left', padx=3, pady=2)
+
     write_font_conf_button = tk.Button(
         frame5,
         text='写入字库配置',
-        width=14,
+        width=13,
         command=lambda: write_font_conf(
-            serial_port_combo.get(),
-            window,
-            progress,
-            label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()),
-            FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
-        ),
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+        )
     )
-    write_font_conf_button.pack(side='left', padx=3, pady=1, ipady=2)
+    write_font_conf_button.pack(side='left', padx=3, pady=2)
+
     write_tone_options_button = tk.Button(
         frame5,
         text='写入亚音参数',
-        width=14,
+        width=13,
         command=lambda: write_tone_options(
-            serial_port_combo.get(),
-            window,
-            progress,
-            label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()),
-            FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
-        ),
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+        )
     )
-    write_tone_options_button.pack(side='left', padx=3, pady=1, ipady=2)
-    auto_write_font_button = tk.Button(
-        frame5,
-        text='自动写入字库',
-        width=14,
-        command=lambda: auto_write_font(
-            serial_port_combo.get(),
-            window,
-            progress,
-            label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()),
-            FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
-        ),
-    )
-    auto_write_font_button.pack(side='left', padx=3, pady=1, ipady=2)
+    write_tone_options_button.pack(side='left', padx=3, pady=2)
 
     # 第六行
-    frame6 = tk.Frame(window, padx=4, pady=2)
-    frame6.grid(row=5, column=0, sticky='we')
-    textbox = tk.Text(frame6, width=60, height=15)
-    textbox.bind('<Key>', make_readonly)  # 防止用户修改
-    textbox.pack(side='left', padx=3, pady=1)
-    sys.stdout = TextRedirector(textbox)
+    frame6 = tk.Frame(window, padx=10, pady=2)
+    frame6.grid(row=5, column=0, sticky='w')
+
+    write_font_k_button = tk.Button(
+        frame6,
+        text='写入字库 (K)',
+        width=13,
+        command=lambda: write_font(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
+            FontType.GB2312_COMPRESSED
+        )
+    )
+    write_font_k_button.pack(side='left', padx=3, pady=2)
+
+    write_font_h_button = tk.Button(
+        frame6,
+        text='写入字库 (H)',
+        width=13,
+        command=lambda: write_font(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
+            FontType.GB2312_UNCOMPRESSED
+        )
+    )
+    write_font_h_button.pack(side='left', padx=3, pady=2)
+
+    write_font_old_button = tk.Button(
+        frame6,
+        text='写入字库 (旧)',
+        width=13,
+        command=lambda: write_font(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
+            FontType.LOSEHU_FONT
+        )
+    )
+    write_font_old_button.pack(side='left', padx=3, pady=2)
+
+    write_pinyin_index_button = tk.Button(
+        frame6,
+        text='写入拼音检索表',
+        width=13,
+        command=lambda: write_pinyin_index(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
+            FontType.GB2312_COMPRESSED
+        )
+    )
+    write_pinyin_index_button.pack(side='left', padx=3, pady=2)    
 
     # 第七行
-    frame7 = tk.Frame(window, padx=4, pady=2)
-    frame7.grid(row=6, column=0, sticky='we')
-    progress = ttk.Progressbar(
-        frame7, orient='horizontal', length=434, mode='determinate'
-    )
-    progress.pack(side='left', padx=3, pady=(1, 5))
+    frame7 = tk.Frame(window, padx=10, pady=2)
+    frame7.grid(row=6, column=0, sticky='w')
+    textbox = tk.Text(frame7, width=60, height=15)
+    textbox.bind("<Key>", make_readonly)  # 防止用户修改
+    textbox.pack(side='left', padx=2, pady=2)
+    sys.stdout = TextRedirector(textbox)
+
+    # 第八行
+    frame8 = tk.Frame(window, padx=10, pady=2)
+    frame8.grid(row=7, column=0, sticky='w')
+    progress = ttk.Progressbar(frame8, orient='horizontal', length=424, mode='determinate')
+    progress.pack(side='left', padx=2, pady=2)
 
     # 布局结束，显示首行日志
     log(f'K5/K6 小工具集 v{version} BG4IST - hank9999\n')
+    log('所有操作均有一定的风险，请确保您已备份校准等文件！！！\n')
 
     # 在此统一设置tooltip
-    Tooltip(serial_port_combo, '点击选择K5/K6所在串口')
-    Tooltip(eeprom_size_combo, 'EEPROM芯片容量，若自动检测正确则无需修改')
-    Tooltip(firmware_combo, '固件版本，若自动检测正确则无需修改')
-    Tooltip(write_font_k_button, '萝狮虎118版本及后续版本使用，压缩GB2312字库')
-    Tooltip(write_font_h_button, '萝狮虎118版本及后续版本使用，全量GB2312字库')
-    Tooltip(write_font_old_button, '萝狮虎117版本及之前版本使用，旧字库')
-
+    Tooltip(serial_port_combo, "点击选择K5/K6所在串口")
+    Tooltip(eeprom_size_combo, "EEPROM芯片容量，若自动检测正确则无需修改")
+    Tooltip(firmware_combo, "固件版本，若自动检测正确则无需修改")
+    Tooltip(clean_eeprom_button, "清除EEPROM中的所有数据")
+    Tooltip(auto_write_font_button, "自动写入机器固件所需字库等文件，如不清楚点那个按钮的情况下，点这个总没错")
+    Tooltip(read_calibration_button, "校准文件包含硬件参数校准信息，必须备份！建议终身保留以备恢复")
+    Tooltip(write_calibration_button, "校准文件只在更换芯片或清除EEPROM数据后写一次即可")
+    Tooltip(read_config_button, "配置文件包含了菜单设置信息、开机字符和信道信息等，如无特别需要可不备份，不同固件的菜单设置可能不通用")
+    Tooltip(write_config_button, "配置文件如无特别需要，可以不写")
+    Tooltip(write_font_conf_button, "写入字库配置，如果不使用自动写入，请在执行完字库写入后点击")
+    Tooltip(write_tone_options_button, "写入亚音参数，如果不使用自动写入，请在执行完字库写入后点击")
+    Tooltip(write_font_k_button, "萝狮虎118版本及后续版本使用，压缩GB2312字库")
+    Tooltip(write_font_h_button, "萝狮虎118版本及后续版本使用，全量GB2312字库")
+    Tooltip(write_font_old_button, "萝狮虎117版本及之前版本使用，旧字库")
+    Tooltip(write_pinyin_index_button, "写入拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
     window.mainloop()
 
 
