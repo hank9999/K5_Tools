@@ -486,6 +486,7 @@ def write_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progre
 
         log('写入校准参数完成')
         status_label['text'] = '当前操作: 无'
+        serial_utils.reset_radio(serial_port)
         messagebox.showinfo('提示', '写入成功！')
 
 
@@ -578,6 +579,7 @@ def write_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar
 
         log('写入配置参数完成')
         status_label['text'] = '当前操作: 无'
+        serial_utils.reset_radio(serial_port)
         messagebox.showinfo('提示', '写入成功！')
 
 
