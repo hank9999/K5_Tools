@@ -119,9 +119,12 @@ def write_data(serial_port: Serial, start_addr: int, data: Union[bytes, List[int
 
         writing_data = bytes(data[:step])
         data = data[step:]
-        if addr - offset * 0x10000 >= 0x10000:
-            offset += 1
-        serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, writing_data)
+        if start_addr + data_len < 0x10000:
+            serial_utils.write_eeprom(serial_port, addr, writing_data)
+        else:
+            if addr - offset * 0x10000 >= 0x10000:
+                offset += 1
+            serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, writing_data)
         addr += step
         current_step += 1
     progress['value'] = 0
