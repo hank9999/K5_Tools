@@ -128,15 +128,15 @@ def write_data(serial_port: Serial, start_addr: int, data: Union[bytes, List[int
     window.update()
 
 
-def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label, eeprom_size: int,
+def clean_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label, eeprom_size: int,
                  firmware_version: int):
     if not messagebox.askquestion('警告', '请悉知，清空EEPROM没有任何用处，是否继续？') == 'yes': return
     if not messagebox.askquestion('警告', '清空EEPROM将会删除EEPROM中的所有数据，请确保你已经备份了EEPROM中的重要数据！') == 'yes':
         return
     log('开始清空EEPROM流程')
-    log('选择的串口: ' + serial_port)
+    log('选择的串口: ' + serial_port_text)
     status_label['text'] = '当前操作: 清空EEPROM'
-    if len(serial_port) == 0:
+    if len(serial_port_text) == 0:
         log('没有选择串口！')
         messagebox.showerror('错误', '没有选择串口！')
         status_label['text'] = '当前操作: 无'
@@ -144,7 +144,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
     if messagebox.askquestion('警告', '该操作会清空EEPROM内所有数据(包括设置、信道、校准、字库等)\n确定清空EEPROM请点击否') == 'yes':
         return
 
-    with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
+    with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
             messagebox.showerror('错误', serial_check.message)
