@@ -459,14 +459,21 @@ def write_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progre
         status_label['text'] = '当前操作: 无'
         return
 
-    root = tk.Tk()
-    root.withdraw()  # 隐藏主窗口
     file_path = filedialog.askopenfilename(filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
 
     if not file_path:
         log('用户取消选择')
         messagebox.showinfo('提示', '用户取消选择')
         return  # 用户取消选择，直接返回
+
+    with open(file_path, 'rb') as fp:
+        calibration_data = fp.read()
+
+    if len(calibration_data) != 512:
+        log('校准参数文件大小错误')
+        messagebox.showerror('错误', '校准参数文件大小错误')
+        status_label['text'] = '当前操作: 无'
+        return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
@@ -475,25 +482,8 @@ def write_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progre
             status_label['text'] = '当前操作: 无'
             return
 
-        total_steps = (0x2000 - 0x1E00) // 128  # 计算总步数
-        current_step = 0
-        addr = 0x1E00  # 起始地址为0x1E00
-        offset = 0x0
+        write_data(serial_port, 0x1E00, calibration_data, progress, window)
 
-        with open(file_path, 'rb') as fp:
-            while addr < 0x1FF0:  # 限制地址范围为0x1E00到0x1FF0
-                if addr - offset * 0x10000 >= 0x10000:
-                    offset += 1
-                write_data = fp.read(128)
-                if not write_data:
-                    break  # 文件读取完毕
-                serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, write_data)
-                addr += 128
-                current_step += 1
-                percent_float = (current_step / total_steps) * 100
-                log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-                progress['value'] = percent_float
-                window.update()
         log('写入校准参数完成')
         status_label['text'] = '当前操作: 无'
         messagebox.showinfo('提示', '写入成功！')
