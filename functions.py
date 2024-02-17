@@ -555,8 +555,9 @@ def write_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar
         status_label['text'] = '当前操作: 无'
         messagebox.showinfo('提示', '写入成功！')
 
+
 def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
-               eeprom_size: int, firmware_version: int, font_type: FontType, is_continue: bool = False):
+                       eeprom_size: int, firmware_version: int, is_continue: bool = False):
     log('开始写入拼音检索表')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入拼音检索表'
@@ -572,7 +573,7 @@ def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
             messagebox.showinfo('未扩容固件', msg)
             status_label['text'] = '当前操作: 无'
             return
-        
+
         if eeprom_size < 2:
             msg = f'EEPROM小于256KiB，无法写入拼音检索表！'
             log(msg)
