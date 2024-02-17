@@ -392,10 +392,11 @@ def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
                 log(f'正在进行 4/{n}: 写入拼音检索表')
                 write_pinyin_index(serial_port_text, window, progress, status_label, eeprom_size, firmware_version,
                                    True)
+                reset_radio(serial_port_text, status_label)
                 messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n拼音检索表\n写入成功！')
             else:
+                reset_radio(serial_port_text, status_label)
                 messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n写入成功！')
-            reset_radio(serial_port_text, status_label)
     else:
         messagebox.showinfo('提示', f'非LOSEHU扩容固件，无法写入')
 
