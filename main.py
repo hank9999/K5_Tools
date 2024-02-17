@@ -212,8 +212,7 @@ def main():
         text='读取校准参数',
         width=14,
         command=lambda: read_calibration(
-            serial_port_combo.get(), window, progress, label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+            serial_port_combo.get(), window, progress, label2
         )
     )
     read_calibration_button.pack(side='left', padx=3, pady=(15, 2))
@@ -223,8 +222,7 @@ def main():
         text='写入校准参数',
         width=14,
         command=lambda: write_calibration(
-            serial_port_combo.get(), window, progress, label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+            serial_port_combo.get(), window, progress, label2
         )
     )
     write_calibration_button.pack(side='left', padx=3, pady=(15, 2))
@@ -237,8 +235,7 @@ def main():
         text='读取配置参数',
         width=14,
         command=lambda: read_config(
-            serial_port_combo.get(), window, progress, label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+            serial_port_combo.get(), window, progress, label2
         )
     )
     read_config_button.pack(side='left', padx=3, pady=2)
@@ -248,8 +245,7 @@ def main():
         text='写入配置参数',
         width=14,
         command=lambda: write_config(
-            serial_port_combo.get(), window, progress, label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+            serial_port_combo.get(), window, progress, label2
         )
     )
     write_config_button.pack(side='left', padx=3, pady=2)
@@ -322,8 +318,7 @@ def main():
         width=14,
         command=lambda: write_pinyin_index(
             serial_port_combo.get(), window, progress, label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
-            FontType.GB2312_COMPRESSED
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
     write_pinyin_index_button.pack(side='left', padx=3, pady=(2, 15))

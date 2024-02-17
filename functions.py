@@ -143,7 +143,7 @@ def clean_eeprom(serial_port: str, window: tk.Tk, progress: ttk.Progressbar, sta
         return
     if messagebox.askquestion('警告', '该操作会清空EEPROM内所有数据(包括设置、信道、校准、字库等)\n确定清空EEPROM请点击否') == 'yes':
         return
-    
+
     with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
@@ -371,16 +371,18 @@ def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
             if n == 4:
                 log(f'正在进行 4/{n}: 写入拼音检索表')
-                write_pinyin_index(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
+                write_pinyin_index(serial_port_text, window, progress, status_label, eeprom_size, firmware_version,
+                                   True)
                 messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n拼音检索表\n写入成功！')
             else:
-                reset_radio(serial_port_text, status_label)
                 messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n写入成功！')
+            reset_radio(serial_port_text, status_label)
     else:
         messagebox.showinfo('提示', f'非LOSEHU扩容固件，无法写入')
 
+
 def read_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-         status_label: tk.Label, eeprom_size: int, firmware_version: int):
+                     status_label: tk.Label):
     log('开始读取校准参数')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 读取校准参数'
@@ -423,8 +425,9 @@ def read_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progres
         status_label['text'] = '当前操作: 无'
         messagebox.showinfo('提示', '保存成功！')
 
+
 def write_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-         status_label: tk.Label, eeprom_size: int, firmware_version: int):
+                      status_label: tk.Label):
     log('开始写入校准参数')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入校准参数'
@@ -467,8 +470,9 @@ def write_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progre
         status_label['text'] = '当前操作: 无'
         messagebox.showinfo('提示', '写入成功！')
 
+
 def read_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-         status_label: tk.Label, eeprom_size: int, firmware_version: int):
+                status_label: tk.Label):
     log('开始读取配置参数')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 读取配置参数'
@@ -511,8 +515,9 @@ def read_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
         status_label['text'] = '当前操作: 无'
         messagebox.showinfo('提示', '保存成功！')
 
+
 def write_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-         status_label: tk.Label, eeprom_size: int, firmware_version: int):
+                 status_label: tk.Label):
     log('开始写入配置参数')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入配置参数'
