@@ -188,46 +188,46 @@ def main():
     clean_eeprom_button = tk.Button(
         frame4,
         text='清空EEPROM',
-        width=13,
+        width=14,
         command=lambda: clean_eeprom(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    clean_eeprom_button.pack(side='left', padx=3, pady=2)
-    
+    clean_eeprom_button.pack(side='left', padx=3, pady=(15, 2))
+
     auto_write_font_button = tk.Button(
         frame4,
         text='自动写入字库',
-        width=13,
+        width=14,
         command=lambda: auto_write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    auto_write_font_button.pack(side='left', padx=3, pady=2)
+    auto_write_font_button.pack(side='left', padx=3, pady=(15, 2))
 
     read_calibration_button = tk.Button(
         frame4,
         text='读取校准参数',
-        width=13,
+        width=14,
         command=lambda: read_calibration(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    read_calibration_button.pack(side='left', padx=3, pady=2)
+    read_calibration_button.pack(side='left', padx=3, pady=(15, 2))
 
     write_calibration_button = tk.Button(
         frame4,
         text='写入校准参数',
-        width=13,
+        width=14,
         command=lambda: write_calibration(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    write_calibration_button.pack(side='left', padx=3, pady=2)
+    write_calibration_button.pack(side='left', padx=3, pady=(15, 2))
     # 第五行
     frame5 = tk.Frame(window, padx=10, pady=2)
     frame5.grid(row=4, column=0, sticky='w')
@@ -235,7 +235,7 @@ def main():
     read_config_button = tk.Button(
         frame5,
         text='读取配置参数',
-        width=13,
+        width=14,
         command=lambda: read_config(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
@@ -246,7 +246,7 @@ def main():
     write_config_button = tk.Button(
         frame5,
         text='写入配置参数',
-        width=13,
+        width=14,
         command=lambda: write_config(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
@@ -257,7 +257,7 @@ def main():
     write_font_conf_button = tk.Button(
         frame5,
         text='写入字库配置',
-        width=13,
+        width=14,
         command=lambda: write_font_conf(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
@@ -268,7 +268,7 @@ def main():
     write_tone_options_button = tk.Button(
         frame5,
         text='写入亚音参数',
-        width=13,
+        width=14,
         command=lambda: write_tone_options(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
@@ -283,50 +283,50 @@ def main():
     write_font_k_button = tk.Button(
         frame6,
         text='写入字库 (K)',
-        width=13,
+        width=14,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
             FontType.GB2312_COMPRESSED
         )
     )
-    write_font_k_button.pack(side='left', padx=3, pady=2)
+    write_font_k_button.pack(side='left', padx=3, pady=(2, 15))
 
     write_font_h_button = tk.Button(
         frame6,
         text='写入字库 (H)',
-        width=13,
+        width=14,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
             FontType.GB2312_UNCOMPRESSED
         )
     )
-    write_font_h_button.pack(side='left', padx=3, pady=2)
+    write_font_h_button.pack(side='left', padx=3, pady=(2, 15))
 
     write_font_old_button = tk.Button(
         frame6,
         text='写入字库 (旧)',
-        width=13,
+        width=14,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
             FontType.LOSEHU_FONT
         )
     )
-    write_font_old_button.pack(side='left', padx=3, pady=2)
+    write_font_old_button.pack(side='left', padx=3, pady=(2, 15))
 
     write_pinyin_index_button = tk.Button(
         frame6,
         text='写入拼音检索表',
-        width=13,
+        width=14,
         command=lambda: write_pinyin_index(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
             FontType.GB2312_COMPRESSED
         )
     )
-    write_pinyin_index_button.pack(side='left', padx=3, pady=2)    
+    write_pinyin_index_button.pack(side='left', padx=3, pady=(2, 15))
 
     # 第七行
     frame7 = tk.Frame(window, padx=10, pady=2)
@@ -339,8 +339,8 @@ def main():
     # 第八行
     frame8 = tk.Frame(window, padx=10, pady=2)
     frame8.grid(row=7, column=0, sticky='w')
-    progress = ttk.Progressbar(frame8, orient='horizontal', length=424, mode='determinate')
-    progress.pack(side='left', padx=2, pady=2)
+    progress = ttk.Progressbar(frame8, orient='horizontal', length=434, mode='determinate')
+    progress.pack(side='left', padx=2, pady=(2, 10))
 
     # 布局结束，显示首行日志
     log(f'K5/K6 小工具集 v{version} BG4IST - hank9999\n')
