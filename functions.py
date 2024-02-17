@@ -1,8 +1,6 @@
 import dataclasses
 import random
 import struct
-from tabnanny import verbose
-import time
 from tkinter import filedialog
 from typing import Union, List
 
