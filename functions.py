@@ -510,13 +510,22 @@ def read_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
         total_steps = (0x1D00 - 0x0000) // 128  # 计算总步数
         current_step = 0
         addr = 0x0000  # 起始地址为0x0000
-        offset = 0x0
 
-        root = tk.Tk()
-        root.withdraw()  # 隐藏主窗口
+        config_data = b''
+
+        while addr < 0x1D00:  # 限制地址范围为0x1E00到0x1FF0
+            read_data = serial_utils.read_eeprom(serial_port, addr, 128)
+            config_data += read_data
+            addr += 128
+            current_step += 1
+            percent_float = (current_step / total_steps) * 100
+            log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
+            progress['value'] = percent_float
+            window.update()
 
         # 弹出文件保存对话框
-        file_path = filedialog.asksaveasfilename(defaultextension=".bin",filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
+        file_path = filedialog.asksaveasfilename(defaultextension=".bin",
+                                                 filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
 
         if not file_path:
             log('用户取消保存')
@@ -524,17 +533,8 @@ def read_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
             return  # 用户取消保存，直接返回
 
         with open(file_path, 'wb') as fp:
-            while addr < 0x1D00:  # 限制地址范围为0x0000到0x1D00
-                if addr - offset * 0x10000 >= 0x10000:
-                    offset += 1
-                read_write_data = serial_utils.read_extra_eeprom(serial_port, offset, addr - offset * 0x10000, 128)
-                fp.write(read_write_data)
-                addr += 128
-                current_step += 1
-                percent_float = (current_step / total_steps) * 100
-                log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-                progress['value'] = percent_float
-                window.update()
+            fp.write(config_data)
+
         log('读取配置参数完成')
         status_label['text'] = '当前操作: 无'
         messagebox.showinfo('提示', '保存成功！')
@@ -551,14 +551,21 @@ def write_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar
         status_label['text'] = '当前操作: 无'
         return
 
-    root = tk.Tk()
-    root.withdraw()  # 隐藏主窗口
     file_path = filedialog.askopenfilename(filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
 
     if not file_path:
         log('用户取消选择')
         messagebox.showinfo('提示', '用户取消选择')
         return  # 用户取消选择，直接返回
+
+    with open(file_path, 'rb') as fp:
+        calibration_data = fp.read()
+
+    if len(calibration_data) != 0x1d00:
+        log('配置参数文件大小错误')
+        messagebox.showerror('错误', '配置参数文件大小错误')
+        status_label['text'] = '当前操作: 无'
+        return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
@@ -567,25 +574,8 @@ def write_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar
             status_label['text'] = '当前操作: 无'
             return
 
-        total_steps = (0x1D00 - 0x0000) // 128  # 计算总步数
-        current_step = 0
-        addr = 0x0000  # 起始地址为0x0000
-        offset = 0x0
+        write_data(serial_port, 0x0, calibration_data, progress, window)
 
-        with open(file_path, 'rb') as fp:
-            while addr < 0x1D00:  # 限制地址范围为0x0000到0x1D00
-                if addr - offset * 0x10000 >= 0x10000:
-                    offset += 1
-                write_data = fp.read(128)
-                if not write_data:
-                    break  # 文件读取完毕
-                serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, write_data)
-                addr += 128
-                current_step += 1
-                percent_float = (current_step / total_steps) * 100
-                log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-                progress['value'] = percent_float
-                window.update()
         log('写入配置参数完成')
         status_label['text'] = '当前操作: 无'
         messagebox.showinfo('提示', '写入成功！')
