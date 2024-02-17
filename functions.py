@@ -581,9 +581,6 @@ def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
             return
         pinyin_data = font.PINYIN
         addr = 0x20000
-        total_steps = (0x2511B - 0x20000) // 128  # 计算总步数
-        current_step = 0
-        offset = 0x0
         write_data(serial_port, addr, pinyin_data, progress, window)
         log('写入拼音检索表成功！')
         if not is_continue:
