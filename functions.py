@@ -605,6 +605,21 @@ def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
         messagebox.showerror('错误', '没有选择串口！')
         status_label['text'] = '当前操作: 无'
         return
+
+    if firmware_version != 1:
+        msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入拼音检索表！'
+        log(msg)
+        messagebox.showinfo('未扩容固件', msg)
+        status_label['text'] = '当前操作: 无'
+        return
+
+    if eeprom_size < 2:
+        msg = f'EEPROM小于256KiB，无法写入拼音检索表！'
+        log(msg)
+        messagebox.showinfo('EEPROM大小不足', msg)
+        status_label['text'] = '当前操作: 无'
+        return
+
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
@@ -612,19 +627,6 @@ def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
             status_label['text'] = '当前操作: 无'
             return
 
-        if firmware_version != 1:
-            msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入拼音检索表！'
-            log(msg)
-            messagebox.showinfo('未扩容固件', msg)
-            status_label['text'] = '当前操作: 无'
-            return
-
-        if eeprom_size < 2:
-            msg = f'EEPROM小于256KiB，无法写入拼音检索表！'
-            log(msg)
-            messagebox.showinfo('EEPROM大小不足', msg)
-            status_label['text'] = '当前操作: 无'
-            return
         pinyin_data = font.PINYIN
         addr = 0x20000
         write_data(serial_port, addr, pinyin_data, progress, window)
