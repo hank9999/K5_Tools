@@ -333,6 +333,11 @@ def reset_radio(serial_port_text: str, status_label):
     status_label['text'] = '当前操作: 复位设备'
     log('正在复位设备')
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
+        serial_check = check_serial_port(serial_port, False)
+        if not serial_check.status:
+            messagebox.showerror('错误', serial_check.message)
+            status_label['text'] = '当前操作: 无'
+            return
         serial_utils.reset_radio(serial_port)
     status_label['text'] = '当前操作: 无'
 
@@ -342,6 +347,11 @@ def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
                     status_label: tk.Label, eeprom_size: int, firmware_version: int):
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         result = check_serial_port(serial_port, False)
+        if not result.status:
+            messagebox.showerror('错误', result.message)
+            status_label['text'] = '当前操作: 无'
+            return
+
         version = result.raw_version_text
         if version.startswith('LOSEHU'):
             version_number = int(version[6:9])
@@ -393,6 +403,12 @@ def read_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progres
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
+        serial_check = check_serial_port(serial_port, False)
+        if not serial_check.status:
+            messagebox.showerror('错误', serial_check.message)
+            status_label['text'] = '当前操作: 无'
+            return
+
         total_steps = (0x2000 - 0x1E00) // 128  # 计算总步数
         current_step = 0
         addr = 0x1E00  # 起始地址为0x1E00
@@ -447,6 +463,12 @@ def write_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progre
         return  # 用户取消选择，直接返回
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
+        serial_check = check_serial_port(serial_port, False)
+        if not serial_check.status:
+            messagebox.showerror('错误', serial_check.message)
+            status_label['text'] = '当前操作: 无'
+            return
+
         total_steps = (0x2000 - 0x1E00) // 128  # 计算总步数
         current_step = 0
         addr = 0x1E00  # 起始地址为0x1E00
@@ -483,6 +505,12 @@ def read_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
+        serial_check = check_serial_port(serial_port, False)
+        if not serial_check.status:
+            messagebox.showerror('错误', serial_check.message)
+            status_label['text'] = '当前操作: 无'
+            return
+
         total_steps = (0x1D00 - 0x0000) // 128  # 计算总步数
         current_step = 0
         addr = 0x0000  # 起始地址为0x0000
@@ -537,6 +565,12 @@ def write_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar
         return  # 用户取消选择，直接返回
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
+        serial_check = check_serial_port(serial_port, False)
+        if not serial_check.status:
+            messagebox.showerror('错误', serial_check.message)
+            status_label['text'] = '当前操作: 无'
+            return
+
         total_steps = (0x1D00 - 0x0000) // 128  # 计算总步数
         current_step = 0
         addr = 0x0000  # 起始地址为0x0000
@@ -572,6 +606,12 @@ def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
         status_label['text'] = '当前操作: 无'
         return
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
+        serial_check = check_serial_port(serial_port, False)
+        if not serial_check.status:
+            messagebox.showerror('错误', serial_check.message)
+            status_label['text'] = '当前操作: 无'
+            return
+
         if firmware_version != 1:
             msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入拼音检索表！'
             log(msg)
