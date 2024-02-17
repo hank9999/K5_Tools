@@ -587,8 +587,8 @@ def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
         write_data(serial_port, addr, pinyin_data, progress, window)
         progress['value'] = 0
         window.update()
-    log('写入拼音检索表成功！')
-    status_label['text'] = '当前操作: 无'
-    if not is_continue:
-        reset_radio(serial_port_text,status_label)
-        messagebox.showinfo('提示', '写入拼音检索表成功！')
+        log('写入拼音检索表成功！')
+        if not is_continue:
+            reset_radio(serial_port_text, status_label)
+            messagebox.showinfo('提示', '写入拼音检索表成功！')
+        status_label['text'] = '当前操作: 无'
