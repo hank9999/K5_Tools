@@ -363,7 +363,10 @@ def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             version_number = int(version[6:9])
             version_code = version[-1]
             if version_code == 'H':
-                font_type = FontType.GB2312_COMPRESSED
+                if version_number == 118:
+                    font_type = FontType.GB2312_UNCOMPRESSED
+                else:
+                    font_type = FontType.GB2312_COMPRESSED
             elif version_code == 'K':
                 if version_number < 118:
                     font_type = FontType.LOSEHU_FONT

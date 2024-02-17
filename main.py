@@ -276,9 +276,9 @@ def main():
     frame6 = tk.Frame(window, padx=10, pady=2)
     frame6.grid(row=5, column=0, sticky='w')
 
-    write_font_k_button = tk.Button(
+    write_font_compressed_button = tk.Button(
         frame6,
-        text='写入字库 (K)',
+        text='写入压缩字库',
         width=14,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
@@ -286,11 +286,11 @@ def main():
             FontType.GB2312_COMPRESSED
         )
     )
-    write_font_k_button.pack(side='left', padx=3, pady=(2, 15))
+    write_font_compressed_button.pack(side='left', padx=3, pady=(2, 15))
 
-    write_font_h_button = tk.Button(
+    write_font_uncompressed_button = tk.Button(
         frame6,
-        text='写入字库 (H)',
+        text='写入全量字库',
         width=14,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
@@ -298,7 +298,7 @@ def main():
             FontType.GB2312_UNCOMPRESSED
         )
     )
-    write_font_h_button.pack(side='left', padx=3, pady=(2, 15))
+    write_font_uncompressed_button.pack(side='left', padx=3, pady=(2, 15))
 
     write_font_old_button = tk.Button(
         frame6,
@@ -353,8 +353,8 @@ def main():
     Tooltip(write_config_button, "配置文件如无特别需要，可以不写")
     Tooltip(write_font_conf_button, "写入字库配置，如果不使用自动写入，请在执行完字库写入后点击")
     Tooltip(write_tone_options_button, "写入亚音参数，如果不使用自动写入，请在执行完字库写入后点击")
-    Tooltip(write_font_k_button, "萝狮虎118版本及后续版本使用，压缩GB2312字库")
-    Tooltip(write_font_h_button, "萝狮虎118版本及后续版本使用，全量GB2312字库")
+    Tooltip(write_font_compressed_button, "压缩GB2312字库，萝狮虎118K、123H版本及后续版本使用")
+    Tooltip(write_font_uncompressed_button, "全量GB2312字库，用于萝狮虎118H版本，后续未使用")
     Tooltip(write_font_old_button, "萝狮虎117版本及之前版本使用，旧字库")
     Tooltip(write_pinyin_index_button, "写入拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
     window.mainloop()
