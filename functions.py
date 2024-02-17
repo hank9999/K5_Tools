@@ -415,13 +415,22 @@ def read_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progres
         total_steps = (0x2000 - 0x1E00) // 128  # 计算总步数
         current_step = 0
         addr = 0x1E00  # 起始地址为0x1E00
-        offset = 0x0
 
-        root = tk.Tk()
-        root.withdraw()  # 隐藏主窗口
+        calibration_data = b''
+
+        while addr < 0x2000:  # 限制地址范围为0x1E00到0x1FF0
+            read_data = serial_utils.read_eeprom(serial_port, addr, 128)
+            calibration_data += read_data
+            addr += 128
+            current_step += 1
+            percent_float = (current_step / total_steps) * 100
+            log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
+            progress['value'] = percent_float
+            window.update()
 
         # 弹出文件保存对话框
-        file_path = filedialog.asksaveasfilename(defaultextension=".bin",filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
+        file_path = filedialog.asksaveasfilename(defaultextension=".bin",
+                                                 filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
 
         if not file_path:
             log('用户取消保存')
@@ -429,17 +438,8 @@ def read_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progres
             return  # 用户取消保存，直接返回
 
         with open(file_path, 'wb') as fp:
-            while addr < 0x1FF0:  # 限制地址范围为0x1E00到0x1FF0
-                if addr - offset * 0x10000 >= 0x10000:
-                    offset += 1
-                read_write_data = serial_utils.read_extra_eeprom(serial_port, offset, addr - offset * 0x10000, 128)
-                fp.write(read_write_data)
-                addr += 128
-                current_step += 1
-                percent_float = (current_step / total_steps) * 100
-                log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-                progress['value'] = percent_float
-                window.update()
+            fp.write(calibration_data)
+
         log('读取校准参数完成')
         status_label['text'] = '当前操作: 无'
         messagebox.showinfo('提示', '保存成功！')
