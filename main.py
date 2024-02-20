@@ -18,7 +18,7 @@ from functions import (
     read_config, 
     write_config, 
     write_pinyin_index,
-    TODO
+    todo_function
 )
 
 window = ttk.Window()
@@ -333,35 +333,34 @@ def main():
         width=14,
         command=lambda: write_pinyin_index(
             serial_port_combo.get(), window, progress, label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
-            True
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), True
         )
     )
     write_pinyin_new_index_button.pack(side='left', padx=3, pady=(2, 15))
 
-    TODO_button = tk.Button(
+    todo_button = tk.Button(
         frame7,
         text='敬请期待',
         width=14,
-        command=lambda: TODO()
+        command=todo_function
     )
-    TODO_button.pack(side='left', padx=3, pady=(2, 15))
+    todo_button.pack(side='left', padx=3, pady=(2, 15))
     
-    TODO_button = tk.Button(
+    todo_button = tk.Button(
         frame7,
         text='敬请期待',
         width=14,
-        command=lambda: TODO()
+        command=todo_function
     )
-    TODO_button.pack(side='left', padx=3, pady=(2, 15))
+    todo_button.pack(side='left', padx=3, pady=(2, 15))
     
-    TODO_button = tk.Button(
+    todo_button = tk.Button(
         frame7,
         text='敬请期待',
         width=14,
-        command=lambda: TODO()
+        command=todo_function
     )
-    TODO_button.pack(side='left', padx=3, pady=(2, 15))
+    todo_button.pack(side='left', padx=3, pady=(2, 15))
     # 第八行
     frame8 = tk.Frame(window, padx=10, pady=2)
     frame8.grid(row=7, column=0, sticky='w')
