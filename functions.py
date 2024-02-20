@@ -35,6 +35,11 @@ def serial_port_combo_postcommand(combo: ttk.Combobox):
     combo['values'] = get_all_serial_port()
 
 
+def todo_function():
+    messagebox.showinfo('提示', '敬请期待')
+    return
+
+
 def check_eeprom_writeable(serial_port: serial.Serial, offset: int, extra: int) -> bool:
     # 读取原始数据
     read_data = serial_utils.read_extra_eeprom(serial_port, offset, extra, 8)
@@ -390,8 +395,12 @@ def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
             if n == 4:
                 log(f'正在进行 4/{n}: 写入拼音检索表')
-                write_pinyin_index(serial_port_text, window, progress, status_label, eeprom_size, firmware_version,
-                                   True)
+                if version_number == 123:
+                    write_pinyin_index(serial_port_text, window, progress, status_label, eeprom_size, firmware_version,
+                                       True)
+                elif version_number > 123:
+                    write_pinyin_index(serial_port_text, window, progress, status_label, eeprom_size, firmware_version,
+                                       True, True)
                 reset_radio(serial_port_text, status_label)
                 messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n拼音检索表\n写入成功！')
             else:
@@ -588,7 +597,7 @@ def write_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar
 
 
 def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
-                       eeprom_size: int, firmware_version: int, is_continue: bool = False):
+                       eeprom_size: int, firmware_version: int, is_continue: bool = False, new: bool = False):
     log('开始写入拼音检索表')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入拼音检索表'
@@ -619,7 +628,7 @@ def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
             status_label['text'] = '当前操作: 无'
             return
 
-        pinyin_data = font.PINYIN
+        pinyin_data = font.PINYIN_NEW if new else font.PINYIN_OLD
         addr = 0x20000
         write_data(serial_port, addr, pinyin_data, progress, window)
         log('写入拼音检索表成功！')

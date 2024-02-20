@@ -18,6 +18,7 @@ from functions import (
     read_config, 
     write_config, 
     write_pinyin_index,
+    todo_function
 )
 
 window = ttk.Window()
@@ -286,7 +287,7 @@ def main():
             FontType.GB2312_COMPRESSED
         )
     )
-    write_font_compressed_button.pack(side='left', padx=3, pady=(2, 15))
+    write_font_compressed_button.pack(side='left', padx=3, pady=2)
 
     write_font_uncompressed_button = tk.Button(
         frame6,
@@ -298,7 +299,7 @@ def main():
             FontType.GB2312_UNCOMPRESSED
         )
     )
-    write_font_uncompressed_button.pack(side='left', padx=3, pady=(2, 15))
+    write_font_uncompressed_button.pack(side='left', padx=3, pady=2)
 
     write_font_old_button = tk.Button(
         frame6,
@@ -310,31 +311,68 @@ def main():
             FontType.LOSEHU_FONT
         )
     )
-    write_font_old_button.pack(side='left', padx=3, pady=(2, 15))
+    write_font_old_button.pack(side='left', padx=3, pady=2)
 
-    write_pinyin_index_button = tk.Button(
+    write_pinyin_old_index_button = tk.Button(
         frame6,
-        text='写入拼音检索表',
+        text='写入拼音表（旧）',
         width=14,
         command=lambda: write_pinyin_index(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    write_pinyin_index_button.pack(side='left', padx=3, pady=(2, 15))
+    write_pinyin_old_index_button.pack(side='left', padx=3, pady=2)
 
     # 第七行
     frame7 = tk.Frame(window, padx=10, pady=2)
     frame7.grid(row=6, column=0, sticky='w')
-    textbox = tk.Text(frame7, width=60, height=15)
+    write_pinyin_new_index_button = tk.Button(
+        frame7,
+        text='写入拼音表（新）',
+        width=14,
+        command=lambda: write_pinyin_index(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), True
+        )
+    )
+    write_pinyin_new_index_button.pack(side='left', padx=3, pady=(2, 15))
+
+    todo_button = tk.Button(
+        frame7,
+        text='敬请期待',
+        width=14,
+        command=todo_function
+    )
+    todo_button.pack(side='left', padx=3, pady=(2, 15))
+    
+    todo_button = tk.Button(
+        frame7,
+        text='敬请期待',
+        width=14,
+        command=todo_function
+    )
+    todo_button.pack(side='left', padx=3, pady=(2, 15))
+    
+    todo_button = tk.Button(
+        frame7,
+        text='敬请期待',
+        width=14,
+        command=todo_function
+    )
+    todo_button.pack(side='left', padx=3, pady=(2, 15))
+    # 第八行
+    frame8 = tk.Frame(window, padx=10, pady=2)
+    frame8.grid(row=7, column=0, sticky='w')
+    textbox = tk.Text(frame8, width=60, height=15)
     textbox.bind("<Key>", make_readonly)  # 防止用户修改
     textbox.pack(side='left', padx=2, pady=2)
     sys.stdout = TextRedirector(textbox)
 
-    # 第八行
-    frame8 = tk.Frame(window, padx=10, pady=2)
-    frame8.grid(row=7, column=0, sticky='w')
-    progress = ttk.Progressbar(frame8, orient='horizontal', length=434, mode='determinate')
+    # 第九行
+    frame9 = tk.Frame(window, padx=10, pady=2)
+    frame9.grid(row=8, column=0, sticky='w')
+    progress = ttk.Progressbar(frame9, orient='horizontal', length=434, mode='determinate')
     progress.pack(side='left', padx=2, pady=(2, 10))
 
     # 布局结束，显示首行日志
@@ -356,7 +394,8 @@ def main():
     Tooltip(write_font_compressed_button, "压缩GB2312字库，萝狮虎118K、123H版本及后续版本使用")
     Tooltip(write_font_uncompressed_button, "全量GB2312字库，用于萝狮虎118H版本，后续未使用")
     Tooltip(write_font_old_button, "萝狮虎117版本及之前版本使用，旧字库")
-    Tooltip(write_pinyin_index_button, "写入拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
+    Tooltip(write_pinyin_old_index_button, "123版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
+    Tooltip(write_pinyin_new_index_button, "124及以上版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
     window.mainloop()
 
 
