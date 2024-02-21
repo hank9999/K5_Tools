@@ -22,7 +22,7 @@ from functions import (
 )
 
 window = ttk.Window()
-version = '0.4'
+version = '0.5'
 
 appdata_path = os.getenv('APPDATA') if os.getenv('APPDATA') is not None else ''
 config_dir = os.path.join(appdata_path, 'K5_Tools')

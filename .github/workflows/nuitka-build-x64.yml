@@ -1,0 +1,69 @@
+name: Multi-platform x64 Build with Python 3.11
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.8' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+          cache: 'pip'
+          cache-dependency-path: |
+            **/requirements*.txt
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Nuitka Build x64
+        uses: Nuitka/Nuitka-Action@main
+        with:
+          nuitka-version: main
+          script-name: main.py
+          onefile: true
+          standalone: true
+          enable-plugins: tk-inter
+          disable-console: true
+          macos-create-app-bundle: true
+          macos-signed-app-name: com.github.hank9999.k5-tools
+          macos-app-mode: gui
+
+      - name: Rename Artifacts
+        if: runner.os == 'Windows'
+        run: |
+          move build\main.exe build\K5_Tools_Win10_x64.exe
+
+      - name: Rename Artifacts
+        if: runner.os == 'Linux'
+        run: |
+          mv build/main.bin build/K5_Tools_Linux.bin
+
+      - name: Rename Artifacts
+        if: runner.os == 'macOS'
+        run: |
+          mv build/main.app build/K5_Tools_macOS.app
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ runner.os }} Build
+          path: |
+            build/*.exe
+            build/*.bin
+            build/*.app/**/*

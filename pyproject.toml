@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "k5-tools"
-version = "0.4"
+version = "0.5"
 description = ""
 authors = ["hank9999 <hank9999@qq.com>"]
 readme = "README.md"
