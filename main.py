@@ -129,7 +129,7 @@ def main():
     window.protocol('WM_DELETE_WINDOW', on_closing)
 
     # 第一行
-    frame1 = tk.Frame(window, padx=4, pady=2)
+    frame1 = tk.Frame(window, padx=10, pady=2)
     frame1.grid(row=0, column=0, sticky='we')
     label1 = tk.Label(frame1, text=f'K5/K6 小工具集 v{version} (BG4IST - hank9999)')
     label1.pack(side='left')
@@ -141,20 +141,20 @@ def main():
         values=style.theme_names(),
     )
     theme_combo.current(style.theme_names().index(style.theme.name))
-    theme_combo.pack(side='right', padx=(1, 3), pady=(5, 2))
+    theme_combo.pack(side='right', padx=(1, 3), pady=2)
 
     theme_combo.bind('<<ComboboxSelected>>', lambda event: change_theme(event, theme_combo))
     theme_label = tk.Label(frame1, text='主题')
     theme_label.pack(side='right')
 
     # 第二行
-    frame2 = tk.Frame(window, padx=4, pady=2)
+    frame2 = tk.Frame(window, padx=10, pady=2)
     frame2.grid(row=1, column=0, sticky='we')
     label2 = tk.Label(frame2, text='当前操作: 无')
     label2.pack(side='left')
 
     # 第三行
-    frame3 = tk.Frame(window, padx=4, pady=2)
+    frame3 = tk.Frame(window, padx=10, pady=2)
     frame3.grid(row=2, column=0, sticky='we')
     serial_port_label = tk.Label(frame3, text='串口')
     serial_port_label.pack(side='left')
@@ -361,19 +361,20 @@ def main():
         command=todo_function
     )
     todo_button.pack(side='left', padx=3, pady=(2, 15))
+    
     # 第八行
     frame8 = tk.Frame(window, padx=10, pady=2)
     frame8.grid(row=7, column=0, sticky='w')
     textbox = tk.Text(frame8, width=60, height=15)
     textbox.bind("<Key>", make_readonly)  # 防止用户修改
-    textbox.pack(side='left', padx=2, pady=2)
+    textbox.pack(side='left', padx=(3, 2), pady=2)
     sys.stdout = TextRedirector(textbox)
 
     # 第九行
     frame9 = tk.Frame(window, padx=10, pady=2)
     frame9.grid(row=8, column=0, sticky='w')
     progress = ttk.Progressbar(frame9, orient='horizontal', length=434, mode='determinate')
-    progress.pack(side='left', padx=2, pady=(2, 10))
+    progress.pack(side='left', padx=(3, 2), pady=(2, 10))
 
     # 布局结束，显示首行日志
     log(f'K5/K6 小工具集 v{version} BG4IST - hank9999\n')
