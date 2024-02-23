@@ -5,6 +5,7 @@ import ttkbootstrap as ttk
 import configparser
 from const_vars import *
 from logger import log
+from translations import *
 
 from functions import (
     serial_port_combo_postcommand, 
@@ -142,7 +143,7 @@ def change_language(_, language_combo: ttk.Combobox):
 
 
 def main():
-    window.title(f'K5/K6 小工具集 v{version}')
+    window.title(f"{translations[language]['tool_name']} v{version}")
     # window.geometry('428x370')
     window.resizable(False, False)
     window.protocol('WM_DELETE_WINDOW', on_closing)
@@ -150,7 +151,7 @@ def main():
     # 第一行
     frame1 = tk.Frame(window, padx=10, pady=2)
     frame1.grid(row=0, column=0, sticky='we')
-    label1 = tk.Label(frame1, text=f'K5/K6 小工具集 v{version} (BG4IST - hank9999)')
+    label1 = tk.Label(frame1, text=f"{translations[language]['tool_name']} v{version} (BG4IST - hank9999)")
     label1.pack(side='left')
 
     theme_combo = ttk.Combobox(
@@ -162,13 +163,13 @@ def main():
     theme_combo.current(style.theme_names().index(style.theme.name))
     theme_combo.pack(side='right', padx=(1, 3), pady=2)
     theme_combo.bind('<<ComboboxSelected>>', lambda event: change_theme(event, theme_combo))
-    theme_label = tk.Label(frame1, text='主题')
+    theme_label = tk.Label(frame1, text=translations[language]['theme_label_text'])
     theme_label.pack(side='right')
 
     # 第二行
     frame2 = tk.Frame(window, padx=10, pady=2)
     frame2.grid(row=1, column=0, sticky='we')
-    label2 = tk.Label(frame2, text='当前操作: 无')
+    label2 = tk.Label(frame2, text=translations[language]['now_state_none_text'])
     label2.pack(side='left')
 
     language_combo = ttk.Combobox(
@@ -186,7 +187,7 @@ def main():
     # 第三行
     frame3 = tk.Frame(window, padx=10, pady=2)
     frame3.grid(row=2, column=0, sticky='we')
-    serial_port_label = tk.Label(frame3, text='串口')
+    serial_port_label = tk.Label(frame3, text=translations[language]['serial_port_text'])
     serial_port_label.pack(side='left')
     serial_port_combo = ttk.Combobox(frame3, values=[], width=10, state='readonly')
     serial_port_combo.pack(side='left', padx=1, pady=2)
@@ -205,7 +206,7 @@ def main():
         frame3, values=EEPROM_SIZE, width=10, state='readonly'
     )
     eeprom_size_combo.pack(side='left', padx=1, pady=2)
-    firmware_label = tk.Label(frame3, text='固件版本')
+    firmware_label = tk.Label(frame3, text=translations[language]['firmware_label_text'])
     firmware_label.pack(side='left')
     firmware_combo = ttk.Combobox(
         frame3, values=FIRMWARE_VERSION_LIST, width=10, state='readonly'
@@ -218,7 +219,7 @@ def main():
 
     clean_eeprom_button = tk.Button(
         frame4,
-        text='清空EEPROM',
+        text=translations[language]['clean_eeprom_button_text'],
         width=14,
         command=lambda: clean_eeprom(
             serial_port_combo.get(), window, progress, label2,
@@ -229,7 +230,7 @@ def main():
 
     auto_write_font_button = tk.Button(
         frame4,
-        text='自动写入字库',
+        text=translations[language]['auto_write_font_button_text'],
         width=14,
         command=lambda: auto_write_font(
             serial_port_combo.get(), window, progress, label2,
@@ -240,7 +241,7 @@ def main():
 
     read_calibration_button = tk.Button(
         frame4,
-        text='读取校准参数',
+        text=translations[language]['read_calibration_button_text'],
         width=14,
         command=lambda: read_calibration(
             serial_port_combo.get(), window, progress, label2
@@ -250,7 +251,7 @@ def main():
 
     write_calibration_button = tk.Button(
         frame4,
-        text='写入校准参数',
+        text=translations[language]['write_calibration_button_text'],
         width=14,
         command=lambda: write_calibration(
             serial_port_combo.get(), window, progress, label2
@@ -263,7 +264,7 @@ def main():
 
     read_config_button = tk.Button(
         frame5,
-        text='读取配置参数',
+        text=translations[language]['read_config_button_text'],
         width=14,
         command=lambda: read_config(
             serial_port_combo.get(), window, progress, label2
@@ -273,7 +274,7 @@ def main():
 
     write_config_button = tk.Button(
         frame5,
-        text='写入配置参数',
+        text=translations[language]['write_config_button_text'],
         width=14,
         command=lambda: write_config(
             serial_port_combo.get(), window, progress, label2
@@ -283,7 +284,7 @@ def main():
 
     write_font_conf_button = tk.Button(
         frame5,
-        text='写入字库配置',
+        text=translations[language]['write_font_conf_button_text'],
         width=14,
         command=lambda: write_font_conf(
             serial_port_combo.get(), window, progress, label2,
@@ -294,7 +295,7 @@ def main():
 
     write_tone_options_button = tk.Button(
         frame5,
-        text='写入亚音参数',
+        text=translations[language]['write_tone_options_button_text'],
         width=14,
         command=lambda: write_tone_options(
             serial_port_combo.get(), window, progress, label2,
@@ -309,7 +310,7 @@ def main():
 
     write_font_compressed_button = tk.Button(
         frame6,
-        text='写入压缩字库',
+        text=translations[language]['write_font_compressed_button_text'],
         width=14,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
@@ -321,7 +322,7 @@ def main():
 
     write_font_uncompressed_button = tk.Button(
         frame6,
-        text='写入全量字库',
+        text=translations[language]['write_font_uncompressed_button_text'],
         width=14,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
@@ -333,7 +334,7 @@ def main():
 
     write_font_old_button = tk.Button(
         frame6,
-        text='写入字库 (旧)',
+        text=translations[language]['write_font_old_button_text'],
         width=14,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
@@ -345,7 +346,7 @@ def main():
 
     write_pinyin_old_index_button = tk.Button(
         frame6,
-        text='写入拼音表（旧）',
+        text=translations[language]['write_pinyin_old_index_button_text'],
         width=14,
         command=lambda: write_pinyin_index(
             serial_port_combo.get(), window, progress, label2,
@@ -359,7 +360,7 @@ def main():
     frame7.grid(row=6, column=0, sticky='w')
     write_pinyin_new_index_button = tk.Button(
         frame7,
-        text='写入拼音表（新）',
+        text=translations[language]['write_pinyin_new_index_button_text'],
         width=14,
         command=lambda: write_pinyin_index(
             serial_port_combo.get(), window, progress, label2,
@@ -370,7 +371,7 @@ def main():
 
     todo_button = tk.Button(
         frame7,
-        text='敬请期待',
+        text=translations[language]['todo_button_text'],
         width=14,
         command=todo_function
     )
@@ -378,7 +379,7 @@ def main():
     
     todo_button = tk.Button(
         frame7,
-        text='敬请期待',
+        text=translations[language]['todo_button_text'],
         width=14,
         command=todo_function
     )
@@ -386,7 +387,7 @@ def main():
     
     todo_button = tk.Button(
         frame7,
-        text='敬请期待',
+        text=translations[language]['todo_button_text'],
         width=14,
         command=todo_function
     )
@@ -411,22 +412,42 @@ def main():
     log('所有操作均有一定的风险，请确保您已备份校准等文件！！！\n')
 
     # 在此统一设置tooltip
-    Tooltip(serial_port_combo, "点击选择K5/K6所在串口")
-    Tooltip(eeprom_size_combo, "EEPROM芯片容量，若自动检测正确则无需修改")
-    Tooltip(firmware_combo, "固件版本，若自动检测正确则无需修改")
-    Tooltip(clean_eeprom_button, "清除EEPROM中的所有数据")
-    Tooltip(auto_write_font_button, "自动写入机器固件所需字库等文件，如不清楚点那个按钮的情况下，点这个总没错")
-    Tooltip(read_calibration_button, "校准文件包含硬件参数校准信息，必须备份！建议终身保留以备恢复")
-    Tooltip(write_calibration_button, "校准文件只在更换芯片或清除EEPROM数据后写一次即可")
-    Tooltip(read_config_button, "配置文件包含了菜单设置信息、开机字符和信道信息等，如无特别需要可不备份，不同固件的菜单设置可能不通用")
-    Tooltip(write_config_button, "配置文件如无特别需要，可以不写")
-    Tooltip(write_font_conf_button, "写入字库配置，如果不使用自动写入，请在执行完字库写入后点击")
-    Tooltip(write_tone_options_button, "写入亚音参数，如果不使用自动写入，请在执行完字库写入后点击")
-    Tooltip(write_font_compressed_button, "压缩GB2312字库，萝狮虎118K、123H版本及后续版本使用")
-    Tooltip(write_font_uncompressed_button, "全量GB2312字库，用于萝狮虎118H版本，后续未使用")
-    Tooltip(write_font_old_button, "萝狮虎117版本及之前版本使用，旧字库")
-    Tooltip(write_pinyin_old_index_button, "123版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
-    Tooltip(write_pinyin_new_index_button, "124及以上版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
+    #Tooltip(serial_port_combo, "点击选择K5/K6所在串口")
+    #Tooltip(eeprom_size_combo, "EEPROM芯片容量，若自动检测正确则无需修改")
+    #Tooltip(firmware_combo, "固件版本，若自动检测正确则无需修改")
+    #Tooltip(clean_eeprom_button, "清除EEPROM中的所有数据")
+    #Tooltip(auto_write_font_button, "自动写入机器固件所需字库等文件，如不清楚点那个按钮的情况下，点这个总没错")
+    #Tooltip(read_calibration_button, "校准文件包含硬件参数校准信息，必须备份！建议终身保留以备恢复")
+    #Tooltip(write_calibration_button, "校准文件只在更换芯片或清除EEPROM数据后写一次即可")
+    #Tooltip(read_config_button, "配置文件包含了菜单设置信息、开机字符和信道信息等，如无特别需要可不备份，不同固件的菜单设置可能不通用")
+    #Tooltip(write_config_button, "配置文件如无特别需要，可以不写")
+    #Tooltip(write_font_conf_button, "写入字库配置，如果不使用自动写入，请在执行完字库写入后点击")
+    #Tooltip(write_tone_options_button, "写入亚音参数，如果不使用自动写入，请在执行完字库写入后点击")
+    #Tooltip(write_font_compressed_button, "压缩GB2312字库，萝狮虎118K、123H版本及后续版本使用")
+    #Tooltip(write_font_uncompressed_button, "全量GB2312字库，用于萝狮虎118H版本，后续未使用")
+    #Tooltip(write_font_old_button, "萝狮虎117版本及之前版本使用，旧字库")
+    #Tooltip(write_pinyin_old_index_button, "123版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
+    #Tooltip(write_pinyin_new_index_button, "124及以上版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
+    #Tooltip(language_combo, "Change language.")
+    
+    Tooltip(language_combo, translations[language]['language_combo_tooltip_text'])
+    Tooltip(eeprom_size_combo, translations[language]['eeprom_size_combo_tooltip_text'])
+    Tooltip(firmware_combo, translations[language]['firmware_combo_tooltip_text'])
+    Tooltip(serial_port_combo, translations[language]['serial_port_combo_tooltip_text'])
+    Tooltip(clean_eeprom_button, translations[language]['clean_eeprom_button_tooltip_text'])
+    Tooltip(auto_write_font_button, translations[language]['auto_write_font_button_tooltip_text'])
+    Tooltip(read_calibration_button, translations[language]['read_calibration_button_tooltip_text'])
+    Tooltip(write_calibration_button, translations[language]['write_calibration_button_tooltip_text'])
+    Tooltip(read_config_button, translations[language]['read_config_button_tooltip_text'])
+    Tooltip(write_config_button, translations[language]['write_config_button_tooltip_text'])
+    Tooltip(write_font_conf_button, translations[language]['write_font_conf_button_tooltip_text'])
+    Tooltip(write_tone_options_button, translations[language]['write_tone_options_button_tooltip_text'])
+    Tooltip(write_font_compressed_button, translations[language]['write_font_compressed_button_tooltip_text'])
+    Tooltip(write_font_uncompressed_button, translations[language]['write_font_uncompressed_button_tooltip_text'])
+    Tooltip(write_font_old_button, translations[language]['write_font_old_button_tooltip_text'])
+    Tooltip(write_pinyin_old_index_button, translations[language]['write_pinyin_old_index_button_tooltip_text'])
+    Tooltip(write_pinyin_new_index_button, translations[language]['write_pinyin_new_index_button_tooltip_text'])
+
     window.mainloop()
 
 
