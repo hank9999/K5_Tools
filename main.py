@@ -18,7 +18,9 @@ from functions import (
     read_config, 
     write_config, 
     write_pinyin_index,
-    todo_function
+    todo_function,
+    backup_eeprom,
+    restore_eeprom
 )
 
 window = ttk.Window()
@@ -333,26 +335,30 @@ def main():
         width=14,
         command=lambda: write_pinyin_index(
             serial_port_combo.get(), window, progress, label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), True
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), False, True
         )
     )
     write_pinyin_new_index_button.pack(side='left', padx=3, pady=(2, 15))
 
-    todo_button = tk.Button(
+    backup_eeprom_button = tk.Button(
         frame7,
-        text='敬请期待',
+        text='备份EEPROM',
         width=14,
-        command=todo_function
+        command=lambda:backup_eeprom(
+            serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())   
+        )
     )
-    todo_button.pack(side='left', padx=3, pady=(2, 15))
+    backup_eeprom_button.pack(side='left', padx=3, pady=(2, 15))
     
-    todo_button = tk.Button(
+    restore_eeprom_button = tk.Button(
         frame7,
-        text='敬请期待',
+        text='恢复EEPROM',
         width=14,
-        command=todo_function
+        command=lambda:restore_eeprom(
+            serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())
+        )
     )
-    todo_button.pack(side='left', padx=3, pady=(2, 15))
+    restore_eeprom_button.pack(side='left', padx=3, pady=(2, 15))
     
     todo_button = tk.Button(
         frame7,
@@ -382,7 +388,7 @@ def main():
 
     # 在此统一设置tooltip
     Tooltip(serial_port_combo, "点击选择K5/K6所在串口")
-    Tooltip(eeprom_size_combo, "EEPROM芯片容量，若自动检测正确则无需修改")
+    Tooltip(eeprom_size_combo, "EEPROM芯片容量，若自动检测正确则无需修改，可以使用该下拉框修改所需备份或恢复的容量")
     Tooltip(firmware_combo, "固件版本，若自动检测正确则无需修改")
     Tooltip(clean_eeprom_button, "清除EEPROM中的所有数据")
     Tooltip(auto_write_font_button, "自动写入机器固件所需字库等文件，如不清楚点那个按钮的情况下，点这个总没错")
@@ -397,6 +403,9 @@ def main():
     Tooltip(write_font_old_button, "萝狮虎117版本及之前版本使用，旧字库")
     Tooltip(write_pinyin_old_index_button, "123版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
     Tooltip(write_pinyin_new_index_button, "124及以上版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
+    Tooltip(backup_eeprom_button, "备份EEPROM中的数据，使用EEPROM下拉框可以选择所要备份的大小")
+    Tooltip(restore_eeprom_button, "恢复EEPROM中的数据，使用EEPROM下拉框可以选择所要恢复的大小")
+    Tooltip(todo_button, "敬请期待")
     window.mainloop()
 
 
