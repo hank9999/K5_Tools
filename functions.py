@@ -646,7 +646,7 @@ def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
 
 
 def backup_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-                     status_label: tk.Label, eeprom_size: int):
+                  status_label: tk.Label, eeprom_size: int):
     log('开始备份')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 备份eeprom'
@@ -709,7 +709,7 @@ def backup_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressba
 
 
 def restore_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-                      status_label: tk.Label, eeprom_size: int):
+                   status_label: tk.Label, eeprom_size: int):
     log('开始恢复eeprom')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 恢复eeprom'
