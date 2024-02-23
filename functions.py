@@ -644,6 +644,7 @@ def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
             messagebox.showinfo('提示', '写入拼音检索表成功！')
         status_label['text'] = '当前操作: 无'
 
+
 def backup_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
                      status_label: tk.Label, eeprom_size: int):
     log('开始备份')
@@ -654,8 +655,7 @@ def backup_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressba
         messagebox.showerror('错误', '没有选择串口！')
         status_label['text'] = '当前操作: 无'
         return
-    
-    target_eeprom_offset = 0x2000
+
     if eeprom_size > 0:
         target_eeprom_offset = 0x20000 * eeprom_size
     else:
@@ -707,6 +707,7 @@ def backup_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressba
         status_label['text'] = '当前操作: 无'
         messagebox.showinfo('提示', '保存成功！')
 
+
 def restore_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
                       status_label: tk.Label, eeprom_size: int):
     log('开始恢复eeprom')
@@ -719,7 +720,6 @@ def restore_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressb
         return
 
     start_addr = 0x0
-    target_eeprom_offset = 0x2000
     if eeprom_size > 0:
         target_eeprom_offset = 0x20000 * eeprom_size
     else:
