@@ -1,5 +1,7 @@
+from const_vars import LANGUAGE_LIST
+
 translations = {
-    'zh-CN': {
+    LANGUAGE_LIST[0]: {
         # UI
         'tool_name': 'K5/K6 小工具集 ',
         'now_state_none_text': '当前操作: 无',
@@ -43,7 +45,7 @@ translations = {
         'write_pinyin_new_index_button_tooltip_text': '124及以上版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击',
         'language_combo_tooltip_text':'更改语言，重启程序生效'
     },
-    'en-US': {
+    LANGUAGE_LIST[1]: {
         'tool_name': 'K5/K6 Tools ',
         'now_state_none_text': 'Now state: none',
 

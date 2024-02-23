@@ -42,7 +42,7 @@ if 'Settings' not in config:
 if 'theme' not in config['Settings']:
     config['Settings']['theme'] = 'darkly'
 if 'language' not in config['Settings']:
-    config['Settings']['language'] = 'zh-CN'
+    config['Settings']['language'] = LANGUAGE_LIST[0]
 
 config_version = config.get('ConfigVersion', 'configversion')
 style = ttk.Style(config.get('Settings', 'theme'))
