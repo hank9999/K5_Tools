@@ -3,7 +3,7 @@ import sys
 import tkinter as tk
 import ttkbootstrap as ttk
 import configparser
-from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE, FontType
+from const_vars import *
 from logger import log
 
 from functions import (
@@ -29,10 +29,23 @@ config_dir = os.path.join(appdata_path, 'K5_Tools')
 config_path = os.path.join(config_dir, 'config.ini')
 
 config = configparser.ConfigParser()
-if not config.read(config_path):
-    config['Settings'] = {'theme': ''}
+config.read(config_path)
 
+# 检查配置文件并添加缺失的部分
+if 'ConfigVersion' not in config:
+    config['ConfigVersion'] = {}
+if 'configversion' not in config['ConfigVersion']:
+    config['ConfigVersion']['configversion'] = '0.2'
+if 'Settings' not in config:
+    config['Settings'] = {}
+if 'theme' not in config['Settings']:
+    config['Settings']['theme'] = 'darkly'
+if 'language' not in config['Settings']:
+    config['Settings']['language'] = 'zh-CN'
+
+config_version = config.get('ConfigVersion', 'configversion')
 style = ttk.Style(config.get('Settings', 'theme'))
+language = config.get('Settings', 'language')
 
 
 class Tooltip(object):
@@ -108,7 +121,8 @@ def make_readonly(_):
 
 
 def on_closing():
-    config['Settings'] = {'theme': style.theme.name}
+    config['Settings']['theme'] = style.theme.name
+    config['Settings']['language'] = language
     if not os.path.exists(config_dir):
         os.mkdir(config_dir)
     with open(config_path, 'w') as configfile:
@@ -120,6 +134,11 @@ def change_theme(_, theme_combo: ttk.Combobox):
     t = theme_combo.get()
     style.theme_use(t)
     theme_combo.selection_clear()
+
+
+def change_language(_, language_combo: ttk.Combobox):
+    global language
+    language = language_combo.get()
 
 
 def main():
@@ -142,7 +161,6 @@ def main():
     )
     theme_combo.current(style.theme_names().index(style.theme.name))
     theme_combo.pack(side='right', padx=(1, 3), pady=2)
-
     theme_combo.bind('<<ComboboxSelected>>', lambda event: change_theme(event, theme_combo))
     theme_label = tk.Label(frame1, text='主题')
     theme_label.pack(side='right')
@@ -152,6 +170,18 @@ def main():
     frame2.grid(row=1, column=0, sticky='we')
     label2 = tk.Label(frame2, text='当前操作: 无')
     label2.pack(side='left')
+
+    language_combo = ttk.Combobox(
+        frame2,
+        width=10,
+        state='readonly',
+        values=LANGUAGE_LIST,
+    )
+    language_combo.current(LANGUAGE_LIST.index(language))
+    language_combo.pack(side='right', padx=(1, 3), pady=2)
+    language_combo.bind('<<ComboboxSelected>>', lambda event: change_language(event, language_combo))
+    language_label = tk.Label(frame2, text='Language')
+    language_label.pack(side='right')
 
     # 第三行
     frame3 = tk.Frame(window, padx=10, pady=2)
