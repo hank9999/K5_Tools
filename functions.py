@@ -408,11 +408,11 @@ def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             m += 1
             log(f'正在进行 {m}/{n}: 写入亚音参数')
             write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
+            reset_radio(serial_port_text, status_label)
             if n == 4:
                 messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n拼音检索表\n写入成功！')
             else:
                 messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n写入成功！')
-            reset_radio(serial_port_text, status_label)
     else:
         messagebox.showinfo('提示', f'非LOSEHU扩容固件，无法写入')
 
@@ -644,7 +644,7 @@ def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
             messagebox.showinfo('提示', '写入拼音检索表成功！')
         status_label['text'] = '当前操作: 无'
 
-def backups_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
+def backup_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
                      status_label: tk.Label, eeprom_size: int):
     log('开始备份')
     log('选择的串口: ' + serial_port_text)
@@ -655,18 +655,12 @@ def backups_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressb
         status_label['text'] = '当前操作: 无'
         return
     
-    if eeprom_size == 1:
-        end_addr = 0x20000
-    elif eeprom_size == 2:
-        end_addr = 0x40000
-    elif eeprom_size == 3:
-        end_addr = 0x60000
-    elif eeprom_size == 4:
-        end_addr = 0x80000
+    target_eeprom_offset = 0x2000
+    if eeprom_size > 0:
+        target_eeprom_offset = 0x20000 * eeprom_size
     else:
-        end_addr = 0x2000
+        target_eeprom_offset = 0x2000
         
-    
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
@@ -675,21 +669,21 @@ def backups_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressb
             return
 
         start_addr = 0x0  # 起始地址为0x0
-        total_steps = (end_addr - start_addr) // 128  # 计算总步数
+        total_steps = (target_eeprom_offset - start_addr) // 128  # 计算总步数
         current_step = 0
         addr = start_addr
         offset = 0
 
-        backups_data = b''
+        backup_data = b''
 
-        while addr < end_addr:  # 限制地址范围为start_addr到end_addr
-            if end_addr < 0x10000:
+        while addr < target_eeprom_offset:  # 限制地址范围为start_addr到target_eeprom_offset
+            if target_eeprom_offset < 0x10000:
                 read_data = serial_utils.read_eeprom(serial_port, addr, 128)
             else:
                 if addr - offset * 0x10000 >= 0x10000:
                     offset += 1
                 read_data = serial_utils.read_extra_eeprom(serial_port, offset, addr - offset * 0x10000, 128)
-            backups_data += read_data
+            backup_data += read_data
             addr += 128
             current_step += 1
             percent_float = (current_step / total_steps) * 100
@@ -707,9 +701,9 @@ def backups_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressb
             return  # 用户取消保存，直接返回
 
         with open(file_path, 'wb') as fp:
-            fp.write(backups_data)
+            fp.write(backup_data)
 
-        log('备份完成')
+        log('EEPROM 备份完成')
         status_label['text'] = '当前操作: 无'
         messagebox.showinfo('提示', '保存成功！')
 
@@ -725,17 +719,11 @@ def restore_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressb
         return
 
     start_addr = 0x0
-        
-    if eeprom_size == 1:
-        end_addr = 0x20000
-    elif eeprom_size == 2:
-        end_addr = 0x40000
-    elif eeprom_size == 3:
-        end_addr = 0x60000
-    elif eeprom_size == 4:
-        end_addr = 0x80000
+    target_eeprom_offset = 0x2000
+    if eeprom_size > 0:
+        target_eeprom_offset = 0x20000 * eeprom_size
     else:
-        end_addr = 0x2000
+        target_eeprom_offset = 0x2000
         
     file_path = filedialog.askopenfilename(filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
 
@@ -747,6 +735,12 @@ def restore_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressb
     with open(file_path, 'rb') as fp:
         restore_data = fp.read()
 
+    if len(restore_data) != target_eeprom_offset:
+        if messagebox.askquestion('提示', f'选择的文件大小为{len(restore_data)}，但目标eeprom大小为{target_eeprom_offset}，是否继续？') == 'no':
+            log('用户取消恢复')
+            messagebox.showinfo('提示', '用户取消恢复')
+            return  # 用户取消恢复，直接返回
+
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
@@ -756,7 +750,7 @@ def restore_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressb
 
         write_data(serial_port, start_addr, restore_data, progress, window)
 
-        log('写入校准参数完成')
+        log('EEPROM恢复完成')
         status_label['text'] = '当前操作: 无'
         serial_utils.reset_radio(serial_port)
         messagebox.showinfo('提示', '写入成功！')
