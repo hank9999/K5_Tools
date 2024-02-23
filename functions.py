@@ -384,32 +384,23 @@ def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n写入成功')
         else:
             n = 4 if version_code == 'H' else 3
-            m = 1
+            log(f'正在进行 1/{n}: 写入{version_number}{version_code}版字库')
+            write_font(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, font_type, True)
+            log(f'正在进行 2/{n}: 写入字库配置')
+            write_font_conf(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
+            log(f'正在进行 3/{n}: 写入亚音参数')
+            write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
             if n == 4:
-                log(f'正在进行 {m}/{n}: 写入拼音检索表')
+                log(f'正在进行 4/4: 写入拼音检索表')
                 if version_number == 123:
                     write_pinyin_index(serial_port_text, window, progress, status_label, eeprom_size, firmware_version,
                                        True)
-                    m += 1
                 elif version_number > 123:
                     write_pinyin_index(serial_port_text, window, progress, status_label, eeprom_size, firmware_version,
                                        True, True)
-                    m += 1
-            else:
-                return
-            log(f'正在进行 {m}/{n}: 写入{version_number}{version_code}版字库')
-            write_font(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, font_type, True)
-            m += 1
-            log(f'正在进行 {m}/{n}: 写入字库配置')
-            write_font_conf(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
-            m += 1
-            log(f'正在进行 {m}/{n}: 写入亚音参数')
-            write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
             reset_radio(serial_port_text, status_label)
-            if n == 4:
-                messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n拼音检索表\n写入成功！')
-            else:
-                messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n写入成功！')
+            extra_msg = '拼音检索表\n' if n == 4 else ''
+            messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n{extra_msg}写入成功！')
     else:
         messagebox.showinfo('提示', f'非LOSEHU扩容固件，无法写入')
 
