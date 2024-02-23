@@ -387,25 +387,32 @@ def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n写入成功')
         else:
             n = 4 if version_code == 'H' else 3
-            log(f'正在进行 1/{n}: 写入{version_number}{version_code}版字库')
-            write_font(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, font_type, True)
-            log(f'正在进行 2/{n}: 写入字库配置')
-            write_font_conf(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
-            log(f'正在进行 3/{n}: 写入亚音参数')
-            write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
+            m = 1
             if n == 4:
-                log(f'正在进行 4/{n}: 写入拼音检索表')
+                log(f'正在进行 {m}/{n}: 写入拼音检索表')
                 if version_number == 123:
                     write_pinyin_index(serial_port_text, window, progress, status_label, eeprom_size, firmware_version,
                                        True)
+                    m += 1
                 elif version_number > 123:
                     write_pinyin_index(serial_port_text, window, progress, status_label, eeprom_size, firmware_version,
                                        True, True)
-                reset_radio(serial_port_text, status_label)
+                    m += 1
+            else:
+                return
+            log(f'正在进行 {m}/{n}: 写入{version_number}{version_code}版字库')
+            write_font(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, font_type, True)
+            m += 1
+            log(f'正在进行 {m}/{n}: 写入字库配置')
+            write_font_conf(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
+            m += 1
+            log(f'正在进行 {m}/{n}: 写入亚音参数')
+            write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
+            if n == 4:
                 messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n拼音检索表\n写入成功！')
             else:
-                reset_radio(serial_port_text, status_label)
                 messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n写入成功！')
+            reset_radio(serial_port_text, status_label)
     else:
         messagebox.showinfo('提示', f'非LOSEHU扩容固件，无法写入')
 
@@ -636,3 +643,120 @@ def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
             serial_utils.reset_radio(serial_port)
             messagebox.showinfo('提示', '写入拼音检索表成功！')
         status_label['text'] = '当前操作: 无'
+
+def backups_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
+                     status_label: tk.Label, eeprom_size: int):
+    log('开始备份')
+    log('选择的串口: ' + serial_port_text)
+    status_label['text'] = f'当前操作: 备份eeprom'
+    if len(serial_port_text) == 0:
+        log('没有选择串口！')
+        messagebox.showerror('错误', '没有选择串口！')
+        status_label['text'] = '当前操作: 无'
+        return
+    
+    if eeprom_size == 1:
+        end_addr = 0x20000
+    elif eeprom_size == 2:
+        end_addr = 0x40000
+    elif eeprom_size == 3:
+        end_addr = 0x60000
+    elif eeprom_size == 4:
+        end_addr = 0x80000
+    else:
+        end_addr = 0x2000
+        
+    
+    with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
+        serial_check = check_serial_port(serial_port, False)
+        if not serial_check.status:
+            messagebox.showerror('错误', serial_check.message)
+            status_label['text'] = '当前操作: 无'
+            return
+
+        start_addr = 0x0  # 起始地址为0x0
+        total_steps = (end_addr - start_addr) // 128  # 计算总步数
+        current_step = 0
+        addr = start_addr
+        offset = 0
+
+        backups_data = b''
+
+        while addr < end_addr:  # 限制地址范围为start_addr到end_addr
+            if end_addr < 0x10000:
+                read_data = serial_utils.read_eeprom(serial_port, addr, 128)
+            else:
+                if addr - offset * 0x10000 >= 0x10000:
+                    offset += 1
+                read_data = serial_utils.read_extra_eeprom(serial_port, offset, addr - offset * 0x10000, 128)
+            backups_data += read_data
+            addr += 128
+            current_step += 1
+            percent_float = (current_step / total_steps) * 100
+            log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
+            progress['value'] = percent_float
+            window.update()
+
+        # 弹出文件保存对话框
+        file_path = filedialog.asksaveasfilename(defaultextension=".bin",
+                                                 filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
+
+        if not file_path:
+            log('用户取消保存')
+            messagebox.showinfo('提示', '用户取消保存')
+            return  # 用户取消保存，直接返回
+
+        with open(file_path, 'wb') as fp:
+            fp.write(backups_data)
+
+        log('备份完成')
+        status_label['text'] = '当前操作: 无'
+        messagebox.showinfo('提示', '保存成功！')
+
+def restore_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
+                      status_label: tk.Label, eeprom_size: int):
+    log('开始恢复eeprom')
+    log('选择的串口: ' + serial_port_text)
+    status_label['text'] = f'当前操作: 恢复eeprom'
+    if len(serial_port_text) == 0:
+        log('没有选择串口！')
+        messagebox.showerror('错误', '没有选择串口！')
+        status_label['text'] = '当前操作: 无'
+        return
+
+    start_addr = 0x0
+        
+    if eeprom_size == 1:
+        end_addr = 0x20000
+    elif eeprom_size == 2:
+        end_addr = 0x40000
+    elif eeprom_size == 3:
+        end_addr = 0x60000
+    elif eeprom_size == 4:
+        end_addr = 0x80000
+    else:
+        end_addr = 0x2000
+        
+    file_path = filedialog.askopenfilename(filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
+
+    if not file_path:
+        log('用户取消选择')
+        messagebox.showinfo('提示', '用户取消选择')
+        return  # 用户取消选择，直接返回
+
+    with open(file_path, 'rb') as fp:
+        restore_data = fp.read()
+
+    with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
+        serial_check = check_serial_port(serial_port, False)
+        if not serial_check.status:
+            messagebox.showerror('错误', serial_check.message)
+            status_label['text'] = '当前操作: 无'
+            return
+
+        write_data(serial_port, start_addr, restore_data, progress, window)
+
+        log('写入校准参数完成')
+        status_label['text'] = '当前操作: 无'
+        serial_utils.reset_radio(serial_port)
+        messagebox.showinfo('提示', '写入成功！')

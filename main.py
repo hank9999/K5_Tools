@@ -18,7 +18,9 @@ from functions import (
     read_config, 
     write_config, 
     write_pinyin_index,
-    todo_function
+    todo_function,
+    backups_eeprom,
+    restore_eeprom
 )
 
 window = ttk.Window()
@@ -333,26 +335,30 @@ def main():
         width=14,
         command=lambda: write_pinyin_index(
             serial_port_combo.get(), window, progress, label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), True
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), False, True
         )
     )
     write_pinyin_new_index_button.pack(side='left', padx=3, pady=(2, 15))
 
-    todo_button = tk.Button(
+    backups_eeprom_button = tk.Button(
         frame7,
-        text='敬请期待',
+        text='备份EEPROM',
         width=14,
-        command=todo_function
+        command=lambda:backups_eeprom(
+            serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())   
+        )
     )
-    todo_button.pack(side='left', padx=3, pady=(2, 15))
+    backups_eeprom_button.pack(side='left', padx=3, pady=(2, 15))
     
-    todo_button = tk.Button(
+    restore_eeprom_button = tk.Button(
         frame7,
-        text='敬请期待',
+        text='恢复EEPROM',
         width=14,
-        command=todo_function
+        command=lambda:restore_eeprom(
+            serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())
+        )
     )
-    todo_button.pack(side='left', padx=3, pady=(2, 15))
+    restore_eeprom_button.pack(side='left', padx=3, pady=(2, 15))
     
     todo_button = tk.Button(
         frame7,
