@@ -105,7 +105,6 @@ def read_eeprom(serial_port: serial.Serial, offset: int, length: int):
 def read_extra_eeprom(serial_port: serial.Serial, addr: int, length: int):
     offset = addr >> 16
     extra = addr & 0xFFFF
-    extra = struct.pack("<H", extra)
     extra_bytes = struct.pack("<H", extra)
     read_mem = b"\x2b\x05\x08\x00" + \
                struct.pack("<HBB", offset, length, 0) + \

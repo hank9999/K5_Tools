@@ -72,7 +72,7 @@ def check_serial_port(serial_port: serial.Serial,
                 for i in range(1, 5):
                     # 128 KiB offset 0x1, 256 KiB offset 0x3, 384 KiB offset 0x5, 512 KiB offset 0x7
                     # 1 -> 0x1, 2 -> 0x3, 3 -> 0x5, 4 -> 0x7 符合 2n-1
-                    if check_eeprom_writeable(serial_port, 2 * i - 1, 0x8000):
+                    if check_eeprom_writeable(serial_port, (2 * i - 1) * 0x10000 + 0x8000):
                         eeprom_size = i
                     else:
                         break
