@@ -40,16 +40,16 @@ def todo_function():
     return
 
 
-def check_eeprom_writeable(serial_port: serial.Serial, offset: int, extra: int) -> bool:
+def check_eeprom_writeable(serial_port: serial.Serial, addr: int) -> bool:
     # 读取原始数据
-    read_data = serial_utils.read_extra_eeprom(serial_port, offset, extra, 8)
+    read_data = serial_utils.read_extra_eeprom(serial_port, addr, 8)
     # 写入随机数据
     random_bytes = bytes([random.randint(0, 255) for _ in range(8)])
-    serial_utils.write_extra_eeprom(serial_port, offset, extra, random_bytes)
+    serial_utils.write_extra_eeprom(serial_port, addr, random_bytes)
     # 读取写入的数据
-    read_write_data = serial_utils.read_extra_eeprom(serial_port, offset, extra, 8)
+    read_write_data = serial_utils.read_extra_eeprom(serial_port, addr, 8)
     # 恢复原始数据
-    serial_utils.write_extra_eeprom(serial_port, offset, extra, read_data)
+    serial_utils.write_extra_eeprom(serial_port, addr, read_data)
 
     return read_write_data == random_bytes
 
@@ -114,7 +114,6 @@ def write_data(serial_port: Serial, start_addr: int, data: Union[bytes, List[int
     total_page = data_len // 128
     addr = start_addr
     current_step = 0
-    offset = 0
     while addr < start_addr + data_len:
         percent_float = (current_step / total_page) * 100
         percent = int(percent_float)
@@ -127,9 +126,7 @@ def write_data(serial_port: Serial, start_addr: int, data: Union[bytes, List[int
         if start_addr + data_len < 0x10000:
             serial_utils.write_eeprom(serial_port, addr, writing_data)
         else:
-            if addr - offset * 0x10000 >= 0x10000:
-                offset += 1
-            serial_utils.write_extra_eeprom(serial_port, offset, addr - offset * 0x10000, writing_data)
+            serial_utils.write_extra_eeprom(serial_port, addr, writing_data)
         addr += step
         current_step += 1
     progress['value'] = 0
@@ -672,7 +669,6 @@ def backup_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressba
         total_steps = (target_eeprom_offset - start_addr) // 128  # 计算总步数
         current_step = 0
         addr = start_addr
-        offset = 0
 
         backup_data = b''
 
@@ -680,9 +676,7 @@ def backup_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressba
             if target_eeprom_offset < 0x10000:
                 read_data = serial_utils.read_eeprom(serial_port, addr, 128)
             else:
-                if addr - offset * 0x10000 >= 0x10000:
-                    offset += 1
-                read_data = serial_utils.read_extra_eeprom(serial_port, offset, addr - offset * 0x10000, 128)
+                read_data = serial_utils.read_extra_eeprom(serial_port, addr, 128)
             backup_data += read_data
             addr += 128
             current_step += 1
