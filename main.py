@@ -153,71 +153,75 @@ def main():
     # 第一行
     frame1 = tk.Frame(window, padx=10, pady=2)
     frame1.grid(row=0, column=0, sticky='we')
+
     label1 = tk.Label(frame1, text=f"{translations[language]['tool_name']} v{version} (BG4IST - hank9999)")
     label1.pack(side='left')
 
-    theme_combo = ttk.Combobox(
-        frame1,
-        width=10,
-        state='readonly',
-        values=style.theme_names(),
-    )
+    theme_combo = ttk.Combobox(frame1, width=10, state='readonly', values=style.theme_names())
     theme_combo.current(style.theme_names().index(style.theme.name))
     theme_combo.pack(side='right', padx=(1, 3), pady=2)
-    theme_combo.bind('<<ComboboxSelected>>', lambda event: change_theme(event, theme_combo))
+    theme_combo.bind(
+        '<<ComboboxSelected>>',
+        lambda event: change_theme(
+            event, theme_combo
+        )
+    )
+
     theme_label = tk.Label(frame1, text=translations[language]['theme_label_text'])
     theme_label.pack(side='right')
 
     # 第二行
     frame2 = tk.Frame(window, padx=10, pady=2)
     frame2.grid(row=1, column=0, sticky='we')
+
     label2 = tk.Label(frame2, text=translations[language]['now_state_none_text'])
     label2.pack(side='left')
 
-    language_combo = ttk.Combobox(
-        frame2,
-        width=10,
-        state='readonly',
-        values=LANGUAGE_LIST,
-    )
+    language_combo = ttk.Combobox(frame2, width=10, state='readonly', values=LANGUAGE_LIST)
     language_combo.current(LANGUAGE_LIST.index(language))
     language_combo.pack(side='right', padx=(1, 3), pady=2)
-    language_combo.bind('<<ComboboxSelected>>', lambda event: change_language(event, language_combo))
+    language_combo.bind(
+        '<<ComboboxSelected>>',
+        lambda event: change_language(
+            event, language_combo
+        )
+    )
+
     language_label = tk.Label(frame2, text='Language')
     language_label.pack(side='right')
 
     # 第三行
     frame3 = tk.Frame(window, padx=10, pady=2)
     frame3.grid(row=2, column=0, sticky='we')
+
     serial_port_label = tk.Label(frame3, text=translations[language]['serial_port_text'])
     serial_port_label.pack(side='left')
+
     serial_port_combo = ttk.Combobox(frame3, values=[], width=10, state='readonly')
-    serial_port_combo.pack(side='left', padx=1, pady=2)
-    serial_port_combo['postcommand'] = lambda: serial_port_combo_postcommand(
-        serial_port_combo
-    )
+    serial_port_combo['postcommand'] = lambda: serial_port_combo_postcommand(serial_port_combo)
     serial_port_combo.bind(
         '<<ComboboxSelected>>',
         lambda event: serial_port_combo_callback(
             event, serial_port_combo.get(), label2, eeprom_size_combo, firmware_combo
-        ),
+        )
     )
+    serial_port_combo.pack(side='left', padx=(1, 3), pady=2)
+
     eeprom_size_label = tk.Label(frame3, text='EEPROM')
     eeprom_size_label.pack(side='left')
-    eeprom_size_combo = ttk.Combobox(
-        frame3, values=EEPROM_SIZE, width=10, state='readonly'
-    )
-    eeprom_size_combo.pack(side='left', padx=1, pady=2)
+
+    eeprom_size_combo = ttk.Combobox(frame3, values=EEPROM_SIZE, width=10, state='readonly')
+    eeprom_size_combo.pack(side='left', padx=(1, 3))
+
     firmware_label = tk.Label(frame3, text=translations[language]['firmware_label_text'])
     firmware_label.pack(side='left')
-    firmware_combo = ttk.Combobox(
-        frame3, values=FIRMWARE_VERSION_LIST, width=10, state='readonly'
-    )
-    firmware_combo.pack(side='left', padx=1, pady=2)
+
+    firmware_combo = ttk.Combobox(frame3, values=FIRMWARE_VERSION_LIST, width=10, state='readonly')
+    firmware_combo.pack(side='left', padx=(1, 3))
 
     # 第四行
     frame4 = tk.Frame(window, padx=10, pady=2)
-    frame4.grid(row=3, column=0, sticky='w')
+    frame4.grid(row=3, column=0, sticky='we')
 
     clean_eeprom_button = tk.Button(
         frame4,
@@ -228,7 +232,7 @@ def main():
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    clean_eeprom_button.pack(side='left', padx=3, pady=(15, 2))
+    clean_eeprom_button.pack(side='left', padx=3, pady=(15, 2), expand=True, fill='x')
 
     auto_write_font_button = tk.Button(
         frame4,
@@ -239,7 +243,7 @@ def main():
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    auto_write_font_button.pack(side='left', padx=3, pady=(15, 2))
+    auto_write_font_button.pack(side='left', padx=3, pady=(15, 2), expand=True, fill='x')
 
     read_calibration_button = tk.Button(
         frame4,
@@ -249,7 +253,7 @@ def main():
             serial_port_combo.get(), window, progress, label2
         )
     )
-    read_calibration_button.pack(side='left', padx=3, pady=(15, 2))
+    read_calibration_button.pack(side='left', padx=3, pady=(15, 2), expand=True, fill='x')
 
     write_calibration_button = tk.Button(
         frame4,
@@ -259,10 +263,11 @@ def main():
             serial_port_combo.get(), window, progress, label2
         )
     )
-    write_calibration_button.pack(side='left', padx=3, pady=(15, 2))
+    write_calibration_button.pack(side='left', padx=3, pady=(15, 2), expand=True, fill='x')
+
     # 第五行
     frame5 = tk.Frame(window, padx=10, pady=2)
-    frame5.grid(row=4, column=0, sticky='w')
+    frame5.grid(row=4, column=0, sticky='we')
 
     read_config_button = tk.Button(
         frame5,
@@ -272,7 +277,7 @@ def main():
             serial_port_combo.get(), window, progress, label2
         )
     )
-    read_config_button.pack(side='left', padx=3, pady=2)
+    read_config_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     write_config_button = tk.Button(
         frame5,
@@ -282,7 +287,7 @@ def main():
             serial_port_combo.get(), window, progress, label2
         )
     )
-    write_config_button.pack(side='left', padx=3, pady=2)
+    write_config_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     write_font_conf_button = tk.Button(
         frame5,
@@ -293,7 +298,7 @@ def main():
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    write_font_conf_button.pack(side='left', padx=3, pady=2)
+    write_font_conf_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     write_tone_options_button = tk.Button(
         frame5,
@@ -304,11 +309,11 @@ def main():
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    write_tone_options_button.pack(side='left', padx=3, pady=2)
+    write_tone_options_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     # 第六行
     frame6 = tk.Frame(window, padx=10, pady=2)
-    frame6.grid(row=5, column=0, sticky='w')
+    frame6.grid(row=5, column=0, sticky='we')
 
     write_font_compressed_button = tk.Button(
         frame6,
@@ -320,7 +325,7 @@ def main():
             FontType.GB2312_COMPRESSED
         )
     )
-    write_font_compressed_button.pack(side='left', padx=3, pady=2)
+    write_font_compressed_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     write_font_uncompressed_button = tk.Button(
         frame6,
@@ -332,7 +337,7 @@ def main():
             FontType.GB2312_UNCOMPRESSED
         )
     )
-    write_font_uncompressed_button.pack(side='left', padx=3, pady=2)
+    write_font_uncompressed_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     write_font_old_button = tk.Button(
         frame6,
@@ -344,7 +349,7 @@ def main():
             FontType.LOSEHU_FONT
         )
     )
-    write_font_old_button.pack(side='left', padx=3, pady=2)
+    write_font_old_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     write_pinyin_old_index_button = tk.Button(
         frame6,
@@ -355,11 +360,11 @@ def main():
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    write_pinyin_old_index_button.pack(side='left', padx=3, pady=2)
+    write_pinyin_old_index_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     # 第七行
     frame7 = tk.Frame(window, padx=10, pady=2)
-    frame7.grid(row=6, column=0, sticky='w')
+    frame7.grid(row=6, column=0, sticky='we')
     write_pinyin_new_index_button = tk.Button(
         frame7,
         text=translations[language]['write_pinyin_new_index_button_text'],
@@ -369,7 +374,7 @@ def main():
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), False, True
         )
     )
-    write_pinyin_new_index_button.pack(side='left', padx=3, pady=(2, 15))
+    write_pinyin_new_index_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
 
     backup_eeprom_button = tk.Button(
         frame7,
@@ -379,7 +384,7 @@ def main():
             serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())   
         )
     )
-    backup_eeprom_button.pack(side='left', padx=3, pady=(2, 15))
+    backup_eeprom_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
     
     restore_eeprom_button = tk.Button(
         frame7,
@@ -389,7 +394,7 @@ def main():
             serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())
         )
     )
-    restore_eeprom_button.pack(side='left', padx=3, pady=(2, 15))
+    restore_eeprom_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
     
     todo_button = tk.Button(
         frame7,
@@ -397,21 +402,23 @@ def main():
         width=14,
         command=todo_function
     )
-    todo_button.pack(side='left', padx=3, pady=(2, 15))
+    todo_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
     
     # 第八行
     frame8 = tk.Frame(window, padx=10, pady=2)
-    frame8.grid(row=7, column=0, sticky='w')
+    frame8.grid(row=7, column=0, sticky='we')
+
     textbox = tk.Text(frame8, width=60, height=15)
     textbox.bind("<Key>", make_readonly)  # 防止用户修改
-    textbox.pack(side='left', padx=(3, 2), pady=2)
+    textbox.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
     sys.stdout = TextRedirector(textbox)
 
     # 第九行
     frame9 = tk.Frame(window, padx=10, pady=2)
-    frame9.grid(row=8, column=0, sticky='w')
-    progress = ttk.Progressbar(frame9, orient='horizontal', length=434, mode='determinate')
-    progress.pack(side='left', padx=(3, 2), pady=(2, 10))
+    frame9.grid(row=8, column=0, sticky='we')
+
+    progress = ttk.Progressbar(frame9, orient='horizontal', mode='determinate')
+    progress.pack(side='left', padx=3, pady=(2, 10), expand=True, fill='x')
 
     # 布局结束，显示首行日志
     log(f'K5/K6 小工具集 v{version} BG4IST - hank9999\n')
