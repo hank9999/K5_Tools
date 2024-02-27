@@ -24,6 +24,8 @@ translations = {
         'write_font_old_button_text' : '写入字库 (旧)',
         'write_pinyin_old_index_button_text' : '写入拼音表（旧）',
         'write_pinyin_new_index_button_text' : '写入拼音表（新）',
+        'backup_eeprom_button_text' : '备份EEPROM',
+        'restore_eeprom_button_text' : '恢复EEPROM',
         'todo_button_text' : '敬请期待',
 
         # Tooltip
@@ -43,6 +45,9 @@ translations = {
         'write_font_old_button_tooltip_text': '117版本及之前版本使用，旧字库',
         'write_pinyin_old_index_button_tooltip_text': '123版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击',
         'write_pinyin_new_index_button_tooltip_text': '124及以上版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击',
+        'backup_eeprom_button_tooltip_text' : '备份EEPROM中的数据，使用EEPROM下拉框可以选择所要备份的大小',
+        'restore_eeprom_button_tooltip_text' : '恢复EEPROM中的数据，使用EEPROM下拉框可以选择所要恢复的大小',
+        'todo_button_tooltip_text' : '敬请期待',
         'language_combo_tooltip_text':'更改语言，重启程序生效'
     },
     LANGUAGE_LIST[1]: {
@@ -66,6 +71,8 @@ translations = {
         'write_font_old_button_text': 'Write old font',
         'write_pinyin_old_index_button_text': 'Write old index',
         'write_pinyin_new_index_button_text': 'Write new index',
+        'backup_eeprom_button_text' : 'Backup EEPROM',
+        'restore_eeprom_button_text' : 'Restore EEPROM',
         'todo_button_text': 'Coming soon',
 
         'eeprom_size_combo_tooltip_text': 'EEPROM chip capacity, no need to modify if automatically detected correctly',
@@ -84,6 +91,9 @@ translations = {
         'write_font_old_button_tooltip_text': 'Used for losehu 117 version and earlier versions, old font library.',
         'write_pinyin_old_index_button_tooltip_text': '123 version Pinyin index. If not using automatic writing, click after executing font library writing.',
         'write_pinyin_new_index_button_tooltip_text': '124 and later versions Pinyin index. If not using automatic writing, click after executing font library writing.',
+        'backup_eeprom_button_tooltip_text': 'Backup data in EEPROM. Use the EEPROM dropdown to select the size to be backed up.',
+        'restore_eeprom_button_tooltip_text': 'Restore data in EEPROM. Use the EEPROM dropdown to select the size to be restored.',
+        'todo_button_tooltip_text': 'Coming soon',
         'language_combo_tooltip_text':'Change language, take effect after restart.'
     }
 }

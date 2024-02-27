@@ -373,7 +373,7 @@ def main():
 
     backup_eeprom_button = tk.Button(
         frame7,
-        text='备份EEPROM',
+        text=translations[language]['backup_eeprom_button_text'],
         width=14,
         command=lambda:backup_eeprom(
             serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())   
@@ -383,7 +383,7 @@ def main():
     
     restore_eeprom_button = tk.Button(
         frame7,
-        text='恢复EEPROM',
+        text=translations[language]['restore_eeprom_button_text'],
         width=14,
         command=lambda:restore_eeprom(
             serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())
@@ -435,9 +435,9 @@ def main():
     Tooltip(write_font_old_button, translations[language]['write_font_old_button_tooltip_text'])
     Tooltip(write_pinyin_old_index_button, translations[language]['write_pinyin_old_index_button_tooltip_text'])
     Tooltip(write_pinyin_new_index_button, translations[language]['write_pinyin_new_index_button_tooltip_text'])
-    Tooltip(backup_eeprom_button, "备份EEPROM中的数据，使用EEPROM下拉框可以选择所要备份的大小")
-    Tooltip(restore_eeprom_button, "恢复EEPROM中的数据，使用EEPROM下拉框可以选择所要恢复的大小")
-    Tooltip(todo_button, "敬请期待")
+    Tooltip(backup_eeprom_button, translations[language]['backup_eeprom_button_tooltip_text'])
+    Tooltip(restore_eeprom_button, translations[language]['restore_eeprom_button_tooltip_text'])
+    Tooltip(todo_button, translations[language]['todo_button_tooltip_text'])
 
     window.mainloop()
 
