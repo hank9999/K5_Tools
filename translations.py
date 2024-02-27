@@ -3,7 +3,7 @@ from const_vars import LANGUAGE_LIST
 translations = {
     LANGUAGE_LIST[0]: {
         # UI
-        'tool_name': 'K5/K6 小工具集 ',
+        'tool_name': 'K5/K6 小工具集',
         'now_state_none_text': '当前操作: 无',
 
         'theme_label_text': '主题',
@@ -51,7 +51,7 @@ translations = {
         'language_combo_tooltip_text':'更改语言，重启程序生效'
     },
     LANGUAGE_LIST[1]: {
-        'tool_name': 'K5/K6 Tools ',
+        'tool_name': 'K5/K6 Tools',
         'now_state_none_text': 'Now state: none',
 
         'theme_label_text': 'Theme',
