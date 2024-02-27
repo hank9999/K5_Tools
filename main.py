@@ -19,11 +19,13 @@ from functions import (
     read_config, 
     write_config, 
     write_pinyin_index,
-    todo_function
+    todo_function,
+    backup_eeprom,
+    restore_eeprom
 )
 
 window = ttk.Window()
-version = '0.5'
+version = '0.6'
 
 appdata_path = os.getenv('APPDATA') if os.getenv('APPDATA') is not None else ''
 config_dir = os.path.join(appdata_path, 'K5_Tools')
@@ -364,26 +366,30 @@ def main():
         width=14,
         command=lambda: write_pinyin_index(
             serial_port_combo.get(), window, progress, label2,
-            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), True
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), False, True
         )
     )
     write_pinyin_new_index_button.pack(side='left', padx=3, pady=(2, 15))
 
-    todo_button = tk.Button(
+    backup_eeprom_button = tk.Button(
         frame7,
-        text=translations[language]['todo_button_text'],
+        text='备份EEPROM',
         width=14,
-        command=todo_function
+        command=lambda:backup_eeprom(
+            serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())   
+        )
     )
-    todo_button.pack(side='left', padx=3, pady=(2, 15))
+    backup_eeprom_button.pack(side='left', padx=3, pady=(2, 15))
     
-    todo_button = tk.Button(
+    restore_eeprom_button = tk.Button(
         frame7,
-        text=translations[language]['todo_button_text'],
+        text='恢复EEPROM',
         width=14,
-        command=todo_function
+        command=lambda:restore_eeprom(
+            serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())
+        )
     )
-    todo_button.pack(side='left', padx=3, pady=(2, 15))
+    restore_eeprom_button.pack(side='left', padx=3, pady=(2, 15))
     
     todo_button = tk.Button(
         frame7,
@@ -412,24 +418,6 @@ def main():
     log('所有操作均有一定的风险，请确保您已备份校准等文件！！！\n')
 
     # 在此统一设置tooltip
-    #Tooltip(serial_port_combo, "点击选择K5/K6所在串口")
-    #Tooltip(eeprom_size_combo, "EEPROM芯片容量，若自动检测正确则无需修改")
-    #Tooltip(firmware_combo, "固件版本，若自动检测正确则无需修改")
-    #Tooltip(clean_eeprom_button, "清除EEPROM中的所有数据")
-    #Tooltip(auto_write_font_button, "自动写入机器固件所需字库等文件，如不清楚点那个按钮的情况下，点这个总没错")
-    #Tooltip(read_calibration_button, "校准文件包含硬件参数校准信息，必须备份！建议终身保留以备恢复")
-    #Tooltip(write_calibration_button, "校准文件只在更换芯片或清除EEPROM数据后写一次即可")
-    #Tooltip(read_config_button, "配置文件包含了菜单设置信息、开机字符和信道信息等，如无特别需要可不备份，不同固件的菜单设置可能不通用")
-    #Tooltip(write_config_button, "配置文件如无特别需要，可以不写")
-    #Tooltip(write_font_conf_button, "写入字库配置，如果不使用自动写入，请在执行完字库写入后点击")
-    #Tooltip(write_tone_options_button, "写入亚音参数，如果不使用自动写入，请在执行完字库写入后点击")
-    #Tooltip(write_font_compressed_button, "压缩GB2312字库，萝狮虎118K、123H版本及后续版本使用")
-    #Tooltip(write_font_uncompressed_button, "全量GB2312字库，用于萝狮虎118H版本，后续未使用")
-    #Tooltip(write_font_old_button, "萝狮虎117版本及之前版本使用，旧字库")
-    #Tooltip(write_pinyin_old_index_button, "123版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
-    #Tooltip(write_pinyin_new_index_button, "124及以上版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击")
-    #Tooltip(language_combo, "Change language.")
-    
     Tooltip(language_combo, translations[language]['language_combo_tooltip_text'])
     Tooltip(eeprom_size_combo, translations[language]['eeprom_size_combo_tooltip_text'])
     Tooltip(firmware_combo, translations[language]['firmware_combo_tooltip_text'])
@@ -447,6 +435,9 @@ def main():
     Tooltip(write_font_old_button, translations[language]['write_font_old_button_tooltip_text'])
     Tooltip(write_pinyin_old_index_button, translations[language]['write_pinyin_old_index_button_tooltip_text'])
     Tooltip(write_pinyin_new_index_button, translations[language]['write_pinyin_new_index_button_tooltip_text'])
+    Tooltip(backup_eeprom_button, "备份EEPROM中的数据，使用EEPROM下拉框可以选择所要备份的大小")
+    Tooltip(restore_eeprom_button, "恢复EEPROM中的数据，使用EEPROM下拉框可以选择所要恢复的大小")
+    Tooltip(todo_button, "敬请期待")
 
     window.mainloop()
 

@@ -102,10 +102,9 @@ def read_eeprom(serial_port: serial.Serial, offset: int, length: int):
     return o[8:]
 
 
-def read_extra_eeprom(serial_port: serial.Serial, offset: int, extra: int, length: int):
-    if extra > 0xFFFF:
-        offset = extra >> 16
-        extra = extra & 0xFFFF
+def read_extra_eeprom(serial_port: serial.Serial, addr: int, length: int):
+    offset = addr >> 16
+    extra = addr & 0xFFFF
     extra_bytes = struct.pack("<H", extra)
     read_mem = b"\x2b\x05\x08\x00" + \
                struct.pack("<HBB", offset, length, 0) + \
@@ -135,10 +134,9 @@ def write_eeprom(serial_port: serial.Serial, offset: int, data: bytes):
         raise Exception("写入前8KiB EEPROM响应错误！")
 
 
-def write_extra_eeprom(serial_port: serial.Serial, offset: int, extra: int, data: bytes):
-    if extra > 0xFFFF:
-        offset = extra >> 16
-        extra = extra & 0xFFFF
+def write_extra_eeprom(serial_port: serial.Serial, addr: int, data: bytes):
+    offset = addr >> 16
+    extra = addr & 0xFFFF
     extra = struct.pack("<H", extra)
     length = len(data) + len(extra)
 
