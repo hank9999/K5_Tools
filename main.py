@@ -3,7 +3,7 @@ import sys
 import tkinter as tk
 import ttkbootstrap as ttk
 import configparser
-from const_vars import *
+from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE, FontType, LanguageType
 from logger import log
 from translations import *
 
@@ -44,11 +44,11 @@ if 'Settings' not in config:
 if 'theme' not in config['Settings']:
     config['Settings']['theme'] = 'darkly'
 if 'language' not in config['Settings']:
-    config['Settings']['language'] = LANGUAGE_LIST[0]
+    config['Settings']['language'] = LanguageType.SIMPLIFIED_CHINESE.name
 
 config_version = config.get('ConfigVersion', 'configversion')
 style = ttk.Style(config.get('Settings', 'theme'))
-language = config.get('Settings', 'language')
+language = LanguageType.find_name(config.get('Settings', 'language'))
 
 
 class Tooltip(object):
@@ -125,7 +125,7 @@ def make_readonly(_):
 
 def on_closing():
     config['Settings']['theme'] = style.theme.name
-    config['Settings']['language'] = language
+    config['Settings']['language'] = language.name
     if not os.path.exists(config_dir):
         os.mkdir(config_dir)
     with open(config_path, 'w') as configfile:
@@ -141,7 +141,7 @@ def change_theme(_, theme_combo: ttk.Combobox):
 
 def change_language(_, language_combo: ttk.Combobox):
     global language
-    language = language_combo.get()
+    language = LanguageType.find_value(language_combo.get())
 
 
 def main():
@@ -177,8 +177,8 @@ def main():
     label2 = tk.Label(frame2, text=translations[language]['now_state_none_text'])
     label2.pack(side='left')
 
-    language_combo = ttk.Combobox(frame2, width=10, state='readonly', values=LANGUAGE_LIST)
-    language_combo.current(LANGUAGE_LIST.index(language))
+    language_combo = ttk.Combobox(frame2, width=10, state='readonly', values=LanguageType.value_list())
+    language_combo.current(LanguageType.value_list().index(language.value))
     language_combo.pack(side='right', padx=(1, 3), pady=2)
     language_combo.bind(
         '<<ComboboxSelected>>',

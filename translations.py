@@ -1,7 +1,7 @@
-from const_vars import LANGUAGE_LIST
+from const_vars import LanguageType
 
 translations = {
-    LANGUAGE_LIST[0]: {
+    LanguageType.SIMPLIFIED_CHINESE: {
         # UI
         'tool_name': 'K5/K6 小工具集',
         'now_state_none_text': '当前操作: 无',
@@ -11,22 +11,22 @@ translations = {
         'firmware_label_text': '固件版本',
 
         # Buttons
-        'clean_eeprom_button_text' : '清空EEPROM',
-        'auto_write_font_button_text' : '自动写入字库',
-        'read_calibration_button_text' : '读取校准参数',
-        'write_calibration_button_text' : '写入校准参数',
-        'read_config_button_text' : '读取配置参数',
-        'write_config_button_text' :'写入配置参数',
-        'write_font_conf_button_text' : '写入字库配置',
-        'write_tone_options_button_text' :'写入亚音参数',
-        'write_font_compressed_button_text' : '写入压缩字库',
-        'write_font_uncompressed_button_text' : '写入全量字库',
-        'write_font_old_button_text' : '写入字库 (旧)',
-        'write_pinyin_old_index_button_text' : '写入拼音表（旧）',
-        'write_pinyin_new_index_button_text' : '写入拼音表（新）',
-        'backup_eeprom_button_text' : '备份EEPROM',
-        'restore_eeprom_button_text' : '恢复EEPROM',
-        'todo_button_text' : '敬请期待',
+        'clean_eeprom_button_text': '清空EEPROM',
+        'auto_write_font_button_text': '自动写入字库',
+        'read_calibration_button_text': '读取校准参数',
+        'write_calibration_button_text': '写入校准参数',
+        'read_config_button_text': '读取配置参数',
+        'write_config_button_text': '写入配置参数',
+        'write_font_conf_button_text': '写入字库配置',
+        'write_tone_options_button_text': '写入亚音参数',
+        'write_font_compressed_button_text': '写入压缩字库',
+        'write_font_uncompressed_button_text': '写入全量字库',
+        'write_font_old_button_text': '写入字库 (旧)',
+        'write_pinyin_old_index_button_text': '写入拼音表（旧）',
+        'write_pinyin_new_index_button_text': '写入拼音表（新）',
+        'backup_eeprom_button_text': '备份EEPROM',
+        'restore_eeprom_button_text': '恢复EEPROM',
+        'todo_button_text': '敬请期待',
 
         # Tooltip
         'eeprom_size_combo_tooltip_text': 'EEPROM芯片容量，若自动检测正确则无需修改',
@@ -45,12 +45,12 @@ translations = {
         'write_font_old_button_tooltip_text': '117版本及之前版本使用，旧字库',
         'write_pinyin_old_index_button_tooltip_text': '123版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击',
         'write_pinyin_new_index_button_tooltip_text': '124及以上版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击',
-        'backup_eeprom_button_tooltip_text' : '备份EEPROM中的数据，使用EEPROM下拉框可以选择所要备份的大小',
-        'restore_eeprom_button_tooltip_text' : '恢复EEPROM中的数据，使用EEPROM下拉框可以选择所要恢复的大小',
-        'todo_button_tooltip_text' : '敬请期待',
-        'language_combo_tooltip_text':'更改语言，重启程序生效'
+        'backup_eeprom_button_tooltip_text': '备份EEPROM中的数据，使用EEPROM下拉框可以选择所要备份的大小',
+        'restore_eeprom_button_tooltip_text': '恢复EEPROM中的数据，使用EEPROM下拉框可以选择所要恢复的大小',
+        'todo_button_tooltip_text': '敬请期待',
+        'language_combo_tooltip_text': '更改语言，重启程序生效'
     },
-    LANGUAGE_LIST[1]: {
+    LanguageType.ENGLISH: {
         'tool_name': 'K5/K6 Tools',
         'now_state_none_text': 'Now state: none',
 
@@ -71,8 +71,8 @@ translations = {
         'write_font_old_button_text': 'Write old font',
         'write_pinyin_old_index_button_text': 'Write old index',
         'write_pinyin_new_index_button_text': 'Write new index',
-        'backup_eeprom_button_text' : 'Backup EEPROM',
-        'restore_eeprom_button_text' : 'Restore EEPROM',
+        'backup_eeprom_button_text': 'Backup EEPROM',
+        'restore_eeprom_button_text': 'Restore EEPROM',
         'todo_button_text': 'Coming soon',
 
         'eeprom_size_combo_tooltip_text': 'EEPROM chip capacity, no need to modify if automatically detected correctly',
@@ -94,6 +94,6 @@ translations = {
         'backup_eeprom_button_tooltip_text': 'Backup data in EEPROM. Use the EEPROM dropdown to select the size to be backed up.',
         'restore_eeprom_button_tooltip_text': 'Restore data in EEPROM. Use the EEPROM dropdown to select the size to be restored.',
         'todo_button_tooltip_text': 'Coming soon',
-        'language_combo_tooltip_text':'Change language, take effect after restart.'
+        'language_combo_tooltip_text': 'Change language, take effect after restart.'
     }
 }
