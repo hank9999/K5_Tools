@@ -2,9 +2,9 @@ name: Multi-platform x64 Build with Python 3.11
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
   build:
