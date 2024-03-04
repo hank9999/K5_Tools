@@ -1,6 +1,8 @@
 import os
 import sys
 import tkinter as tk
+from tkinter import messagebox
+
 import ttkbootstrap as ttk
 import configparser
 from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE, FontType, LanguageType
@@ -142,6 +144,16 @@ def change_theme(_, theme_combo: ttk.Combobox):
 def change_language(_, language_combo: ttk.Combobox):
     global language
     language = LanguageType.find_value(language_combo.get())
+    if language == LanguageType.SIMPLIFIED_CHINESE:
+        log('语言已更改为简体中文\n请重启程序以应用更改\n')
+        messagebox.showinfo('提示', '语言已更改为简体中文\n请重启程序以应用更改')
+    else:
+        log('Language has been changed to English\nPlease restart the program to apply the changes')
+        messagebox.showinfo(
+            'Prompt',
+            'Language has been changed to English\nPlease restart the program to apply the changes'
+        )
+
 
 
 def main():
