@@ -12,7 +12,7 @@ class FontType(Enum):
 
 class LanguageType(Enum):
     SIMPLIFIED_CHINESE = '简体中文'
-    ENGLISH = 'en-US'
+    ENGLISH = 'English'
 
     @staticmethod
     def find_value(value: str) -> 'LanguageType':
