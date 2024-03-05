@@ -145,13 +145,16 @@ def change_language(_, language_combo: ttk.Combobox):
     global language
     language = LanguageType.find_value(language_combo.get())
     if language == LanguageType.SIMPLIFIED_CHINESE:
-        log('语言已更改为简体中文\n请重启程序以应用更改\n')
-        messagebox.showinfo('提示', '语言已更改为简体中文\n请重启程序以应用更改')
+        log('语言设置已更改为"简体中文"\n请在当前操作完成后手动重启此程序以应用更改')
+        messagebox.showinfo(
+            '提示',
+            '语言设置已更改为"简体中文"\n请在当前操作完成后手动重启此程序以应用更改'
+        )
     else:
-        log('Language has been changed to English\nPlease restart the program to apply the changes')
+        log('Language setting has been changed to "English"\nPlease manually restart this program after the current operation is completed to apply the changes')
         messagebox.showinfo(
             'Prompt',
-            'Language has been changed to English\nPlease restart the program to apply the changes'
+            'Language setting has been changed to "English"\nPlease manually restart this program after the current operation is completed to apply the changes'
         )
 
 
