@@ -422,11 +422,11 @@ def main():
 
     # 第九行
     frame9 = ctk.CTkFrame(window)
-    frame9.grid(row=8, column=0, sticky='we')
+    frame9.grid(row=8, column=0, sticky='we', padx=10, pady=10)
 
     progress = ctk.CTkProgressBar(frame9, mode='determinate')
     progress.set(0)
-    progress.pack(side='left', padx=3, pady=(2, 10), expand=True, fill='x')
+    progress.pack(side='left', padx=3, pady=(2, 2), expand=True, fill='x')
 
     # 布局结束，显示首行日志
     log(f'K5/K6 小工具集 v{version} BG4IST - hank9999\n')
