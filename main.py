@@ -226,44 +226,44 @@ def main():
     clean_eeprom_button = ctk.CTkButton(
         frame4,
         text=translations[language]['clean_eeprom_button_text'],
-        width=14,
+        width=104,
         command=lambda: clean_eeprom(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    clean_eeprom_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
+    clean_eeprom_button.pack(side='left', padx=3, pady=2)
 
     auto_write_font_button = ctk.CTkButton(
         frame4,
         text=translations[language]['auto_write_font_button_text'],
-        width=14,
+        width=104,
         command=lambda: auto_write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    auto_write_font_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
+    auto_write_font_button.pack(side='left', padx=3, pady=2)
 
     read_calibration_button = ctk.CTkButton(
         frame4,
         text=translations[language]['read_calibration_button_text'],
-        width=14,
+        width=104,
         command=lambda: read_calibration(
             serial_port_combo.get(), window, progress, label2
         )
     )
-    read_calibration_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
+    read_calibration_button.pack(side='left', padx=3, pady=2)
 
     write_calibration_button = ctk.CTkButton(
         frame4,
         text=translations[language]['write_calibration_button_text'],
-        width=14,
+        width=104,
         command=lambda: write_calibration(
             serial_port_combo.get(), window, progress, label2
         )
     )
-    write_calibration_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
+    write_calibration_button.pack(side='left', padx=3, pady=2)
 
     # 第五行
     frame5 = ctk.CTkFrame(window)
@@ -272,7 +272,7 @@ def main():
     read_config_button = ctk.CTkButton(
         frame5,
         text=translations[language]['read_config_button_text'],
-        width=14,
+        width=104,
         command=lambda: read_config(
             serial_port_combo.get(), window, progress, label2
         )
@@ -282,7 +282,7 @@ def main():
     write_config_button = ctk.CTkButton(
         frame5,
         text=translations[language]['write_config_button_text'],
-        width=14,
+        width=104,
         command=lambda: write_config(
             serial_port_combo.get(), window, progress, label2
         )
@@ -292,7 +292,7 @@ def main():
     write_font_conf_button = ctk.CTkButton(
         frame5,
         text=translations[language]['write_font_conf_button_text'],
-        width=14,
+        width=104,
         command=lambda: write_font_conf(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
@@ -303,7 +303,7 @@ def main():
     write_tone_options_button = ctk.CTkButton(
         frame5,
         text=translations[language]['write_tone_options_button_text'],
-        width=14,
+        width=104,
         command=lambda: write_tone_options(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
@@ -318,7 +318,7 @@ def main():
     write_font_compressed_button = ctk.CTkButton(
         frame6,
         text=translations[language]['write_font_compressed_button_text'],
-        width=14,
+        width=104,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
@@ -330,7 +330,7 @@ def main():
     write_font_uncompressed_button = ctk.CTkButton(
         frame6,
         text=translations[language]['write_font_uncompressed_button_text'],
-        width=14,
+        width=104,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
@@ -342,7 +342,7 @@ def main():
     write_font_old_button = ctk.CTkButton(
         frame6,
         text=translations[language]['write_font_old_button_text'],
-        width=14,
+        width=104,
         command=lambda: write_font(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()),
@@ -354,7 +354,7 @@ def main():
     write_pinyin_old_index_button = ctk.CTkButton(
         frame6,
         text=translations[language]['write_pinyin_old_index_button_text'],
-        width=14,
+        width=104,
         command=lambda: write_pinyin_index(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
@@ -368,7 +368,7 @@ def main():
     write_pinyin_new_index_button = ctk.CTkButton(
         frame7,
         text=translations[language]['write_pinyin_new_index_button_text'],
-        width=14,
+        width=104,
         command=lambda: write_pinyin_index(
             serial_port_combo.get(), window, progress, label2,
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), False, True
@@ -379,7 +379,7 @@ def main():
     backup_eeprom_button = ctk.CTkButton(
         frame7,
         text=translations[language]['backup_eeprom_button_text'],
-        width=14,
+        width=104,
         command=lambda:backup_eeprom(
             serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())   
         )
@@ -389,7 +389,7 @@ def main():
     restore_eeprom_button = ctk.CTkButton(
         frame7,
         text=translations[language]['restore_eeprom_button_text'],
-        width=14,
+        width=104,
         command=lambda:restore_eeprom(
             serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())
         )
@@ -399,7 +399,7 @@ def main():
     todo_button = ctk.CTkButton(
         frame7,
         text=translations[language]['todo_button_text'],
-        width=14,
+        width=104,
         command=todo_function
     )
     todo_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
