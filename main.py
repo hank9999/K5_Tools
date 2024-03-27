@@ -228,7 +228,7 @@ def main():
 
     # 第四行
     frame4 = ctk.CTkFrame(window)
-    frame4.grid(row=3, column=0, sticky='we', padx=10, pady=2)
+    frame4.grid(row=3, column=0, sticky='we', padx=10, pady=(15, 2))
 
     clean_eeprom_button = ctk.CTkButton(
         frame4,
@@ -239,7 +239,7 @@ def main():
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    clean_eeprom_button.pack(side='left', padx=3, pady=(15, 2), expand=True, fill='x')
+    clean_eeprom_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     auto_write_font_button = ctk.CTkButton(
         frame4,
@@ -250,7 +250,7 @@ def main():
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
         )
     )
-    auto_write_font_button.pack(side='left', padx=3, pady=(15, 2), expand=True, fill='x')
+    auto_write_font_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     read_calibration_button = ctk.CTkButton(
         frame4,
@@ -260,7 +260,7 @@ def main():
             serial_port_combo.get(), window, progress, label2
         )
     )
-    read_calibration_button.pack(side='left', padx=3, pady=(15, 2), expand=True, fill='x')
+    read_calibration_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     write_calibration_button = ctk.CTkButton(
         frame4,
@@ -270,7 +270,7 @@ def main():
             serial_port_combo.get(), window, progress, label2
         )
     )
-    write_calibration_button.pack(side='left', padx=3, pady=(15, 2), expand=True, fill='x')
+    write_calibration_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     # 第五行
     frame5 = ctk.CTkFrame(window)
@@ -371,7 +371,7 @@ def main():
 
     # 第七行
     frame7 = ctk.CTkFrame(window)
-    frame7.grid(row=6, column=0, sticky='we', padx=10, pady=2)
+    frame7.grid(row=6, column=0, sticky='we', padx=10, pady=(2, 15))
     write_pinyin_new_index_button = ctk.CTkButton(
         frame7,
         text=translations[language]['write_pinyin_new_index_button_text'],
@@ -381,7 +381,7 @@ def main():
             EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get()), False, True
         )
     )
-    write_pinyin_new_index_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
+    write_pinyin_new_index_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     backup_eeprom_button = ctk.CTkButton(
         frame7,
@@ -391,7 +391,7 @@ def main():
             serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())   
         )
     )
-    backup_eeprom_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
+    backup_eeprom_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
     
     restore_eeprom_button = ctk.CTkButton(
         frame7,
@@ -401,7 +401,7 @@ def main():
             serial_port_combo.get(), window, progress, label2,EEPROM_SIZE.index(eeprom_size_combo.get())
         )
     )
-    restore_eeprom_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
+    restore_eeprom_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
     
     todo_button = ctk.CTkButton(
         frame7,
@@ -409,7 +409,7 @@ def main():
         width=14,
         command=todo_function
     )
-    todo_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
+    todo_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
     
     # 第八行
     frame8 = ctk.CTkFrame(window)
@@ -417,7 +417,7 @@ def main():
 
     textbox = ctk.CTkTextbox(frame8, height=240)
     textbox.bind("<Key>", make_readonly)  # 防止用户修改
-    textbox.pack(side='left', padx=3, pady=(2, 2), expand=True, fill='x')
+    textbox.pack(side='left', padx=3, pady=2, expand=True, fill='x')
     sys.stdout = TextRedirector(textbox)
 
     # 第九行
@@ -426,7 +426,7 @@ def main():
 
     progress = ctk.CTkProgressBar(frame9, mode='determinate')
     progress.set(0)
-    progress.pack(side='left', padx=3, pady=(2, 2), expand=True, fill='x')
+    progress.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     # 布局结束，显示首行日志
     log(f'K5/K6 小工具集 v{version} BG4IST - hank9999\n')
