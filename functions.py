@@ -1,7 +1,10 @@
 import dataclasses
 import random
 import struct
-from tkinter import filedialog
+
+from tkinter import messagebox, filedialog
+import customtkinter as ctk
+
 from typing import Union, List
 
 from serial import Serial
@@ -10,8 +13,6 @@ from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE, FontType
 import serial_utils
 import serial.tools.list_ports
 from logger import log
-import tkinter as tk
-from tkinter import messagebox, ttk
 from resources import tone, font
 
 
@@ -31,7 +32,7 @@ def get_all_serial_port():
     return ports
 
 
-def serial_port_combo_postcommand(combo: ttk.Combobox):
+def serial_port_combo_postcommand(combo: ctk.CTkComboBox):
     combo['values'] = get_all_serial_port()
 
 
@@ -94,8 +95,8 @@ def check_serial_port(serial_port: serial.Serial,
         return SerialPortCheckResult(False, msg, 2, 0, '')
 
 
-def serial_port_combo_callback(_, serial_port: str, status_label: tk.Label, eeprom_size_combo: ttk.Combobox,
-                               firmware_combo: ttk.Combobox):
+def serial_port_combo_callback(_, serial_port: str, status_label: ctk.CTkLabel, eeprom_size_combo: ctk.CTkComboBox,
+                               firmware_combo: ctk.CTkComboBox):
     status_label['text'] = '当前操作: 检查串口连接'
     with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port)
@@ -109,7 +110,7 @@ def serial_port_combo_callback(_, serial_port: str, status_label: tk.Label, eepr
 
 
 def write_data(serial_port: Serial, start_addr: int, data: Union[bytes, List[int]],
-               progress: ttk.Progressbar, window: tk.Tk, step: int = 128):
+               progress: ctk.CTkProgressBar, window: ctk.CTk, step: int = 128):
     data_len = len(data)
     total_page = data_len // 128
     addr = start_addr
@@ -133,7 +134,7 @@ def write_data(serial_port: Serial, start_addr: int, data: Union[bytes, List[int
     window.update()
 
 
-def clean_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
+def clean_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar, status_label: ctk.CTkLabel,
                  eeprom_size: int, firmware_version: int):
     log('开始清空EEPROM流程')
     log('选择的串口: ' + serial_port_text)
@@ -183,7 +184,7 @@ def clean_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar
         status_label['text'] = '当前操作: 无'
 
 
-def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
+def write_font(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar, status_label: ctk.CTkLabel,
                eeprom_size: int, firmware_version: int, font_type: FontType, is_continue: bool = False):
     log('开始写入字库流程')
     log(f'字库版本: {font_type.value}')
@@ -247,7 +248,7 @@ def write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, 
         status_label['text'] = '当前操作: 无'
 
 
-def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
+def write_font_conf(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar, status_label: ctk.CTkLabel,
                     eeprom_size: int, firmware_version: int, is_continue: bool = False):
     log('开始写入字库配置')
     log('选择的串口: ' + serial_port_text)
@@ -290,7 +291,7 @@ def write_font_conf(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
         status_label['text'] = '当前操作: 无'
 
 
-def write_tone_options(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
+def write_tone_options(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar, status_label: ctk.CTkLabel,
                        eeprom_size: int, firmware_version: int, is_continue: bool = False):
     log('开始写入亚音参数')
     log('选择的串口: ' + serial_port_text)
@@ -351,8 +352,8 @@ def reset_radio(serial_port_text: str, status_label):
 
 
 # 写入字库等信息的总函数
-def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-                    status_label: tk.Label, eeprom_size: int, firmware_version: int):
+def auto_write_font(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar,
+                    status_label: ctk.CTkLabel, eeprom_size: int, firmware_version: int):
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         result = check_serial_port(serial_port, False)
         if not result.status:
@@ -405,8 +406,8 @@ def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
         messagebox.showinfo('提示', f'非LOSEHU扩容固件，无法写入')
 
 
-def read_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-                     status_label: tk.Label):
+def read_calibration(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar,
+                     status_label: ctk.CTkLabel):
     log('开始读取校准参数')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 读取校准参数'
@@ -456,8 +457,8 @@ def read_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progres
         messagebox.showinfo('提示', '保存成功！')
 
 
-def write_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-                      status_label: tk.Label):
+def write_calibration(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar,
+                      status_label: ctk.CTkLabel):
     log('开始写入校准参数')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入校准参数'
@@ -498,8 +499,8 @@ def write_calibration(serial_port_text: str, window: tk.Tk, progress: ttk.Progre
         messagebox.showinfo('提示', '写入成功！')
 
 
-def read_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-                status_label: tk.Label):
+def read_config(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar,
+                status_label: ctk.CTkLabel):
     log('开始读取配置参数')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 读取配置参数'
@@ -549,8 +550,8 @@ def read_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
         messagebox.showinfo('提示', '保存成功！')
 
 
-def write_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-                 status_label: tk.Label):
+def write_config(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar,
+                 status_label: ctk.CTkLabel):
     log('开始写入配置参数')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 写入配置参数'
@@ -591,7 +592,7 @@ def write_config(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar
         messagebox.showinfo('提示', '写入成功！')
 
 
-def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
+def write_pinyin_index(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar, status_label: ctk.CTkLabel,
                        eeprom_size: int, firmware_version: int, is_continue: bool = False, new: bool = False):
     log('开始写入拼音检索表')
     log('选择的串口: ' + serial_port_text)
@@ -633,8 +634,8 @@ def write_pinyin_index(serial_port_text: str, window: tk.Tk, progress: ttk.Progr
         status_label['text'] = '当前操作: 无'
 
 
-def backup_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-                  status_label: tk.Label, eeprom_size: int):
+def backup_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar,
+                  status_label: ctk.CTkLabel, eeprom_size: int):
     log('开始备份')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 备份eeprom'
@@ -693,8 +694,8 @@ def backup_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressba
         messagebox.showinfo('提示', '保存成功！')
 
 
-def restore_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar,
-                   status_label: tk.Label, eeprom_size: int):
+def restore_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar,
+                   status_label: ctk.CTkLabel, eeprom_size: int):
     log('开始恢复eeprom')
     log('选择的串口: ' + serial_port_text)
     status_label['text'] = f'当前操作: 恢复eeprom'
