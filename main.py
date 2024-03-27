@@ -188,12 +188,7 @@ def main():
     language_combo = ctk.CTkComboBox(frame2, width=100, state='readonly', values=LanguageType.value_list())
     language_combo.set(language.value)
     language_combo.pack(side='right', padx=(1, 3), pady=2)
-    language_combo.bind(
-        '<<ComboboxSelected>>',
-        lambda event: change_language(
-            event, language_combo
-        )
-    )
+    language_combo.configure(command=lambda event: change_language(event, language_combo))
 
     language_label = ctk.CTkLabel(frame2, text='Language')
     language_label.pack(side='right')
@@ -207,11 +202,9 @@ def main():
 
     serial_port_combo = ctk.CTkComboBox(frame3, width=100, state='readonly')
     serial_port_combo_postcommand(serial_port_combo)
-    serial_port_combo.configure(
-        command=lambda event: serial_port_combo_callback(
-            event, serial_port_combo.get(), label2, eeprom_size_combo, firmware_combo
-        )
-    )
+    serial_port_combo.configure(command=lambda event: serial_port_combo_callback(
+        event, serial_port_combo.get(), label2, eeprom_size_combo, firmware_combo
+    ))
     serial_port_combo.pack(side='left', padx=(1, 3), pady=2)
 
     eeprom_size_label = ctk.CTkLabel(frame3, text='EEPROM')
