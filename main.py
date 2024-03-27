@@ -55,7 +55,7 @@ language = LanguageType.find_name(config.get('Settings', 'language'))
 class Tooltip(object):
     def __init__(self, widget, text='widget info'):
         self.wait_time = 500  # milliseconds
-        self.wrap_length = 180  # pixels
+        self.wrap_length = 280  # pixels
         self.widget = widget
         self.text = text
         self.widget.bind('<Enter>', self.enter)
@@ -84,8 +84,8 @@ class Tooltip(object):
 
     def showtip(self):
         x, y, cx, cy = self.widget.bbox('insert')
-        x += self.widget.winfo_rootx() + 25
-        y += self.widget.winfo_rooty() + 25
+        x += self.widget.winfo_rootx() + 30
+        y += self.widget.winfo_rooty() + 30
         self.tw = ctk.CTkToplevel(self.widget)
         self.tw.wm_overrideredirect(True)
         self.tw.wm_geometry('+%d+%d' % (x, y))
@@ -93,9 +93,6 @@ class Tooltip(object):
             self.tw,
             text=self.text,
             justify='left',
-            background='#ffffff',
-            relief='solid',
-            borderwidth=1,
             wraplength=self.wrap_length,
         )
         label.pack(ipadx=1)
