@@ -198,26 +198,26 @@ def main():
     frame3.grid(row=2, column=0, sticky='we', padx=10, pady=2)
 
     serial_port_label = ctk.CTkLabel(frame3, text=translations[language]['serial_port_text'])
-    serial_port_label.pack(side='left')
+    serial_port_label.pack(side='left', expand=True, fill='x')
 
     serial_port_combo = ctk.CTkComboBox(frame3, width=100, state='readonly')
     serial_port_combo_postcommand(serial_port_combo)
     serial_port_combo.configure(command=lambda event: serial_port_combo_callback(
         event, serial_port_combo.get(), label2, eeprom_size_combo, firmware_combo
     ))
-    serial_port_combo.pack(side='left', padx=(1, 3), pady=2)
+    serial_port_combo.pack(side='left', padx=(1, 3), pady=2, expand=True, fill='x')
 
     eeprom_size_label = ctk.CTkLabel(frame3, text='EEPROM')
-    eeprom_size_label.pack(side='left')
+    eeprom_size_label.pack(side='left', expand=True, fill='x')
 
     eeprom_size_combo = ctk.CTkComboBox(frame3, values=EEPROM_SIZE, width=100, state='readonly')
-    eeprom_size_combo.pack(side='left', padx=(1, 3))
+    eeprom_size_combo.pack(side='left', padx=(1, 3), expand=True, fill='x')
 
     firmware_label = ctk.CTkLabel(frame3, text=translations[language]['firmware_label_text'])
-    firmware_label.pack(side='left')
+    firmware_label.pack(side='left', expand=True, fill='x')
 
     firmware_combo = ctk.CTkComboBox(frame3, values=FIRMWARE_VERSION_LIST, width=100, state='readonly')
-    firmware_combo.pack(side='left', padx=(1, 3))
+    firmware_combo.pack(side='left', padx=(1, 3), expand=True, fill='x')
 
     # 第四行
     frame4 = ctk.CTkFrame(window)
