@@ -1,9 +1,8 @@
 import os
 import sys
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import messagebox
 
-import ttkbootstrap as ttk
 import configparser
 from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE, FontType, LanguageType
 from logger import log
@@ -26,7 +25,7 @@ from functions import (
     restore_eeprom
 )
 
-window = ttk.Window()
+window = ctk.CTk()
 version = '0.6'
 
 appdata_path = os.getenv('APPDATA') if os.getenv('APPDATA') is not None else ''
@@ -49,7 +48,7 @@ if 'language' not in config['Settings']:
     config['Settings']['language'] = LanguageType.SIMPLIFIED_CHINESE.name
 
 config_version = config.get('ConfigVersion', 'configversion')
-style = ttk.Style(config.get('Settings', 'theme'))
+# style = ttk.Style(config.get('Settings', 'theme'))
 language = LanguageType.find_name(config.get('Settings', 'language'))
 
 
@@ -87,10 +86,10 @@ class Tooltip(object):
         x, y, cx, cy = self.widget.bbox('insert')
         x += self.widget.winfo_rootx() + 25
         y += self.widget.winfo_rooty() + 25
-        self.tw = tk.Toplevel(self.widget)
+        self.tw = ctk.CTkToplevel(self.widget)
         self.tw.wm_overrideredirect(True)
         self.tw.wm_geometry('+%d+%d' % (x, y))
-        label = tk.Label(
+        label = ctk.CTkLabel(
             self.tw,
             text=self.text,
             justify='left',
@@ -108,17 +107,17 @@ class Tooltip(object):
             tw.destroy()
 
 
-class TextRedirector(tk.Text):
-    def __init__(self, widget):
-        super().__init__()
-        self.widget = widget
-
-    def write(self, strs):
-        self.widget.insert(tk.END, strs)
-        self.widget.see(tk.END)
-
-    def flush(self):
-        pass
+# class TextRedirector(tk.Text):
+#     def __init__(self, widget):
+#         super().__init__()
+#         self.widget = widget
+#
+#     def write(self, strs):
+#         self.widget.insert(ctk.END, strs)
+#         self.widget.see(ctk.END)
+#
+#     def flush(self):
+#         pass
 
 
 def make_readonly(_):
@@ -126,7 +125,6 @@ def make_readonly(_):
 
 
 def on_closing():
-    config['Settings']['theme'] = style.theme.name
     config['Settings']['language'] = language.name
     if not os.path.exists(config_dir):
         os.mkdir(config_dir)
@@ -135,13 +133,13 @@ def on_closing():
     window.destroy()
 
 
-def change_theme(_, theme_combo: ttk.Combobox):
+def change_theme(_, theme_combo: ctk.CTkComboBox):
     t = theme_combo.get()
-    style.theme_use(t)
+    # style.theme_use(t)
     theme_combo.selection_clear()
 
 
-def change_language(_, language_combo: ttk.Combobox):
+def change_language(_, language_combo: ctk.CTkComboBox):
     global language
     language = LanguageType.find_value(language_combo.get())
     if language == LanguageType.SIMPLIFIED_CHINESE:
@@ -165,14 +163,13 @@ def main():
     window.protocol('WM_DELETE_WINDOW', on_closing)
 
     # 第一行
-    frame1 = tk.Frame(window, padx=10, pady=2)
-    frame1.grid(row=0, column=0, sticky='we')
+    frame1 = ctk.CTkFrame(window)
+    frame1.grid(row=0, column=0, sticky='we', padx=10, pady=2)
 
-    label1 = tk.Label(frame1, text=f"{translations[language]['tool_name']} v{version} (BG4IST - hank9999)")
+    label1 = ctk.CTkLabel(frame1, text=f"{translations[language]['tool_name']} v{version} (BG4IST - hank9999)")
     label1.pack(side='left')
 
-    theme_combo = ttk.Combobox(frame1, width=10, state='readonly', values=style.theme_names())
-    theme_combo.current(style.theme_names().index(style.theme.name))
+    theme_combo = ctk.CTkComboBox(frame1, width=10, state='readonly', values=[''])
     theme_combo.pack(side='right', padx=(1, 3), pady=2)
     theme_combo.bind(
         '<<ComboboxSelected>>',
@@ -181,18 +178,18 @@ def main():
         )
     )
 
-    theme_label = tk.Label(frame1, text=translations[language]['theme_label_text'])
+    theme_label = ctk.CTkLabel(frame1, text=translations[language]['theme_label_text'])
     theme_label.pack(side='right')
 
     # 第二行
-    frame2 = tk.Frame(window, padx=10, pady=2)
-    frame2.grid(row=1, column=0, sticky='we')
+    frame2 = ctk.CTkFrame(window)
+    frame2.grid(row=1, column=0, sticky='we', padx=10, pady=2)
 
-    label2 = tk.Label(frame2, text=translations[language]['now_state_none_text'])
+    label2 = ctk.CTkLabel(frame2, text=translations[language]['now_state_none_text'])
     label2.pack(side='left')
 
-    language_combo = ttk.Combobox(frame2, width=10, state='readonly', values=LanguageType.value_list())
-    language_combo.current(LanguageType.value_list().index(language.value))
+    language_combo = ctk.CTkComboBox(frame2, width=10, state='readonly', values=LanguageType.value_list())
+    language_combo.set(language.value)
     language_combo.pack(side='right', padx=(1, 3), pady=2)
     language_combo.bind(
         '<<ComboboxSelected>>',
@@ -201,17 +198,17 @@ def main():
         )
     )
 
-    language_label = tk.Label(frame2, text='Language')
+    language_label = ctk.CTkLabel(frame2, text='Language')
     language_label.pack(side='right')
 
     # 第三行
-    frame3 = tk.Frame(window, padx=10, pady=2)
-    frame3.grid(row=2, column=0, sticky='we')
+    frame3 = ctk.CTkFrame(window)
+    frame3.grid(row=2, column=0, sticky='we', padx=10, pady=2)
 
-    serial_port_label = tk.Label(frame3, text=translations[language]['serial_port_text'])
+    serial_port_label = ctk.CTkLabel(frame3, text=translations[language]['serial_port_text'])
     serial_port_label.pack(side='left')
 
-    serial_port_combo = ttk.Combobox(frame3, values=[], width=10, state='readonly')
+    serial_port_combo = ctk.CTkComboBox(frame3, values=[], width=10, state='readonly')
     serial_port_combo['postcommand'] = lambda: serial_port_combo_postcommand(serial_port_combo)
     serial_port_combo.bind(
         '<<ComboboxSelected>>',
@@ -221,23 +218,23 @@ def main():
     )
     serial_port_combo.pack(side='left', padx=(1, 3), pady=2)
 
-    eeprom_size_label = tk.Label(frame3, text='EEPROM')
+    eeprom_size_label = ctk.CTkLabel(frame3, text='EEPROM')
     eeprom_size_label.pack(side='left')
 
-    eeprom_size_combo = ttk.Combobox(frame3, values=EEPROM_SIZE, width=10, state='readonly')
+    eeprom_size_combo = ctk.CTkComboBox(frame3, values=EEPROM_SIZE, width=10, state='readonly')
     eeprom_size_combo.pack(side='left', padx=(1, 3))
 
-    firmware_label = tk.Label(frame3, text=translations[language]['firmware_label_text'])
+    firmware_label = ctk.CTkLabel(frame3, text=translations[language]['firmware_label_text'])
     firmware_label.pack(side='left')
 
-    firmware_combo = ttk.Combobox(frame3, values=FIRMWARE_VERSION_LIST, width=10, state='readonly')
+    firmware_combo = ctk.CTkComboBox(frame3, values=FIRMWARE_VERSION_LIST, width=10, state='readonly')
     firmware_combo.pack(side='left', padx=(1, 3))
 
     # 第四行
-    frame4 = tk.Frame(window, padx=10, pady=2)
-    frame4.grid(row=3, column=0, sticky='we')
+    frame4 = ctk.CTkFrame(window)
+    frame4.grid(row=3, column=0, sticky='we', padx=10, pady=2)
 
-    clean_eeprom_button = tk.Button(
+    clean_eeprom_button = ctk.CTkButton(
         frame4,
         text=translations[language]['clean_eeprom_button_text'],
         width=14,
@@ -248,7 +245,7 @@ def main():
     )
     clean_eeprom_button.pack(side='left', padx=3, pady=(15, 2), expand=True, fill='x')
 
-    auto_write_font_button = tk.Button(
+    auto_write_font_button = ctk.CTkButton(
         frame4,
         text=translations[language]['auto_write_font_button_text'],
         width=14,
@@ -259,7 +256,7 @@ def main():
     )
     auto_write_font_button.pack(side='left', padx=3, pady=(15, 2), expand=True, fill='x')
 
-    read_calibration_button = tk.Button(
+    read_calibration_button = ctk.CTkButton(
         frame4,
         text=translations[language]['read_calibration_button_text'],
         width=14,
@@ -269,7 +266,7 @@ def main():
     )
     read_calibration_button.pack(side='left', padx=3, pady=(15, 2), expand=True, fill='x')
 
-    write_calibration_button = tk.Button(
+    write_calibration_button = ctk.CTkButton(
         frame4,
         text=translations[language]['write_calibration_button_text'],
         width=14,
@@ -280,10 +277,10 @@ def main():
     write_calibration_button.pack(side='left', padx=3, pady=(15, 2), expand=True, fill='x')
 
     # 第五行
-    frame5 = tk.Frame(window, padx=10, pady=2)
-    frame5.grid(row=4, column=0, sticky='we')
+    frame5 = ctk.CTkFrame(window)
+    frame5.grid(row=4, column=0, sticky='we', padx=10, pady=2)
 
-    read_config_button = tk.Button(
+    read_config_button = ctk.CTkButton(
         frame5,
         text=translations[language]['read_config_button_text'],
         width=14,
@@ -293,7 +290,7 @@ def main():
     )
     read_config_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
-    write_config_button = tk.Button(
+    write_config_button = ctk.CTkButton(
         frame5,
         text=translations[language]['write_config_button_text'],
         width=14,
@@ -303,7 +300,7 @@ def main():
     )
     write_config_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
-    write_font_conf_button = tk.Button(
+    write_font_conf_button = ctk.CTkButton(
         frame5,
         text=translations[language]['write_font_conf_button_text'],
         width=14,
@@ -314,7 +311,7 @@ def main():
     )
     write_font_conf_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
-    write_tone_options_button = tk.Button(
+    write_tone_options_button = ctk.CTkButton(
         frame5,
         text=translations[language]['write_tone_options_button_text'],
         width=14,
@@ -326,10 +323,10 @@ def main():
     write_tone_options_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     # 第六行
-    frame6 = tk.Frame(window, padx=10, pady=2)
-    frame6.grid(row=5, column=0, sticky='we')
+    frame6 = ctk.CTkFrame(window)
+    frame6.grid(row=5, column=0, sticky='we', padx=10, pady=2)
 
-    write_font_compressed_button = tk.Button(
+    write_font_compressed_button = ctk.CTkButton(
         frame6,
         text=translations[language]['write_font_compressed_button_text'],
         width=14,
@@ -341,7 +338,7 @@ def main():
     )
     write_font_compressed_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
-    write_font_uncompressed_button = tk.Button(
+    write_font_uncompressed_button = ctk.CTkButton(
         frame6,
         text=translations[language]['write_font_uncompressed_button_text'],
         width=14,
@@ -353,7 +350,7 @@ def main():
     )
     write_font_uncompressed_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
-    write_font_old_button = tk.Button(
+    write_font_old_button = ctk.CTkButton(
         frame6,
         text=translations[language]['write_font_old_button_text'],
         width=14,
@@ -365,7 +362,7 @@ def main():
     )
     write_font_old_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
-    write_pinyin_old_index_button = tk.Button(
+    write_pinyin_old_index_button = ctk.CTkButton(
         frame6,
         text=translations[language]['write_pinyin_old_index_button_text'],
         width=14,
@@ -377,9 +374,9 @@ def main():
     write_pinyin_old_index_button.pack(side='left', padx=3, pady=2, expand=True, fill='x')
 
     # 第七行
-    frame7 = tk.Frame(window, padx=10, pady=2)
-    frame7.grid(row=6, column=0, sticky='we')
-    write_pinyin_new_index_button = tk.Button(
+    frame7 = ctk.CTkFrame(window)
+    frame7.grid(row=6, column=0, sticky='we', padx=10, pady=2)
+    write_pinyin_new_index_button = ctk.CTkButton(
         frame7,
         text=translations[language]['write_pinyin_new_index_button_text'],
         width=14,
@@ -390,7 +387,7 @@ def main():
     )
     write_pinyin_new_index_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
 
-    backup_eeprom_button = tk.Button(
+    backup_eeprom_button = ctk.CTkButton(
         frame7,
         text=translations[language]['backup_eeprom_button_text'],
         width=14,
@@ -400,7 +397,7 @@ def main():
     )
     backup_eeprom_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
     
-    restore_eeprom_button = tk.Button(
+    restore_eeprom_button = ctk.CTkButton(
         frame7,
         text=translations[language]['restore_eeprom_button_text'],
         width=14,
@@ -410,7 +407,7 @@ def main():
     )
     restore_eeprom_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
     
-    todo_button = tk.Button(
+    todo_button = ctk.CTkButton(
         frame7,
         text=translations[language]['todo_button_text'],
         width=14,
@@ -419,19 +416,20 @@ def main():
     todo_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
     
     # 第八行
-    frame8 = tk.Frame(window, padx=10, pady=2)
-    frame8.grid(row=7, column=0, sticky='we')
+    frame8 = ctk.CTkFrame(window)
+    frame8.grid(row=7, column=0, sticky='we', padx=10, pady=2)
 
-    textbox = tk.Text(frame8, width=60, height=15)
+    textbox = ctk.CTkTextbox(frame8, width=60, height=15)
     textbox.bind("<Key>", make_readonly)  # 防止用户修改
     textbox.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
-    sys.stdout = TextRedirector(textbox)
+    # sys.stdout = TextRedirector(textbox)
 
     # 第九行
-    frame9 = tk.Frame(window, padx=10, pady=2)
+    frame9 = ctk.CTkFrame(window)
     frame9.grid(row=8, column=0, sticky='we')
 
-    progress = ttk.Progressbar(frame9, orient='horizontal', mode='determinate')
+    progress = ctk.CTkProgressBar(frame9, mode='determinate')
+    progress.set(0)
     progress.pack(side='left', padx=3, pady=(2, 10), expand=True, fill='x')
 
     # 布局结束，显示首行日志
