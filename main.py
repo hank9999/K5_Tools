@@ -107,17 +107,17 @@ class Tooltip(object):
             tw.destroy()
 
 
-# class TextRedirector(tk.Text):
-#     def __init__(self, widget):
-#         super().__init__()
-#         self.widget = widget
-#
-#     def write(self, strs):
-#         self.widget.insert(ctk.END, strs)
-#         self.widget.see(ctk.END)
-#
-#     def flush(self):
-#         pass
+class TextRedirector:
+    def __init__(self, widget):
+        super().__init__()
+        self.widget = widget
+
+    def write(self, strs):
+        self.widget.insert(ctk.END, strs)
+        self.widget.see(ctk.END)
+
+    def flush(self):
+        pass
 
 
 def make_readonly(_):
@@ -419,10 +419,10 @@ def main():
     frame8 = ctk.CTkFrame(window)
     frame8.grid(row=7, column=0, sticky='we', padx=10, pady=2)
 
-    textbox = ctk.CTkTextbox(frame8, width=60, height=15)
+    textbox = ctk.CTkTextbox(frame8, height=240)
     textbox.bind("<Key>", make_readonly)  # 防止用户修改
-    textbox.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
-    # sys.stdout = TextRedirector(textbox)
+    textbox.pack(side='left', padx=3, pady=(2, 2), expand=True, fill='x')
+    sys.stdout = TextRedirector(textbox)
 
     # 第九行
     frame9 = ctk.CTkFrame(window)
