@@ -169,7 +169,7 @@ def main():
     label1 = ctk.CTkLabel(frame1, text=f"{translations[language]['tool_name']} v{version} (BG4IST - hank9999)")
     label1.pack(side='left')
 
-    theme_combo = ctk.CTkComboBox(frame1, width=10, state='readonly', values=[''])
+    theme_combo = ctk.CTkComboBox(frame1, width=100, state='readonly', values=[''])
     theme_combo.pack(side='right', padx=(1, 3), pady=2)
     theme_combo.bind(
         '<<ComboboxSelected>>',
@@ -188,7 +188,7 @@ def main():
     label2 = ctk.CTkLabel(frame2, text=translations[language]['now_state_none_text'])
     label2.pack(side='left')
 
-    language_combo = ctk.CTkComboBox(frame2, width=10, state='readonly', values=LanguageType.value_list())
+    language_combo = ctk.CTkComboBox(frame2, width=100, state='readonly', values=LanguageType.value_list())
     language_combo.set(language.value)
     language_combo.pack(side='right', padx=(1, 3), pady=2)
     language_combo.bind(
@@ -208,7 +208,7 @@ def main():
     serial_port_label = ctk.CTkLabel(frame3, text=translations[language]['serial_port_text'])
     serial_port_label.pack(side='left')
 
-    serial_port_combo = ctk.CTkComboBox(frame3, values=[], width=10, state='readonly')
+    serial_port_combo = ctk.CTkComboBox(frame3, values=[], width=100, state='readonly')
     serial_port_combo['postcommand'] = lambda: serial_port_combo_postcommand(serial_port_combo)
     serial_port_combo.bind(
         '<<ComboboxSelected>>',
@@ -221,13 +221,13 @@ def main():
     eeprom_size_label = ctk.CTkLabel(frame3, text='EEPROM')
     eeprom_size_label.pack(side='left')
 
-    eeprom_size_combo = ctk.CTkComboBox(frame3, values=EEPROM_SIZE, width=10, state='readonly')
+    eeprom_size_combo = ctk.CTkComboBox(frame3, values=EEPROM_SIZE, width=100, state='readonly')
     eeprom_size_combo.pack(side='left', padx=(1, 3))
 
     firmware_label = ctk.CTkLabel(frame3, text=translations[language]['firmware_label_text'])
     firmware_label.pack(side='left')
 
-    firmware_combo = ctk.CTkComboBox(frame3, values=FIRMWARE_VERSION_LIST, width=10, state='readonly')
+    firmware_combo = ctk.CTkComboBox(frame3, values=FIRMWARE_VERSION_LIST, width=100, state='readonly')
     firmware_combo.pack(side='left', padx=(1, 3))
 
     # 第四行
