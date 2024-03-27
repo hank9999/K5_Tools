@@ -7,7 +7,7 @@ import ttkbootstrap as ttk
 import configparser
 from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE, FontType, LanguageType
 from logger import log
-from translations import *
+from translations import translations
 
 from functions import (
     serial_port_combo_postcommand, 
@@ -156,7 +156,6 @@ def change_language(_, language_combo: ttk.Combobox):
             'Prompt',
             'Language setting has been changed to "English"\nPlease manually restart this program after the current operation is completed to apply the changes'
         )
-
 
 
 def main():
