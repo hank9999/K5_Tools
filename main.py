@@ -205,11 +205,10 @@ def main():
     serial_port_label = ctk.CTkLabel(frame3, text=translations[language]['serial_port_text'])
     serial_port_label.pack(side='left')
 
-    serial_port_combo = ctk.CTkComboBox(frame3, values=[], width=100, state='readonly')
-    serial_port_combo['postcommand'] = lambda: serial_port_combo_postcommand(serial_port_combo)
-    serial_port_combo.bind(
-        '<<ComboboxSelected>>',
-        lambda event: serial_port_combo_callback(
+    serial_port_combo = ctk.CTkComboBox(frame3, width=100, state='readonly')
+    serial_port_combo_postcommand(serial_port_combo)
+    serial_port_combo.configure(
+        command=lambda event: serial_port_combo_callback(
             event, serial_port_combo.get(), label2, eeprom_size_combo, firmware_combo
         )
     )

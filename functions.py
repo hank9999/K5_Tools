@@ -33,7 +33,7 @@ def get_all_serial_port():
 
 
 def serial_port_combo_postcommand(combo: ctk.CTkComboBox):
-    combo['values'] = get_all_serial_port()
+    combo.configure(values=get_all_serial_port())
 
 
 def todo_function():
