@@ -118,8 +118,8 @@ def write_data(serial_port: Serial, start_addr: int, data: Union[bytes, List[int
     current_step = 0
     while addr < start_addr + data_len:
         percent_float = (current_step / total_page) * 100
-        percent = int(percent_float)
-        progress['value'] = percent
+        percent = int(percent_float) / 100
+        progress.set(percent)
         log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
         window.update()
 
@@ -131,7 +131,7 @@ def write_data(serial_port: Serial, start_addr: int, data: Union[bytes, List[int
             serial_utils.write_extra_eeprom(serial_port, addr, writing_data)
         addr += step
         current_step += 1
-    progress['value'] = 0
+    progress.set(0)
     window.update()
 
 
@@ -175,8 +175,8 @@ def clean_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgre
             CTkMessagebox(title='未扩容固件', message=msg, icon='info')
             for i in range(0, 64):
                 percent_float = (i + 1) / 64 * 100
-                percent = int(percent_float)
-                progress['value'] = percent
+                percent = int(percent_float) / 100
+                progress.set(percent)
                 log(f'进度: {percent_float:.1f}%, offset={hex(i * 128)}', '')
                 window.update()
                 serial_utils.write_eeprom(serial_port, i * 128, b'\xff' * 128)
@@ -185,7 +185,7 @@ def clean_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgre
             if eeprom_size > 0:
                 target_eeprom_offset = 0x20000 * eeprom_size
             write_data(serial_port, 0, b'\xff' * target_eeprom_offset, progress, window)
-        progress['value'] = 0
+        progress.set(0)
         window.update()
         log('清空EEPROM成功！')
         serial_utils.reset_radio(serial_port)
@@ -248,7 +248,7 @@ def write_font(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgress
             status_label.configure(text='当前操作: 无')
             return
         write_data(serial_port, addr, font_data, progress, window)
-        progress['value'] = 0
+        progress.set(0)
         window.update()
         log('写入字库成功！')
         if not is_continue:
@@ -291,7 +291,7 @@ def write_font_conf(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkPro
             status_label.configure(text='当前操作: 无')
             return
         write_data(serial_port, 0x2480, font.FONT_CONF, progress, window)
-        progress['value'] = 0
+        progress.set(0)
         window.update()
         log('写入字库配置成功！')
         if not is_continue:
@@ -337,7 +337,7 @@ def write_tone_options(serial_port_text: str, window: ctk.CTk, progress: ctk.CTk
         for tone_data in tone.CTCSS_OPTIONS + tone.DCS_OPTIONS:
             data += struct.pack('<H', tone_data)
         write_data(serial_port, 0x2C00, data, progress, window)
-        progress['value'] = 0
+        progress.set(0)
         window.update()
         log('写入亚音参数成功！')
         if not is_continue:
@@ -446,7 +446,7 @@ def read_calibration(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkPr
             current_step += 1
             percent_float = (current_step / total_steps) * 100
             log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-            progress['value'] = percent_float
+            progress.set(int(percent_float) / 100)
             window.update()
 
         # 弹出文件保存对话框
@@ -539,7 +539,7 @@ def read_config(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgres
             current_step += 1
             percent_float = (current_step / total_steps) * 100
             log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-            progress['value'] = percent_float
+            progress.set(int(percent_float) / 100)
             window.update()
 
         # 弹出文件保存对话框
@@ -658,7 +658,7 @@ def backup_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgr
         target_eeprom_offset = 0x20000 * eeprom_size
     else:
         target_eeprom_offset = 0x2000
-        
+
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
@@ -683,7 +683,7 @@ def backup_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgr
             current_step += 1
             percent_float = (current_step / total_steps) * 100
             log(f'进度: {percent_float:.1f}%, addr={hex(addr)}', '')
-            progress['value'] = percent_float
+            progress.set(int(percent_float) / 100)
             window.update()
 
         # 弹出文件保存对话框
