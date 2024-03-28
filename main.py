@@ -1,7 +1,7 @@
 import os
 import sys
 import customtkinter as ctk
-from tkinter import messagebox
+from CTkMessagebox import CTkMessagebox
 
 import configparser
 from const_vars import FIRMWARE_VERSION_LIST, EEPROM_SIZE, FontType, LanguageType
@@ -141,15 +141,17 @@ def change_language(_, language_combo: ctk.CTkComboBox):
     language = LanguageType.find_value(language_combo.get())
     if language == LanguageType.SIMPLIFIED_CHINESE:
         log('语言设置已更改为"简体中文"\n请在当前操作完成后手动重启此程序以应用更改')
-        messagebox.showinfo(
-            '提示',
-            '语言设置已更改为"简体中文"\n请在当前操作完成后手动重启此程序以应用更改'
-        )
+        CTkMessagebox(title='提示', message='语言设置已更改为"简体中文"\n请在当前操作完成后手动重启此程序以应用更改',
+                      icon='info')
     else:
-        log('Language setting has been changed to "English"\nPlease manually restart this program after the current operation is completed to apply the changes')
-        messagebox.showinfo(
-            'Prompt',
-            'Language setting has been changed to "English"\nPlease manually restart this program after the current operation is completed to apply the changes'
+        log('Language setting has been changed to "English"\n'
+            'Please manually restart this program after the current operation is completed to apply the changes')
+        CTkMessagebox(
+            title='Tip',
+            message='Language setting has been changed to "English"\n'
+                    'Please manually restart this program after the current operation is completed '
+                    'to apply the changes',
+            icon='info'
         )
 
 
