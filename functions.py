@@ -141,17 +141,17 @@ def clean_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgre
     log('选择的串口: ' + serial_port_text)
 
     mb = CTkMessagebox(title='警告', message='请悉知，清空EEPROM没有任何用处，是否继续？',
-                       icon='question', options=['是', '否'])
+                       icon='warning', options=['是', '否'])
     if mb.get() != '是':
         return
 
     mb = CTkMessagebox(title='警告', message='清空EEPROM将会删除EEPROM中的所有数据，请确保你已经备份了EEPROM中的重要数据！',
-                       icon='question', options=['是', '否'])
+                       icon='warning', options=['是', '否'])
     if mb.get() != '是':
         return
 
     mb = CTkMessagebox(title='警告', message='该操作会清空EEPROM内所有数据(包括设置、信道、校准、字库等)\n确定清空EEPROM请点击否',
-                       icon='question', options=['是', '否'])
+                       icon='warning', options=['是', '否'])
     if mb.get() == '否':
         return
 
