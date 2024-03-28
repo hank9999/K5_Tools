@@ -2,9 +2,9 @@ import dataclasses
 import random
 import struct
 
-from tkinter import messagebox
 import customtkinter as ctk
 from customtkinter import filedialog
+from CTkMessagebox import CTkMessagebox
 
 from typing import Union, List
 
@@ -38,7 +38,7 @@ def serial_port_combo_postcommand(combo: ctk.CTkComboBox):
 
 
 def todo_function():
-    messagebox.showinfo('提示', '敬请期待')
+    CTkMessagebox(title='提示', message='敬请期待', icon='info')
     return
 
 
@@ -102,9 +102,9 @@ def serial_port_combo_callback(_, serial_port: str, status_label: ctk.CTkLabel, 
     with serial.Serial(serial_port, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port)
         if serial_check.status:
-            messagebox.showinfo('提示', serial_check.message)
+            CTkMessagebox(title='提示', message=serial_check.message, icon='info')
         else:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
         firmware_combo.set(FIRMWARE_VERSION_LIST[serial_check.firmware_version])
         eeprom_size_combo.set(EEPROM_SIZE[serial_check.eeprom_size])
     status_label['text'] = '当前操作: 无'
@@ -140,31 +140,39 @@ def clean_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgre
     log('开始清空EEPROM流程')
     log('选择的串口: ' + serial_port_text)
 
-    if not messagebox.askquestion('警告', '请悉知，清空EEPROM没有任何用处，是否继续？') == 'yes':
+    mb = CTkMessagebox(title='警告', message='请悉知，清空EEPROM没有任何用处，是否继续？',
+                       icon='question', options=['是', '否'])
+    if mb.get() != '是':
         return
-    if not messagebox.askquestion('警告', '清空EEPROM将会删除EEPROM中的所有数据，请确保你已经备份了EEPROM中的重要数据！') == 'yes':
+
+    mb = CTkMessagebox(title='警告', message='清空EEPROM将会删除EEPROM中的所有数据，请确保你已经备份了EEPROM中的重要数据！',
+                       icon='question', options=['是', '否'])
+    if mb.get() != '是':
         return
-    if messagebox.askquestion('警告', '该操作会清空EEPROM内所有数据(包括设置、信道、校准、字库等)\n确定清空EEPROM请点击否') == 'yes':
+
+    mb = CTkMessagebox(title='警告', message='该操作会清空EEPROM内所有数据(包括设置、信道、校准、字库等)\n确定清空EEPROM请点击否',
+                       icon='question', options=['是', '否'])
+    if mb.get() == '否':
         return
 
     status_label['text'] = '当前操作: 清空EEPROM'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
-        messagebox.showerror('错误', '没有选择串口！')
+        CTkMessagebox(title='错误', message='没有选择串口！', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
         log(f'选择固件版本: {FIRMWARE_VERSION_LIST[firmware_version]} EEPROM大小: {EEPROM_SIZE[eeprom_size]}')
         if firmware_version != 1:
             msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，部分扇区可能无法被清除 (仅清除前8KiB原厂大小数据)'
             log(msg)
-            messagebox.showinfo('未扩容固件', msg)
+            CTkMessagebox(title='未扩容固件', message=msg, icon='info')
             for i in range(0, 64):
                 percent_float = (i + 1) / 64 * 100
                 percent = int(percent_float)
@@ -181,7 +189,7 @@ def clean_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgre
         window.update()
         log('清空EEPROM成功！')
         serial_utils.reset_radio(serial_port)
-        messagebox.showinfo('提示', '清空EEPROM成功！')
+        CTkMessagebox(title='提示', message='清空EEPROM成功！', icon='info')
         status_label['text'] = '当前操作: 无'
 
 
@@ -193,14 +201,14 @@ def write_font(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgress
     status_label['text'] = f'当前操作: 写入字库 ({font_type.value})'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
-        messagebox.showerror('错误', '没有选择串口！')
+        CTkMessagebox(title='错误', message='没有选择串口！', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
 
@@ -209,21 +217,21 @@ def write_font(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgress
         if firmware_version != 1:
             msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入字库！'
             log(msg)
-            messagebox.showinfo('未扩容固件', msg)
+            CTkMessagebox(title='未扩容固件', message=msg, icon='info')
             status_label['text'] = '当前操作: 无'
             return
 
         if eeprom_size < 1:
             msg = f'EEPROM小于128KiB，无法写入字库！'
             log(msg)
-            messagebox.showinfo('EEPROM大小不足', msg)
+            CTkMessagebox(title='EEPROM大小不足', message=msg, icon='info')
             status_label['text'] = '当前操作: 无'
             return
 
         if font_type == FontType.GB2312_UNCOMPRESSED and eeprom_size < 2:
             msg = f'EEPROM小于256KiB，无法写入H固件字库！'
             log(msg)
-            messagebox.showinfo('EEPROM大小不足', msg)
+            CTkMessagebox(title='EEPROM大小不足', message=msg, icon='info')
             status_label['text'] = '当前操作: 无'
             return
 
@@ -236,7 +244,7 @@ def write_font(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgress
             font_data = font.LOSEHU_FONT
             addr = 0x2000
         else:
-            messagebox.showerror('错误', '未知字库类型！')
+            CTkMessagebox(title='错误', message='未知字库类型！', icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
         write_data(serial_port, addr, font_data, progress, window)
@@ -245,7 +253,7 @@ def write_font(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgress
         log('写入字库成功！')
         if not is_continue:
             serial_utils.reset_radio(serial_port)
-            messagebox.showinfo('提示', '写入字库成功！')
+            CTkMessagebox(title='提示', message='写入字库成功！', icon='info')
         status_label['text'] = '当前操作: 无'
 
 
@@ -256,14 +264,14 @@ def write_font_conf(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkPro
     status_label['text'] = f'当前操作: 写入字库配置'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
-        messagebox.showerror('错误', '没有选择串口！')
+        CTkMessagebox(title='错误', message='没有选择串口！', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
 
@@ -272,14 +280,14 @@ def write_font_conf(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkPro
         if firmware_version != 1:
             msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入字库配置！'
             log(msg)
-            messagebox.showinfo('未扩容固件', msg)
+            CTkMessagebox(title='未扩容固件', message=msg, icon='info')
             status_label['text'] = '当前操作: 无'
             return
 
         if eeprom_size < 1:
             msg = f'EEPROM小于128KiB，无法写入字库配置！'
             log(msg)
-            messagebox.showinfo('EEPROM大小不足', msg)
+            CTkMessagebox(title='EEPROM大小不足', message=msg, icon='info')
             status_label['text'] = '当前操作: 无'
             return
         write_data(serial_port, 0x2480, font.FONT_CONF, progress, window)
@@ -288,7 +296,7 @@ def write_font_conf(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkPro
         log('写入字库配置成功！')
         if not is_continue:
             serial_utils.reset_radio(serial_port)
-            messagebox.showinfo('提示', '写入字库配置成功！')
+            CTkMessagebox(title='提示', message='写入字库配置成功！', icon='info')
         status_label['text'] = '当前操作: 无'
 
 
@@ -299,14 +307,14 @@ def write_tone_options(serial_port_text: str, window: ctk.CTk, progress: ctk.CTk
     status_label['text'] = f'当前操作: 写入亚音参数'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
-        messagebox.showerror('错误', '没有选择串口！')
+        CTkMessagebox(title='错误', message='没有选择串口！', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
 
@@ -315,14 +323,14 @@ def write_tone_options(serial_port_text: str, window: ctk.CTk, progress: ctk.CTk
         if firmware_version != 1:
             msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入亚音参数！'
             log(msg)
-            messagebox.showinfo('未扩容固件', msg)
+            CTkMessagebox(title='未扩容固件', message=msg, icon='info')
             status_label['text'] = '当前操作: 无'
             return
 
         if eeprom_size < 1:
             msg = f'EEPROM小于128KiB，无法写入亚音参数！'
             log(msg)
-            messagebox.showinfo('EEPROM大小不足', msg)
+            CTkMessagebox(title='EEPROM大小不足', message=msg, icon='info')
             status_label['text'] = '当前操作: 无'
             return
         data = b''
@@ -334,7 +342,7 @@ def write_tone_options(serial_port_text: str, window: ctk.CTk, progress: ctk.CTk
         log('写入亚音参数成功！')
         if not is_continue:
             serial_utils.reset_radio(serial_port)
-            messagebox.showinfo('提示', '写入亚音参数成功！')
+            CTkMessagebox(title='提示', message='写入亚音参数成功！', icon='info')
         status_label['text'] = '当前操作: 无'
 
 
@@ -345,7 +353,7 @@ def reset_radio(serial_port_text: str, status_label):
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
         serial_utils.reset_radio(serial_port)
@@ -358,7 +366,7 @@ def auto_write_font(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkPro
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         result = check_serial_port(serial_port, False)
         if not result.status:
-            messagebox.showerror('错误', result.message)
+            CTkMessagebox(title='错误', message=result.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
 
@@ -383,7 +391,7 @@ def auto_write_font(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkPro
             log(f'正在进行 写入{version_number}{version_code}版字库')
             write_font(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, font_type)
             reset_radio(serial_port_text, status_label)
-            messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n写入成功')
+            CTkMessagebox(title='提示', message=f'{version_number}{version_code}版本字库\n写入成功')
         else:
             n = 4 if version_code == 'H' else 3
             log(f'正在进行 1/{n}: 写入{version_number}{version_code}版字库')
@@ -402,9 +410,9 @@ def auto_write_font(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkPro
                                        True, True)
             reset_radio(serial_port_text, status_label)
             extra_msg = '拼音检索表\n' if n == 4 else ''
-            messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n{extra_msg}写入成功！')
+            CTkMessagebox(title='提示', message=f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n{extra_msg}写入成功！')
     else:
-        messagebox.showinfo('提示', f'非LOSEHU扩容固件，无法写入')
+        CTkMessagebox(title='提示', message='非LOSEHU扩容固件，无法写入', icon='info')
 
 
 def read_calibration(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar,
@@ -414,14 +422,14 @@ def read_calibration(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkPr
     status_label['text'] = f'当前操作: 读取校准参数'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
-        messagebox.showerror('错误', '没有选择串口！')
+        CTkMessagebox(title='错误', message='没有选择串口！', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
 
@@ -447,7 +455,7 @@ def read_calibration(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkPr
 
         if not file_path:
             log('用户取消保存')
-            messagebox.showinfo('提示', '用户取消保存')
+            CTkMessagebox(title='提示', message='用户取消保存')
             return  # 用户取消保存，直接返回
 
         with open(file_path, 'wb') as fp:
@@ -455,7 +463,7 @@ def read_calibration(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkPr
 
         log('读取校准参数完成')
         status_label['text'] = '当前操作: 无'
-        messagebox.showinfo('提示', '保存成功！')
+        CTkMessagebox(title='提示', message='保存成功！')
 
 
 def write_calibration(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar,
@@ -465,7 +473,7 @@ def write_calibration(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkP
     status_label['text'] = f'当前操作: 写入校准参数'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
-        messagebox.showerror('错误', '没有选择串口！')
+        CTkMessagebox(title='错误', message='没有选择串口！', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
@@ -473,7 +481,7 @@ def write_calibration(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkP
 
     if not file_path:
         log('用户取消选择')
-        messagebox.showinfo('提示', '用户取消选择')
+        CTkMessagebox(title='提示', message='用户取消选择')
         return  # 用户取消选择，直接返回
 
     with open(file_path, 'rb') as fp:
@@ -481,14 +489,14 @@ def write_calibration(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkP
 
     if len(calibration_data) != 512:
         log('校准参数文件大小错误')
-        messagebox.showerror('错误', '校准参数文件大小错误')
+        CTkMessagebox(title='错误', message='校准参数文件大小错误', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
 
@@ -497,7 +505,7 @@ def write_calibration(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkP
         log('写入校准参数完成')
         status_label['text'] = '当前操作: 无'
         serial_utils.reset_radio(serial_port)
-        messagebox.showinfo('提示', '写入成功！')
+        CTkMessagebox(title='提示', message='写入成功！')
 
 
 def read_config(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar,
@@ -507,14 +515,14 @@ def read_config(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgres
     status_label['text'] = f'当前操作: 读取配置参数'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
-        messagebox.showerror('错误', '没有选择串口！')
+        CTkMessagebox(title='错误', message='没有选择串口！', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
 
@@ -540,7 +548,7 @@ def read_config(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgres
 
         if not file_path:
             log('用户取消保存')
-            messagebox.showinfo('提示', '用户取消保存')
+            CTkMessagebox(title='提示', message='用户取消保存')
             return  # 用户取消保存，直接返回
 
         with open(file_path, 'wb') as fp:
@@ -548,7 +556,7 @@ def read_config(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgres
 
         log('读取配置参数完成')
         status_label['text'] = '当前操作: 无'
-        messagebox.showinfo('提示', '保存成功！')
+        CTkMessagebox(title='提示', message='保存成功！')
 
 
 def write_config(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar,
@@ -558,7 +566,7 @@ def write_config(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgre
     status_label['text'] = f'当前操作: 写入配置参数'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
-        messagebox.showerror('错误', '没有选择串口！')
+        CTkMessagebox(title='错误', message='没有选择串口！', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
@@ -566,7 +574,7 @@ def write_config(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgre
 
     if not file_path:
         log('用户取消选择')
-        messagebox.showinfo('提示', '用户取消选择')
+        CTkMessagebox(title='提示', message='用户取消选择')
         return  # 用户取消选择，直接返回
 
     with open(file_path, 'rb') as fp:
@@ -574,14 +582,14 @@ def write_config(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgre
 
     if len(calibration_data) != 0x1d00:
         log('配置参数文件大小错误')
-        messagebox.showerror('错误', '配置参数文件大小错误')
+        CTkMessagebox(title='错误', message='配置参数文件大小错误', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
 
@@ -590,7 +598,7 @@ def write_config(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgre
         log('写入配置参数完成')
         status_label['text'] = '当前操作: 无'
         serial_utils.reset_radio(serial_port)
-        messagebox.showinfo('提示', '写入成功！')
+        CTkMessagebox(title='提示', message='写入成功！')
 
 
 def write_pinyin_index(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar, status_label: ctk.CTkLabel,
@@ -600,28 +608,28 @@ def write_pinyin_index(serial_port_text: str, window: ctk.CTk, progress: ctk.CTk
     status_label['text'] = f'当前操作: 写入拼音检索表'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
-        messagebox.showerror('错误', '没有选择串口！')
+        CTkMessagebox(title='错误', message='没有选择串口！', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
     if firmware_version != 1:
         msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入拼音检索表！'
         log(msg)
-        messagebox.showinfo('未扩容固件', msg)
+        CTkMessagebox(title='未扩容固件', message=msg, icon='info')
         status_label['text'] = '当前操作: 无'
         return
 
     if eeprom_size < 2:
         msg = f'EEPROM小于256KiB，无法写入拼音检索表！'
         log(msg)
-        messagebox.showinfo('EEPROM大小不足', msg)
+        CTkMessagebox(title='EEPROM大小不足', message=msg, icon='info')
         status_label['text'] = '当前操作: 无'
         return
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
 
@@ -631,7 +639,7 @@ def write_pinyin_index(serial_port_text: str, window: ctk.CTk, progress: ctk.CTk
         log('写入拼音检索表成功！')
         if not is_continue:
             serial_utils.reset_radio(serial_port)
-            messagebox.showinfo('提示', '写入拼音检索表成功！')
+            CTkMessagebox(title='提示', message='写入拼音检索表成功！')
         status_label['text'] = '当前操作: 无'
 
 
@@ -642,7 +650,7 @@ def backup_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgr
     status_label['text'] = f'当前操作: 备份eeprom'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
-        messagebox.showerror('错误', '没有选择串口！')
+        CTkMessagebox(title='错误', message='没有选择串口！', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
@@ -654,7 +662,7 @@ def backup_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgr
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
 
@@ -684,7 +692,7 @@ def backup_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgr
 
         if not file_path:
             log('用户取消保存')
-            messagebox.showinfo('提示', '用户取消保存')
+            CTkMessagebox(title='提示', message='用户取消保存')
             return  # 用户取消保存，直接返回
 
         with open(file_path, 'wb') as fp:
@@ -692,7 +700,7 @@ def backup_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgr
 
         log('EEPROM 备份完成')
         status_label['text'] = '当前操作: 无'
-        messagebox.showinfo('提示', '保存成功！')
+        CTkMessagebox(title='提示', message='保存成功！')
 
 
 def restore_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProgressBar,
@@ -702,7 +710,7 @@ def restore_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProg
     status_label['text'] = f'当前操作: 恢复eeprom'
     if len(serial_port_text) == 0:
         log('没有选择串口！')
-        messagebox.showerror('错误', '没有选择串口！')
+        CTkMessagebox(title='错误', message='没有选择串口！', icon='cancel')
         status_label['text'] = '当前操作: 无'
         return
 
@@ -716,22 +724,24 @@ def restore_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProg
 
     if not file_path:
         log('用户取消选择')
-        messagebox.showinfo('提示', '用户取消选择')
+        CTkMessagebox(title='提示', message='用户取消选择')
         return  # 用户取消选择，直接返回
 
     with open(file_path, 'rb') as fp:
         restore_data = fp.read()
 
     if len(restore_data) != target_eeprom_offset:
-        if messagebox.askquestion('提示', f'选择的文件大小为{len(restore_data)}，但目标eeprom大小为{target_eeprom_offset}，是否继续？') == 'no':
+        mb = CTkMessagebox(title='提示', message=f'选择的文件大小为{len(restore_data)}，但目标eeprom大小为{target_eeprom_offset}，是否继续？',
+                           icon='question', options=['是', '否'])
+        if mb.get() == '否':
             log('用户取消恢复')
-            messagebox.showinfo('提示', '用户取消恢复')
+            CTkMessagebox(title='提示', message='用户取消恢复')
             return  # 用户取消恢复，直接返回
 
     with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
         serial_check = check_serial_port(serial_port, False)
         if not serial_check.status:
-            messagebox.showerror('错误', serial_check.message)
+            CTkMessagebox(title='错误', message=serial_check.message, icon='cancel')
             status_label['text'] = '当前操作: 无'
             return
 
@@ -740,4 +750,4 @@ def restore_eeprom(serial_port_text: str, window: ctk.CTk, progress: ctk.CTkProg
         log('EEPROM恢复完成')
         status_label['text'] = '当前操作: 无'
         serial_utils.reset_radio(serial_port)
-        messagebox.showinfo('提示', '写入成功！')
+        CTkMessagebox(title='提示', message='写入成功！')

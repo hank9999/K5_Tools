@@ -10,6 +10,7 @@ python = "^3.8"
 pyserial = "^3.5"
 ttkbootstrap = "^1.10.1"
 customtkinter = "^5.2.2"
+ctkmessagebox = "^2.5"
 
 [build-system]
 requires = ["poetry-core"]
