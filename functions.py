@@ -2,8 +2,9 @@ import dataclasses
 import random
 import struct
 
-from tkinter import messagebox, filedialog
+from tkinter import messagebox
 import customtkinter as ctk
+from customtkinter import filedialog
 
 from typing import Union, List
 
