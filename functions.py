@@ -739,3 +739,45 @@ def restore_eeprom(serial_port_text: str, window: tk.Tk, progress: ttk.Progressb
         status_label['text'] = '当前操作: 无'
         serial_utils.reset_radio(serial_port)
         messagebox.showinfo('提示', '写入成功！')
+
+
+def write_patch(serial_port_text: str, window: tk.Tk, progress: ttk.Progressbar, status_label: tk.Label,
+                eeprom_size: int,firmware_version: int , is_continue: bool = False):
+    log('开始写入SSB补丁')
+    log('选择的串口: ' + serial_port_text)
+    status_label['text'] = f'当前操作: 写入SSB补丁'
+    if len(serial_port_text) == 0:
+        log('没有选择串口！')
+        messagebox.showerror('错误', '没有选择串口！')
+        status_label['text'] = '当前操作: 无'
+        return
+
+    if firmware_version != 1:
+        msg = f'非{FIRMWARE_VERSION_LIST[1]}固件，无法写入拼音检索表！'
+        log(msg)
+        messagebox.showinfo('未扩容固件', msg)
+        status_label['text'] = '当前操作: 无'
+        return
+
+    if eeprom_size < 2:
+        msg = f'EEPROM小于256KiB，无法写入SSB补丁！'
+        log(msg)
+        messagebox.showinfo('EEPROM大小不足', msg)
+        status_label['text'] = '当前操作: 无'
+        return
+
+    with serial.Serial(serial_port_text, 38400, timeout=2) as serial_port:
+        serial_check = check_serial_port(serial_port, False)
+        if not serial_check.status:
+            messagebox.showerror('错误', serial_check.message)
+            status_label['text'] = '当前操作: 无'
+            return
+
+        patch_data = font.PATCH
+        addr = 0x3C228
+        write_data(serial_port, addr, patch_data, progress, window)
+        log('写入SSB补丁成功！')
+        if not is_continue:
+            serial_utils.reset_radio(serial_port)
+            messagebox.showinfo('提示', '写入SSB补丁成功！')
+        status_label['text'] = '当前操作: 无'

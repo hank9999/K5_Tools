@@ -26,6 +26,7 @@ translations = {
         'write_pinyin_new_index_button_text': '写入拼音表（新）',
         'backup_eeprom_button_text': '备份EEPROM',
         'restore_eeprom_button_text': '恢复EEPROM',
+        'write_patch_button': '写入SSB补丁',
         'todo_button_text': '敬请期待',
 
         # Tooltip
@@ -47,6 +48,7 @@ translations = {
         'write_pinyin_new_index_button_tooltip_text': '124及以上版本拼音索引，如果不使用自动写入，请在执行完字库写入后点击',
         'backup_eeprom_button_tooltip_text': '备份EEPROM中的数据，使用EEPROM下拉框可以选择所要备份的大小',
         'restore_eeprom_button_tooltip_text': '恢复EEPROM中的数据，使用EEPROM下拉框可以选择所要恢复的大小',
+        'write_patch_button_tooltip_text': '写入SSB补丁，用于解锁4732固件(S结尾LOSEHU固件)的SSB功能，如不使用自动写入，请在执行完字库写入后点击',
         'todo_button_tooltip_text': '敬请期待',
         'language_combo_tooltip_text': '更改语言，重启程序生效'
     },
@@ -73,6 +75,7 @@ translations = {
         'write_pinyin_new_index_button_text': 'Write new index',
         'backup_eeprom_button_text': 'Backup EEPROM',
         'restore_eeprom_button_text': 'Restore EEPROM',
+        'write_patch_button': 'Write into SSB patch',
         'todo_button_text': 'Coming soon',
 
         'eeprom_size_combo_tooltip_text': 'EEPROM chip capacity, no need to modify if automatically detected correctly',
@@ -93,6 +96,7 @@ translations = {
         'write_pinyin_new_index_button_tooltip_text': '124 and later versions Pinyin index. If not using automatic writing, click after executing font library writing.',
         'backup_eeprom_button_tooltip_text': 'Backup data in EEPROM. Use the EEPROM dropdown to select the size to be backed up.',
         'restore_eeprom_button_tooltip_text': 'Restore data in EEPROM. Use the EEPROM dropdown to select the size to be restored.',
+        'write_patch_button_tooltip_text': 'Write to the SSB patch to unlock the SSB function of the 4732 firmware (LOSEHU firmware at the end of S). If it is not used automatically, please click after the font writing',
         'todo_button_tooltip_text': 'Coming soon',
         'language_combo_tooltip_text': 'Change language, take effect after restart.'
     }
