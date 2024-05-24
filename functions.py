@@ -62,7 +62,8 @@ def check_serial_port(serial_port: serial.Serial,
         if auto_detect:
             if version.startswith('LOSEHU'):
                 firmware_version = 0
-                if version.endswith('K') or version.endswith('H'):
+                version_code = version[-2] if version[-1] == "S" else version[-1]
+                if version_code == "K" or version_code == "H":
                     firmware_version = 1
             else:
                 firmware_version = 2
@@ -363,7 +364,12 @@ def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
         version = result.raw_version_text
         if version.startswith('LOSEHU'):
             version_number = int(version[6:9])
-            version_code = version[-1]
+            if version[-1] == "S":
+                version_code = version[-2]
+                SSB = True
+            else:
+                version_code = version[-1]
+                SSB = False
             if version_code == 'H':
                 if version_number == 118:
                     font_type = FontType.GB2312_UNCOMPRESSED
@@ -383,24 +389,34 @@ def auto_write_font(serial_port_text: str, window: tk.Tk, progress: ttk.Progress
             reset_radio(serial_port_text, status_label)
             messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n写入成功')
         else:
-            n = 4 if version_code == 'H' else 3
+            if SSB:
+                n = 5
+            elif version_code == "H":
+                n = 4
+            else:
+                n = 3
             log(f'正在进行 1/{n}: 写入{version_number}{version_code}版字库')
             write_font(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, font_type, True)
             log(f'正在进行 2/{n}: 写入字库配置')
             write_font_conf(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
             log(f'正在进行 3/{n}: 写入亚音参数')
             write_tone_options(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
-            if n == 4:
-                log(f'正在进行 4/4: 写入拼音检索表')
+            if n > 3:
+                log(f'正在进行 4/{n}: 写入拼音检索表')
                 if version_number == 123:
                     write_pinyin_index(serial_port_text, window, progress, status_label, eeprom_size, firmware_version,
                                        True)
                 elif version_number > 123:
                     write_pinyin_index(serial_port_text, window, progress, status_label, eeprom_size, firmware_version,
                                        True, True)
+            if n == 5:
+                log(f'正在进行 5/{n}: 写入SSB补丁')
+                write_patch(serial_port_text, window, progress, status_label, eeprom_size, firmware_version, True)
             reset_radio(serial_port_text, status_label)
-            extra_msg = '拼音检索表\n' if n == 4 else ''
-            messagebox.showinfo('提示', f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n{extra_msg}写入成功！')
+            extra_msg = '拼音检索表\n' if n > 3 else ''
+            is_SSB_msg = 'SSB补丁\n' if n == 5 else ''
+            messagebox.showinfo('提示',
+                                f'{version_number}{version_code}版本字库\n字库配置\n亚音参数\n{extra_msg}{is_SSB_msg}写入成功！')
     else:
         messagebox.showinfo('提示', f'非LOSEHU扩容固件，无法写入')
 
