@@ -12,7 +12,7 @@ translations = {
 
         # Buttons
         'clean_eeprom_button_text': '清空EEPROM',
-        'auto_write_font_button_text': '自动写入字库',
+        'auto_write_font_button_text': '自动写入',
         'read_calibration_button_text': '读取校准参数',
         'write_calibration_button_text': '写入校准参数',
         'read_config_button_text': '读取配置参数',
@@ -61,7 +61,7 @@ translations = {
         'firmware_label_text': 'Firmware',
 
         'clean_eeprom_button_text': 'Clear EEPROM',
-        'auto_write_font_button_text': 'Auto write font',
+        'auto_write_font_button_text': 'Auto write',
         'read_calibration_button_text': 'Read calibration',
         'write_calibration_button_text': 'Write calibration',
         'read_config_button_text': 'Read config',
