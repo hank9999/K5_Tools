@@ -23,7 +23,8 @@ from functions import (
     write_pinyin_index,
     todo_function,
     backup_eeprom,
-    restore_eeprom
+    restore_eeprom,
+    write_patch
 )
 
 window = ttk.Window()
@@ -410,13 +411,16 @@ def main():
     )
     restore_eeprom_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
     
-    todo_button = tk.Button(
+    write_patch_button = tk.Button(
         frame7,
-        text=translations[language]['todo_button_text'],
+        text=translations[language]['write_patch_button_text'],
         width=14,
-        command=todo_function
+        command=lambda:write_patch(
+            serial_port_combo.get(), window, progress, label2,
+            EEPROM_SIZE.index(eeprom_size_combo.get()), FIRMWARE_VERSION_LIST.index(firmware_combo.get())
+        )
     )
-    todo_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
+    write_patch_button.pack(side='left', padx=3, pady=(2, 15), expand=True, fill='x')
     
     # 第八行
     frame8 = tk.Frame(window, padx=10, pady=2)
@@ -458,7 +462,7 @@ def main():
     Tooltip(write_pinyin_new_index_button, translations[language]['write_pinyin_new_index_button_tooltip_text'])
     Tooltip(backup_eeprom_button, translations[language]['backup_eeprom_button_tooltip_text'])
     Tooltip(restore_eeprom_button, translations[language]['restore_eeprom_button_tooltip_text'])
-    Tooltip(todo_button, translations[language]['todo_button_tooltip_text'])
+    Tooltip(write_patch_button, translations[language]['write_patch_button_tooltip_text'])
 
     window.mainloop()
 
