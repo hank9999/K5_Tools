@@ -26,7 +26,7 @@ translations = {
         'write_pinyin_new_index_button_text': '写入拼音表（新）',
         'backup_eeprom_button_text': '备份EEPROM',
         'restore_eeprom_button_text': '恢复EEPROM',
-        'write_patch_button': '写入SSB补丁',
+        'write_patch_button_text': '写入SSB补丁',
         'todo_button_text': '敬请期待',
 
         # Tooltip
@@ -75,7 +75,7 @@ translations = {
         'write_pinyin_new_index_button_text': 'Write new index',
         'backup_eeprom_button_text': 'Backup EEPROM',
         'restore_eeprom_button_text': 'Restore EEPROM',
-        'write_patch_button': 'Write into SSB patch',
+        'write_patch_button_text': 'Write into SSB patch',
         'todo_button_text': 'Coming soon',
 
         'eeprom_size_combo_tooltip_text': 'EEPROM chip capacity, no need to modify if automatically detected correctly',
